@@ -36,7 +36,7 @@ void swap(Node_td *a, Node_td *b)
     a->val = b->val;
     b->val = tmp;
 }
-Node_td *head_(int val, Node_td *father, Node_td *left, Node_td *right)
+Node_td *init_node(int val, Node_td *father, Node_td *left, Node_td *right)
 {
     Node_td *root = (Node_td *)malloc(sizeof(Node_td));
     root->val = val;
@@ -46,10 +46,10 @@ Node_td *head_(int val, Node_td *father, Node_td *left, Node_td *right)
     return root;
 }
 
-void *insert(Node_td *root, int val)
+void insert(Node_td *root, int val)
 {
     Node_td *bottom = (Node_td *)bottom_(root);
-    bottom->right = (Node_td *)head_(val, bottom, NULL, NULL);
+    bottom->right = (Node_td *)init_node(val, bottom, NULL, NULL);
     bottom = bottom->right;
 
     while (bottom->father != NULL)
@@ -72,9 +72,9 @@ void *insert(Node_td *root, int val)
 
 void main()
 {
-    Node_td *root = (Node_td *)malloc(sizeof(Node_td));
-    int arr[] = {8, 2, 9, 7, 8, 10, 1, 5, 6, 3};
-    int i = 0;
+    int arr[] = {0, 0, 8, 2, 9, -1, 7, 8, 10, 1, 5, 6, 3};
+    Node_td *root = init_node(arr[0], NULL, NULL, NULL);
+    int i = 1;
     while (i < sizeof(arr) / sizeof(int))
     {
         insert(root, arr[i++]);

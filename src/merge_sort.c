@@ -20,26 +20,6 @@ link_t *arr_to_link(int *arr, int depth)
     head->val = arr[depth];
     return head;
 }
-link_t *merge_sort(link_t *head)
-{
-    if (head == NULL || head->next == NULL)
-    {
-        return head;
-    }
-    link_t *mid = head;
-    link_t *temp = head;
-    while (temp->next != NULL && temp->next->next != NULL)
-    {
-        mid = mid->next;
-        temp = temp->next->next;
-    }
-    link_t *left = head;
-    link_t *right = mid->next;
-    mid->next = NULL;
-    left = merge_sort(left);
-    right = merge_sort(right);
-    return merge(left, right);
-}
 link_t *merge(link_t *left, link_t *right)
 {
     if (left == NULL)
@@ -62,10 +42,32 @@ link_t *merge(link_t *left, link_t *right)
     }
 }
 
+link_t *merge_sort(link_t *head)
+{
+    if (head == NULL || head->next == NULL)
+    {
+        return head;
+    }
+    link_t *mid = head;
+    link_t *temp = head;
+    while (temp->next != NULL && temp->next->next != NULL)
+    {
+        mid = mid->next;
+        temp = temp->next->next;
+    }
+    link_t *left = head;
+    link_t *right = mid->next;
+    mid->next = NULL;
+    left = merge_sort(left);
+    right = merge_sort(right);
+    return merge(left, right);
+}
+
 void main()
 {
     int arr[] = {2, 5, 4, 6, 8, 1, 7, 3};
-    link_t *head = arr_to_link(arr, 0);
+    link_t *lt = arr_to_link(arr, 0);
+    link_t *head = merge_sort(lt);
     while (head != NULL)
     {
         printf("%d ", head->val);

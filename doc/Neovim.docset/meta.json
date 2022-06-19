@@ -1,0 +1,13 @@
+{
+    "feed_url": "https://zealusercontributions.vercel.app/api/docsets/Neovim.xml",
+    "name": "Neovim",
+    "title": "Neovim",
+    "urls": [
+        "https://kapeli.com/feeds/zzz/user_contributed/build/Neovim/Neovim.tgz",
+        "https://sanfrancisco.kapeli.com/feeds/zzz/user_contributed/build/Neovim/Neovim.tgz",
+        "https://newyork.kapeli.com/feeds/zzz/user_contributed/build/Neovim/Neovim.tgz",
+        "https://london.kapeli.com/feeds/zzz/user_contributed/build/Neovim/Neovim.tgz",
+        "https://frankfurt.kapeli.com/feeds/zzz/user_contributed/build/Neovim/Neovim.tgz"
+    ],
+    "version": "0.4.2"
+}

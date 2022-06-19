@@ -1,0 +1,13 @@
+{
+    "feed_url": "https://zealusercontributions.vercel.app/api/docsets/Python_zh_cn.xml",
+    "name": "Python_zh_cn",
+    "title": "Python zh cn",
+    "urls": [
+        "https://kapeli.com/feeds/zzz/user_contributed/build/Python_zh_cn/Python_zh_cn.tgz",
+        "https://sanfrancisco.kapeli.com/feeds/zzz/user_contributed/build/Python_zh_cn/Python_zh_cn.tgz",
+        "https://newyork.kapeli.com/feeds/zzz/user_contributed/build/Python_zh_cn/Python_zh_cn.tgz",
+        "https://london.kapeli.com/feeds/zzz/user_contributed/build/Python_zh_cn/Python_zh_cn.tgz",
+        "https://frankfurt.kapeli.com/feeds/zzz/user_contributed/build/Python_zh_cn/Python_zh_cn.tgz"
+    ],
+    "version": "3.8.0"
+}

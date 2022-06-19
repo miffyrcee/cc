@@ -1,0 +1,549 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Getting started &#8212; aiohttp-demos 0.2 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="shortcut icon" href="_static/aiohttp-icon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Preparations" href="preparations.html" />
+
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+
+
+    <div class="document">
+      <div class="documentwrapper">
+
+
+          <div class="body" role="main">
+
+  <div class="section" id="getting-started">
+<span id="aiohttp-demos-polls-getting-started"></span><h1>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
+<p>aiohttp server is built around <a class="reference external" href="../web_reference.html#aiohttp.web.Application" title="(in aiohttp v3.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">aiohttp.web.Application</span></code></a> instance.
+It is used for registering <em>startup</em>/<em>cleanup</em> signals, connecting routes etc.</p>
+<p>The following code creates an application:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># main.py</span>
+<span class="kn">from</span> <span class="nn">aiohttp</span> <span class="k">import</span> <span class="n">web</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">web</span><span class="o">.</span><span class="n">Application</span><span class="p">()</span>
+<span class="n">web</span><span class="o">.</span><span class="n">run_app</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Save it under <code class="docutils literal notranslate"><span class="pre">aiohttpdemo_polls/main.py</span></code> and start the server using:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ python3 main.py
+<span class="o">========</span> Running on http://0.0.0.0:8080 <span class="o">========</span>
+<span class="o">(</span>Press CTRL+C to quit<span class="o">)</span>
+</pre></div>
+</div>
+<p>Next, open the displayed link in a browser. It returns a <code class="docutils literal notranslate"><span class="pre">404:</span> <span class="pre">Not</span> <span class="pre">Found</span></code>
+error. To show something more meaningful than an error, let’s create a route
+and a view.</p>
+</div>
+<div class="section" id="views">
+<span id="aiohttp-demos-polls-views"></span><h1>Views<a class="headerlink" href="#views" title="Permalink to this headline">¶</a></h1>
+<p>Let’s start with the first views. Create the file <code class="docutils literal notranslate"><span class="pre">aiohttpdemo_polls/views.py</span></code>
+and add the following to it:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># views.py</span>
+<span class="kn">from</span> <span class="nn">aiohttp</span> <span class="k">import</span> <span class="n">web</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">web</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;Hello Aiohttp!&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This <code class="docutils literal notranslate"><span class="pre">index</span></code> view is the simplest view possible in Aiohttp.</p>
+<p>Now, we should create a route for this <code class="docutils literal notranslate"><span class="pre">index</span></code> view. Put the following into
+<code class="docutils literal notranslate"><span class="pre">aiohttpdemo_polls/routes.py</span></code>. It is a good practice to separate views,
+routes, models etc. You’ll have more of each file type, and it is nice to group
+them into different places:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># routes.py</span>
+<span class="kn">from</span> <span class="nn">views</span> <span class="k">import</span> <span class="n">index</span>
+
+<span class="k">def</span> <span class="nf">setup_routes</span><span class="p">(</span><span class="n">app</span><span class="p">):</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_get</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We should add a call to the <code class="docutils literal notranslate"><span class="pre">setup_routes</span></code> function somewhere. The best place
+to do this is in <code class="docutils literal notranslate"><span class="pre">main.py</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># main.py</span>
+<span class="kn">from</span> <span class="nn">aiohttp</span> <span class="k">import</span> <span class="n">web</span>
+<span class="kn">from</span> <span class="nn">routes</span> <span class="k">import</span> <span class="n">setup_routes</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">web</span><span class="o">.</span><span class="n">Application</span><span class="p">()</span>
+<span class="n">setup_routes</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+<span class="n">web</span><span class="o">.</span><span class="n">run_app</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Start server again using <code class="docutils literal notranslate"><span class="pre">python3</span> <span class="pre">main.py</span></code>. This time when we open the browser
+we see:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Hello Aiohttp!
+</pre></div>
+</div>
+<p><strong>Success!</strong> Now, your working directory should look like this:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>.
+├── ..
+└── polls
+    └── aiohttpdemo_polls
+        ├── main.py
+        ├── routes.py
+        └── views.py
+</pre></div>
+</div>
+</div>
+<div class="section" id="configuration-files">
+<span id="aiohttp-demos-polls-configuration-files"></span><h1>Configuration files<a class="headerlink" href="#configuration-files" title="Permalink to this headline">¶</a></h1>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>aiohttp is configuration agnostic. It means the library does not
+require any specific configuration approach, and it does not have built-in
+support for any config schema.</p>
+<p>Please note these facts:</p>
+<blockquote>
+<div><ol class="arabic">
+<li><p class="first">99% of servers have configuration files.</p>
+</li>
+<li><p class="first">Most products (except Python-based solutions like Django and
+Flask) do not store configs with source code.</p>
+<p>For example Nginx has its own configuration files stored by default
+under <code class="docutils literal notranslate"><span class="pre">/etc/nginx</span></code> folder.</p>
+<p>MongoDB stores its config as <code class="docutils literal notranslate"><span class="pre">/etc/mongodb.conf</span></code>.</p>
+</li>
+<li><p class="first">Config file validation is a good idea. Strong checks may prevent
+unnecessary errors during product deployment.</p>
+</li>
+</ol>
+</div></blockquote>
+<p>Thus, we <strong>suggest</strong> to use the following approach:</p>
+<blockquote class="last">
+<div><ol class="arabic simple">
+<li>Push configs as <code class="docutils literal notranslate"><span class="pre">yaml</span></code> files (<code class="docutils literal notranslate"><span class="pre">json</span></code> or <code class="docutils literal notranslate"><span class="pre">ini</span></code> is also
+good but <code class="docutils literal notranslate"><span class="pre">yaml</span></code> is preferred).</li>
+<li>Load <code class="docutils literal notranslate"><span class="pre">yaml</span></code> config from a list of predefined locations,
+e.g. <code class="docutils literal notranslate"><span class="pre">./config/app_cfg.yaml</span></code>, <code class="docutils literal notranslate"><span class="pre">/etc/app_cfg.yaml</span></code>.</li>
+<li>Keep the ability to override a config file by a command line
+parameter, e.g. <code class="docutils literal notranslate"><span class="pre">./run_app</span> <span class="pre">--config=/opt/config/app_cfg.yaml</span></code>.</li>
+<li>Apply strict validation checks to loaded dict. <a class="reference external" href="http://trafaret.readthedocs.io/en/latest/">trafaret</a>, <a class="reference external" href="http://docs.pylonsproject.org/projects/colander/en/latest/">colander</a>
+or <a class="reference external" href="http://python-jsonschema.readthedocs.io/en/latest/">JSON schema</a> are good
+candidates for such job.</li>
+</ol>
+</div></blockquote>
+</div>
+<p>One way to store your config is in folder at the same level as <cite>aiohttpdemo_polls</cite>.
+Create a <code class="docutils literal notranslate"><span class="pre">config</span></code> folder and config file at desired location. E.g.:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>.
+├── ..
+└── polls                   &lt;-- [BASE_DIR]
+    │
+    ├── aiohttpdemo_polls
+    │   ├── main.py
+    │   ├── routes.py
+    │   └── views.py
+    │
+    └── config
+        └── polls.yaml      &lt;-- [config file]
+</pre></div>
+</div>
+<p>Create a <code class="docutils literal notranslate"><span class="pre">config/polls.yaml</span></code> file with meaningful option names:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># polls.yaml</span>
+<span class="l l-Scalar l-Scalar-Plain">postgres</span><span class="p p-Indicator">:</span>
+  <span class="l l-Scalar l-Scalar-Plain">database</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">aiohttpdemo_polls</span>
+  <span class="l l-Scalar l-Scalar-Plain">user</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">aiohttpdemo_user</span>
+  <span class="l l-Scalar l-Scalar-Plain">password</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">aiohttpdemo_pass</span>
+  <span class="l l-Scalar l-Scalar-Plain">host</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">localhost</span>
+  <span class="l l-Scalar l-Scalar-Plain">port</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">5432</span>
+  <span class="l l-Scalar l-Scalar-Plain">minsize</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+  <span class="l l-Scalar l-Scalar-Plain">maxsize</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">5</span>
+</pre></div>
+</div>
+<p>Install <code class="docutils literal notranslate"><span class="pre">pyyaml</span></code> package:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install pyyaml
+</pre></div>
+</div>
+<p>Let’s also create a separate <code class="docutils literal notranslate"><span class="pre">settings.py</span></code> file. It helps to leave <code class="docutils literal notranslate"><span class="pre">main.py</span></code>
+clean and short:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># settings.py</span>
+<span class="kn">import</span> <span class="nn">pathlib</span>
+<span class="kn">import</span> <span class="nn">yaml</span>
+
+<span class="n">BASE_DIR</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span>
+<span class="n">config_path</span> <span class="o">=</span> <span class="n">BASE_DIR</span> <span class="o">/</span> <span class="s1">&#39;config&#39;</span> <span class="o">/</span> <span class="s1">&#39;polls.yaml&#39;</span>
+
+<span class="k">def</span> <span class="nf">get_config</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">config</span>
+
+<span class="n">config</span> <span class="o">=</span> <span class="n">get_config</span><span class="p">(</span><span class="n">config_path</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Next, load the config into the application:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># main.py</span>
+<span class="kn">from</span> <span class="nn">aiohttp</span> <span class="k">import</span> <span class="n">web</span>
+
+<span class="kn">from</span> <span class="nn">settings</span> <span class="k">import</span> <span class="n">config</span>
+<span class="kn">from</span> <span class="nn">routes</span> <span class="k">import</span> <span class="n">setup_routes</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">web</span><span class="o">.</span><span class="n">Application</span><span class="p">()</span>
+<span class="n">setup_routes</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+<span class="n">app</span><span class="p">[</span><span class="s1">&#39;config&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">config</span>
+<span class="n">web</span><span class="o">.</span><span class="n">run_app</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now, try to run your app again. Make sure you are running it from <code class="docutils literal notranslate"><span class="pre">BASE_DIR</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python aiohttpdemo_polls/main.py
+======== Running on http://0.0.0.0:8080 ========
+(Press CTRL+C to quit)
+</pre></div>
+</div>
+<p>For the moment nothing should have changed in application’s behavior. Since we
+see no errors, we succeeded in learning how to configure our application.</p>
+</div>
+<div class="section" id="database">
+<span id="aiohttp-demos-polls-database"></span><h1>Database<a class="headerlink" href="#database" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="server">
+<h2>Server<a class="headerlink" href="#server" title="Permalink to this headline">¶</a></h2>
+<p>Here, we assume that you have running database and a user with write access.
+Refer to <a class="reference internal" href="preparations.html#aiohttp-demos-polls-preparations-database"><span class="std std-ref">Database</span></a> for details.</p>
+</div>
+<div class="section" id="schema">
+<h2>Schema<a class="headerlink" href="#schema" title="Permalink to this headline">¶</a></h2>
+<p>We will use SQLAlchemy to describe database schema for two related models,
+<code class="docutils literal notranslate"><span class="pre">question</span></code> and <code class="docutils literal notranslate"><span class="pre">choice</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">+---------------+</span>               <span class="o">+---------------+</span>
+<span class="o">|</span> <span class="n">question</span>      <span class="o">|</span>               <span class="o">|</span> <span class="n">choice</span>        <span class="o">|</span>
+<span class="o">+===============+</span>               <span class="o">+===============+</span>
+<span class="o">|</span> <span class="nb">id</span>            <span class="o">|</span> <span class="o">&lt;---+</span>         <span class="o">|</span> <span class="nb">id</span>            <span class="o">|</span>
+<span class="o">+---------------+</span>     <span class="o">|</span>         <span class="o">+---------------+</span>
+<span class="o">|</span> <span class="n">question_text</span> <span class="o">|</span>     <span class="o">|</span>         <span class="o">|</span> <span class="n">choice_text</span>   <span class="o">|</span>
+<span class="o">+---------------+</span>     <span class="o">|</span>         <span class="o">+---------------+</span>
+<span class="o">|</span> <span class="n">pub_date</span>      <span class="o">|</span>     <span class="o">|</span>         <span class="o">|</span> <span class="n">votes</span>         <span class="o">|</span>
+<span class="o">+---------------+</span>     <span class="o">|</span>         <span class="o">+---------------+</span>
+                      <span class="o">+--------</span> <span class="o">|</span> <span class="n">question_id</span>   <span class="o">|</span>
+                                <span class="o">+---------------+</span>
+</pre></div>
+</div>
+<p>Create <code class="docutils literal notranslate"><span class="pre">db.py</span></code> file with database schemas:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># db.py</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">MetaData</span><span class="p">,</span> <span class="n">Table</span><span class="p">,</span> <span class="n">Column</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">,</span>
+    <span class="n">Integer</span><span class="p">,</span> <span class="n">String</span><span class="p">,</span> <span class="n">Date</span>
+<span class="p">)</span>
+
+<span class="n">meta</span> <span class="o">=</span> <span class="n">MetaData</span><span class="p">()</span>
+
+<span class="n">question</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span>
+    <span class="s1">&#39;question&#39;</span><span class="p">,</span> <span class="n">meta</span><span class="p">,</span>
+
+    <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+    <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;question_text&#39;</span><span class="p">,</span> <span class="n">String</span><span class="p">(</span><span class="mi">200</span><span class="p">),</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+    <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;pub_date&#39;</span><span class="p">,</span> <span class="n">Date</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="n">choice</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span>
+    <span class="s1">&#39;choice&#39;</span><span class="p">,</span> <span class="n">meta</span><span class="p">,</span>
+
+    <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+    <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;choice_text&#39;</span><span class="p">,</span> <span class="n">String</span><span class="p">(</span><span class="mi">200</span><span class="p">),</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+    <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;votes&#39;</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">server_default</span><span class="o">=</span><span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+
+    <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;question_id&#39;</span><span class="p">,</span>
+           <span class="n">Integer</span><span class="p">,</span>
+           <span class="n">ForeignKey</span><span class="p">(</span><span class="s1">&#39;question.id&#39;</span><span class="p">,</span> <span class="n">ondelete</span><span class="o">=</span><span class="s1">&#39;CASCADE&#39;</span><span class="p">))</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>It is possible to configure tables in a declarative style like so:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Question</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s1">&#39;question&#39;</span>
+
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">question_text</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">200</span><span class="p">),</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">pub_date</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Date</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>But it doesn’t give much benefits later on. SQLAlchemy ORM doesn’t work in
+asynchronous style and as a result <code class="docutils literal notranslate"><span class="pre">aiopg.sa</span></code> doesn’t support related ORM
+expressions such as <code class="docutils literal notranslate"><span class="pre">Question.query.filter_by(question_text='Why').first()</span></code>
+or <code class="docutils literal notranslate"><span class="pre">session.query(TableName).all()</span></code>.</p>
+<p>You still can make <code class="docutils literal notranslate"><span class="pre">select</span></code> queries after some code modifications:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sqlalchemy.sql</span> <span class="kn">import</span> <span class="n">select</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">([</span><span class="n">Question</span><span class="p">]))</span>
+</pre></div>
+</div>
+<p>instead of</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">result</span> <span class="o">=</span> <span class="n">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">question</span><span class="o">.</span><span class="n">select</span><span class="p">())</span>
+</pre></div>
+</div>
+<p class="last">But it is not as easy to deal with as update/delete queries.</p>
+</div>
+<p>Now we need to create tables in database as it was described with sqlalchemy.
+Helper script can do that for you. Create a new file, <code class="docutils literal notranslate"><span class="pre">init_db.py</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># init_db.py</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="k">import</span> <span class="n">create_engine</span><span class="p">,</span> <span class="n">MetaData</span>
+
+<span class="kn">from</span> <span class="nn">settings</span> <span class="k">import</span> <span class="n">config</span>
+<span class="kn">from</span> <span class="nn">models</span> <span class="k">import</span> <span class="n">question</span><span class="p">,</span> <span class="n">choice</span>
+
+
+<span class="n">DSN</span> <span class="o">=</span> <span class="s2">&quot;postgresql://</span><span class="si">{user}</span><span class="s2">:</span><span class="si">{password}</span><span class="s2">@</span><span class="si">{host}</span><span class="s2">:</span><span class="si">{port}</span><span class="s2">/</span><span class="si">{database}</span><span class="s2">&quot;</span>
+
+<span class="k">def</span> <span class="nf">create_tables</span><span class="p">(</span><span class="n">engine</span><span class="p">):</span>
+    <span class="n">meta</span> <span class="o">=</span> <span class="n">MetaData</span><span class="p">()</span>
+    <span class="n">meta</span><span class="o">.</span><span class="n">create_all</span><span class="p">(</span><span class="n">bind</span><span class="o">=</span><span class="n">engine</span><span class="p">,</span> <span class="n">tables</span><span class="o">=</span><span class="p">[</span><span class="n">question</span><span class="p">,</span> <span class="n">choice</span><span class="p">])</span>
+
+
+<span class="k">def</span> <span class="nf">sample_data</span><span class="p">(</span><span class="n">engine</span><span class="p">):</span>
+    <span class="n">conn</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+    <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">question</span><span class="o">.</span><span class="n">insert</span><span class="p">(),</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s1">&#39;question_text&#39;</span><span class="p">:</span> <span class="s1">&#39;What</span><span class="se">\&#39;</span><span class="s1">s new?&#39;</span><span class="p">,</span>
+         <span class="s1">&#39;pub_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2015-12-15 17:17:49.629+02&#39;</span><span class="p">}</span>
+    <span class="p">])</span>
+    <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">choice</span><span class="o">.</span><span class="n">insert</span><span class="p">(),</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s1">&#39;choice_text&#39;</span><span class="p">:</span> <span class="s1">&#39;Not much&#39;</span><span class="p">,</span> <span class="s1">&#39;votes&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;question_id&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+        <span class="p">{</span><span class="s1">&#39;choice_text&#39;</span><span class="p">:</span> <span class="s1">&#39;The sky&#39;</span><span class="p">,</span> <span class="s1">&#39;votes&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;question_id&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+        <span class="p">{</span><span class="s1">&#39;choice_text&#39;</span><span class="p">:</span> <span class="s1">&#39;Just hacking again&#39;</span><span class="p">,</span> <span class="s1">&#39;votes&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;question_id&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+    <span class="p">])</span>
+    <span class="n">conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">db_url</span> <span class="o">=</span> <span class="n">DSN</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;postgres&#39;</span><span class="p">])</span>
+    <span class="n">engine</span> <span class="o">=</span> <span class="n">create_engine</span><span class="p">(</span><span class="n">db_url</span><span class="p">)</span>
+
+    <span class="n">create_tables</span><span class="p">(</span><span class="n">engine</span><span class="p">)</span>
+    <span class="n">sample_data</span><span class="p">(</span><span class="n">engine</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">A more advanced version of this script is mentioned in <a class="reference internal" href="preparations.html#aiohttp-demos-polls-preparations-database"><span class="std std-ref">Database</span></a> notes.</p>
+</div>
+<p>Install the <code class="docutils literal notranslate"><span class="pre">aiopg[sa]</span></code> package to interact with the database and run the script:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install aiopg[sa]
+$ python init_db.py
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">At this point we are not using any async features of the package. For this
+reason, you could have installed <code class="docutils literal notranslate"><span class="pre">psycopg2</span></code> package. Though since we are
+using sqlalchemy, we also could switch the type of database server.</p>
+</div>
+<p>Now there should be one record for <em>question</em> with related <em>choice</em> options
+stored in corresponding tables in the database.</p>
+</div>
+<div class="section" id="creating-connection-engine">
+<span id="aiohttp-demos-polls-creating-connection-engine"></span><h2>Creating connection engine<a class="headerlink" href="#creating-connection-engine" title="Permalink to this headline">¶</a></h2>
+<p>For making DB queries we need an engine instance. Assuming <code class="docutils literal notranslate"><span class="pre">conf</span></code> is
+a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> with the configuration info for a Postgres connection, this
+could be done by the following coroutine:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">init_pg</span><span class="p">(</span><span class="n">app</span><span class="p">):</span>
+    <span class="n">conf</span> <span class="o">=</span> <span class="n">app</span><span class="p">[</span><span class="s1">&#39;config&#39;</span><span class="p">][</span><span class="s1">&#39;postgres&#39;</span><span class="p">]</span>
+    <span class="n">engine</span> <span class="o">=</span> <span class="k">await</span> <span class="n">aiopg</span><span class="o">.</span><span class="n">sa</span><span class="o">.</span><span class="n">create_engine</span><span class="p">(</span>
+        <span class="n">database</span><span class="o">=</span><span class="n">conf</span><span class="p">[</span><span class="s1">&#39;database&#39;</span><span class="p">],</span>
+        <span class="n">user</span><span class="o">=</span><span class="n">conf</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">],</span>
+        <span class="n">password</span><span class="o">=</span><span class="n">conf</span><span class="p">[</span><span class="s1">&#39;password&#39;</span><span class="p">],</span>
+        <span class="n">host</span><span class="o">=</span><span class="n">conf</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">],</span>
+        <span class="n">port</span><span class="o">=</span><span class="n">conf</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">],</span>
+        <span class="n">minsize</span><span class="o">=</span><span class="n">conf</span><span class="p">[</span><span class="s1">&#39;minsize&#39;</span><span class="p">],</span>
+        <span class="n">maxsize</span><span class="o">=</span><span class="n">conf</span><span class="p">[</span><span class="s1">&#39;maxsize&#39;</span><span class="p">],</span>
+    <span class="p">)</span>
+    <span class="n">app</span><span class="p">[</span><span class="s1">&#39;db&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">engine</span>
+</pre></div>
+</div>
+<p>The best place for connecting to the DB is using the
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">on_startup</span></code> signal:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">app</span><span class="o">.</span><span class="n">on_startup</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">init_pg</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="graceful-shutdown">
+<span id="aiohttp-demos-polls-graceful-shutdown"></span><h2>Graceful shutdown<a class="headerlink" href="#graceful-shutdown" title="Permalink to this headline">¶</a></h2>
+<p>It is a good practice to close all resources on program exit.</p>
+<p>Let’s close the DB connection with the <code class="xref py py-attr docutils literal notranslate"><span class="pre">on_cleanup</span></code>
+signal:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">app</span><span class="o">.</span><span class="n">on_cleanup</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">close_pg</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">close_pg</span><span class="p">(</span><span class="n">app</span><span class="p">):</span>
+    <span class="n">app</span><span class="p">[</span><span class="s1">&#39;db&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">await</span> <span class="n">app</span><span class="p">[</span><span class="s1">&#39;db&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">wait_closed</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="templates">
+<span id="aiohttp-demos-polls-templates"></span><h1>Templates<a class="headerlink" href="#templates" title="Permalink to this headline">¶</a></h1>
+<p>Let’s add more views:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@aiohttp_jinja2</span><span class="o">.</span><span class="n">template</span><span class="p">(</span><span class="s1">&#39;detail.html&#39;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">poll</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="p">[</span><span class="s1">&#39;db&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+        <span class="n">question_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">match_info</span><span class="p">[</span><span class="s1">&#39;question_id&#39;</span><span class="p">]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">question</span><span class="p">,</span> <span class="n">choices</span> <span class="o">=</span> <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">get_question</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span>
+                                                      <span class="n">question_id</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">db</span><span class="o">.</span><span class="n">RecordNotFound</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">web</span><span class="o">.</span><span class="n">HTTPNotFound</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;question&#39;</span><span class="p">:</span> <span class="n">question</span><span class="p">,</span>
+            <span class="s1">&#39;choices&#39;</span><span class="p">:</span> <span class="n">choices</span>
+        <span class="p">}</span>
+</pre></div>
+</div>
+<p>Templates are a very convenient way for web page writing. If we return a
+dict with page content, the <code class="docutils literal notranslate"><span class="pre">aiohttp_jinja2.template</span></code> decorator
+processes the dict using the jinja2 template renderer.</p>
+<p>For setting up the template engine, we install the <code class="docutils literal notranslate"><span class="pre">aiohttp_jinja2</span></code>
+library first:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ pip install aiohttp_jinja2
+</pre></div>
+</div>
+<p>After installing, we setup the library:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">aiohttp_jinja2</span>
+<span class="kn">import</span> <span class="nn">jinja2</span>
+
+<span class="n">aiohttp_jinja2</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span>
+    <span class="n">app</span><span class="p">,</span> <span class="n">loader</span><span class="o">=</span><span class="n">jinja2</span><span class="o">.</span><span class="n">PackageLoader</span><span class="p">(</span><span class="s1">&#39;aiohttpdemo_polls&#39;</span><span class="p">,</span> <span class="s1">&#39;templates&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>In the tutorial we place template files under
+<code class="docutils literal notranslate"><span class="pre">polls/aiohttpdemo_polls/templates</span></code> folder.</p>
+</div>
+<div class="section" id="static-files">
+<span id="aiohttp-demos-polls-static-files"></span><h1>Static files<a class="headerlink" href="#static-files" title="Permalink to this headline">¶</a></h1>
+<p>Any web site has static files such as: images, JavaScript sources, CSS files</p>
+<p>The best way to handle static files in production is by setting up a reverse
+proxy like NGINX or using CDN services.</p>
+<p>During development, handling static files using the aiohttp server is very
+convenient.</p>
+<p>Fortunately, this can be done easily by a single call:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">setup_static_routes</span><span class="p">(</span><span class="n">app</span><span class="p">):</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_static</span><span class="p">(</span><span class="s1">&#39;/static/&#39;</span><span class="p">,</span>
+                          <span class="n">path</span><span class="o">=</span><span class="n">PROJECT_ROOT</span> <span class="o">/</span> <span class="s1">&#39;static&#39;</span><span class="p">,</span>
+                          <span class="n">name</span><span class="o">=</span><span class="s1">&#39;static&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">project_root</span></code> is the path to the root folder.</p>
+</div>
+<div class="section" id="middlewares">
+<span id="aiohttp-demos-polls-middlewares"></span><h1>Middlewares<a class="headerlink" href="#middlewares" title="Permalink to this headline">¶</a></h1>
+<p>Middlewares are stacked around every web-handler. They are called
+before the handler for a pre-processing request. After getting
+a response back, they are used for post-processing the given response.</p>
+<p>A common use of middlewares is to implement custom error pages. Example from
+<a class="reference external" href="../web_advanced.html#aiohttp-web-middlewares" title="(in aiohttp v3.4)"><span>Middlewares</span></a> documentation will render 404 errors using a
+JSON response, as might be appropriate for a REST service.</p>
+<p>Here we’ll create a little bit more complex middleware custom display pages
+for <em>404 Not Found</em> and <em>500 Internal Error</em>.</p>
+<p>Every middleware should accept two parameters, a <em>request</em> and a <em>handler</em>,
+and return the <em>response</em>. Middleware itself is a <em>coroutine</em> that can modify
+either request or response:</p>
+<p>Now, create a new <code class="docutils literal notranslate"><span class="pre">middlewares.py</span></code> file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># middlewares.py</span>
+<span class="kn">import</span> <span class="nn">aiohttp_jinja2</span>
+<span class="kn">from</span> <span class="nn">aiohttp</span> <span class="k">import</span> <span class="n">web</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">handle_404</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">aiohttp_jinja2</span><span class="o">.</span><span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;404.html&#39;</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="p">{})</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">handle_500</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">aiohttp_jinja2</span><span class="o">.</span><span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;500.html&#39;</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="p">{})</span>
+
+
+<span class="k">def</span> <span class="nf">create_error_middleware</span><span class="p">(</span><span class="n">overrides</span><span class="p">):</span>
+
+    <span class="nd">@web</span><span class="o">.</span><span class="n">middleware</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">error_middleware</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">handler</span><span class="p">):</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">handler</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+
+            <span class="n">override</span> <span class="o">=</span> <span class="n">overrides</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">override</span><span class="p">:</span>
+                <span class="k">return</span> <span class="k">await</span> <span class="n">override</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">response</span>
+
+        <span class="k">except</span> <span class="n">web</span><span class="o">.</span><span class="n">HTTPException</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">override</span> <span class="o">=</span> <span class="n">overrides</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ex</span><span class="o">.</span><span class="n">status</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">override</span><span class="p">:</span>
+                <span class="k">return</span> <span class="k">await</span> <span class="n">override</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+
+            <span class="k">raise</span>
+
+    <span class="k">return</span> <span class="n">error_middleware</span>
+
+
+<span class="k">def</span> <span class="nf">setup_middlewares</span><span class="p">(</span><span class="n">app</span><span class="p">):</span>
+    <span class="n">error_middleware</span> <span class="o">=</span> <span class="n">create_error_middleware</span><span class="p">({</span>
+        <span class="mi">404</span><span class="p">:</span> <span class="n">handle_404</span><span class="p">,</span>
+        <span class="mi">500</span><span class="p">:</span> <span class="n">handle_500</span>
+    <span class="p">})</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">middlewares</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">error_middleware</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>As you can see, we do nothing <em>before</em> the web handler. We choose Jinja2
+template renderer based on <code class="docutils literal notranslate"><span class="pre">response.status</span></code>  <em>after</em> the request was handled.
+In case of exceptions, we do something similar, based on <code class="docutils literal notranslate"><span class="pre">ex.status</span></code>.
+Without the <code class="docutils literal notranslate"><span class="pre">create_error_middleware</span></code> function, the same task would take us
+many more <code class="docutils literal notranslate"><span class="pre">if</span></code> statements.</p>
+<p>We have registered middleware in <code class="docutils literal notranslate"><span class="pre">app</span></code> by adding it to <code class="docutils literal notranslate"><span class="pre">app.middlewares</span></code>.</p>
+<p>Now, add a <code class="docutils literal notranslate"><span class="pre">setup_middlewares</span></code> step to the main file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># main.py</span>
+<span class="kn">from</span> <span class="nn">aiohttp</span> <span class="kn">import</span> <span class="n">web</span>
+
+<span class="kn">from</span> <span class="nn">settings</span> <span class="kn">import</span> <span class="n">config</span>
+<span class="kn">from</span> <span class="nn">routes</span> <span class="kn">import</span> <span class="n">setup_routes</span>
+<span class="hll"><span class="kn">from</span> <span class="nn">middlewares</span> <span class="kn">import</span> <span class="n">setup_middlewares</span>
+</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">web</span><span class="o">.</span><span class="n">Application</span><span class="p">()</span>
+<span class="n">setup_routes</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+<span class="hll"><span class="n">setup_middlewares</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+</span><span class="n">app</span><span class="p">[</span><span class="s1">&#39;config&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">config</span>
+<span class="n">web</span><span class="o">.</span><span class="n">run_app</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Run the app again. To test, try an invalid url.</p>
+</div>
+
+
+          </div>
+
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Aiohttp contributors.
+
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.7</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+
+      |
+      <a href="_sources/tutorial.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+
+
+
+  </body>
+</html>

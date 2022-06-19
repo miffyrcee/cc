@@ -1,0 +1,339 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="IE=Edge" http-equiv="X-UA-Compatible"/>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<title>Multipart reference — aiohttp 3.4.4 documentation</title>
+<link href="_static/aiohttp.css" rel="stylesheet" type="text/css"/>
+<link href="_static/pygments.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="./" id="documentation_options" src="_static/documentation_options.js" type="text/javascript"></script>
+<script src="_static/jquery.js" type="text/javascript"></script>
+<script src="_static/underscore.js" type="text/javascript"></script>
+<script src="_static/doctools.js" type="text/javascript"></script>
+<link href="_static/favicon.ico" rel="shortcut icon"/>
+<link href="genindex.html" rel="index" title="Index"/>
+<link href="search.html" rel="search" title="Search"/>
+<link href="streams.html" rel="next" title="Streaming API"/>
+<link href="multipart.html" rel="prev" title="Working with Multipart"/>
+<link href="_static/custom.css" rel="stylesheet" type="text/css"/>
+<link href="http://docs.aiohttp.org/en/stable/multipart_reference.html" rel="canonical"/>
+<meta content="width=device-width, initial-scale=0.9, maximum-scale=0.9" name="viewport"/>
+<link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet"/>
+</head><body>
+<div class="document">
+<div class="documentwrapper">
+<div class="body" role="main">
+<span class="target" id="module-aiohttp"></span><div class="section" id="multipart-reference">
+<span id="aiohttp-multipart-reference"></span><h1>Multipart reference<a class="headerlink" href="#multipart-reference" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="aiohttp.MultipartResponseWrapper"><a name="//apple_ref/cpp/Class/aiohttp.MultipartResponseWrapper"></a>
+<em class="property">class </em><code class="descclassname">aiohttp.</code><code class="descname">MultipartResponseWrapper</code><span class="sig-paren">(</span><em>resp</em>, <em>stream</em><span class="sig-paren">)</span><a class="headerlink" href="#aiohttp.MultipartResponseWrapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper around the <code class="xref py py-class docutils literal notranslate"><span class="pre">MultipartBodyReader</span></code> to take care about
+underlying connection and close it when it needs in.</p>
+<dl class="method">
+<dt id="aiohttp.MultipartResponseWrapper.at_eof"><a name="//apple_ref/cpp/Method/aiohttp.MultipartResponseWrapper.at_eof"></a>
+<code class="descname">at_eof</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#aiohttp.MultipartResponseWrapper.at_eof" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> when all response data had been read.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name"/>
+<col class="field-body"/>
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+<dl class="method">
+<dt id="aiohttp.MultipartResponseWrapper.next"><a name="//apple_ref/cpp/Method/aiohttp.MultipartResponseWrapper.next"></a>
+<em class="property">coroutine </em><code class="descname">next</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#aiohttp.MultipartResponseWrapper.next" title="Permalink to this definition">¶</a></dt>
+<dd><p>Emits next multipart reader object.</p>
+</dd></dl>
+<dl class="method">
+<dt id="aiohttp.MultipartResponseWrapper.release"><a name="//apple_ref/cpp/Method/aiohttp.MultipartResponseWrapper.release"></a>
+<em class="property">coroutine </em><code class="descname">release</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#aiohttp.MultipartResponseWrapper.release" title="Permalink to this definition">¶</a></dt>
+<dd><p>Releases the connection gracefully, reading all the content
+to the void.</p>
+</dd></dl>
+</dd></dl>
+<dl class="class">
+<dt id="aiohttp.BodyPartReader"><a name="//apple_ref/cpp/Class/aiohttp.BodyPartReader"></a>
+<em class="property">class </em><code class="descclassname">aiohttp.</code><code class="descname">BodyPartReader</code><span class="sig-paren">(</span><em>boundary</em>, <em>headers</em>, <em>content</em><span class="sig-paren">)</span><a class="headerlink" href="#aiohttp.BodyPartReader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Multipart reader for single body part.</p>
+<dl class="method">
+<dt id="aiohttp.BodyPartReader.read"><a name="//apple_ref/cpp/Method/aiohttp.BodyPartReader.read"></a>
+<em class="property">coroutine </em><code class="descname">read</code><span class="sig-paren">(</span><em>*</em>, <em>decode=False</em><span class="sig-paren">)</span><a class="headerlink" href="#aiohttp.BodyPartReader.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads body part data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name"/>
+<col class="field-body"/>
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>decode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – Decodes data following by encoding method
+from <code class="docutils literal notranslate"><span class="pre">Content-Encoding</span></code> header. If it
+missed data remains untouched</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytearray" title="(in Python v3.7)">bytearray</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+<dl class="method">
+<dt id="aiohttp.BodyPartReader.read_chunk"><a name="//apple_ref/cpp/Method/aiohttp.BodyPartReader.read_chunk"></a>
+<em class="property">coroutine </em><code class="descname">read_chunk</code><span class="sig-paren">(</span><em>size=chunk_size</em><span class="sig-paren">)</span><a class="headerlink" href="#aiohttp.BodyPartReader.read_chunk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads body part content chunk of the specified size.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name"/>
+<col class="field-body"/>
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – chunk size</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytearray" title="(in Python v3.7)">bytearray</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+<dl class="method">
+<dt id="aiohttp.BodyPartReader.readline"><a name="//apple_ref/cpp/Method/aiohttp.BodyPartReader.readline"></a>
+<em class="property">coroutine </em><code class="descname">readline</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#aiohttp.BodyPartReader.readline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads body part by line by line.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name"/>
+<col class="field-body"/>
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytearray" title="(in Python v3.7)">bytearray</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+<dl class="method">
+<dt id="aiohttp.BodyPartReader.release"><a name="//apple_ref/cpp/Method/aiohttp.BodyPartReader.release"></a>
+<em class="property">coroutine </em><code class="descname">release</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#aiohttp.BodyPartReader.release" title="Permalink to this definition">¶</a></dt>
+<dd><p>Like <a class="reference internal" href="#aiohttp.BodyPartReader.read" title="aiohttp.BodyPartReader.read"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read()</span></code></a>, but reads all the data to the void.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name"/>
+<col class="field-body"/>
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)">None</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+<dl class="method">
+<dt id="aiohttp.BodyPartReader.text"><a name="//apple_ref/cpp/Method/aiohttp.BodyPartReader.text"></a>
+<em class="property">coroutine </em><code class="descname">text</code><span class="sig-paren">(</span><em>*</em>, <em>encoding=None</em><span class="sig-paren">)</span><a class="headerlink" href="#aiohttp.BodyPartReader.text" title="Permalink to this definition">¶</a></dt>
+<dd><p>Like <a class="reference internal" href="#aiohttp.BodyPartReader.read" title="aiohttp.BodyPartReader.read"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read()</span></code></a>, but assumes that body part contains text data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name"/>
+<col class="field-body"/>
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>encoding</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Custom text encoding. Overrides specified
+in charset param of <code class="docutils literal notranslate"><span class="pre">Content-Type</span></code> header</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+<dl class="method">
+<dt id="aiohttp.BodyPartReader.json"><a name="//apple_ref/cpp/Method/aiohttp.BodyPartReader.json"></a>
+<em class="property">coroutine </em><code class="descname">json</code><span class="sig-paren">(</span><em>*</em>, <em>encoding=None</em><span class="sig-paren">)</span><a class="headerlink" href="#aiohttp.BodyPartReader.json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Like <a class="reference internal" href="#aiohttp.BodyPartReader.read" title="aiohttp.BodyPartReader.read"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read()</span></code></a>, but assumes that body parts contains JSON data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name"/>
+<col class="field-body"/>
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>encoding</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Custom JSON encoding. Overrides specified
+in charset param of <code class="docutils literal notranslate"><span class="pre">Content-Type</span></code> header</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+<dl class="method">
+<dt id="aiohttp.BodyPartReader.form"><a name="//apple_ref/cpp/Method/aiohttp.BodyPartReader.form"></a>
+<em class="property">coroutine </em><code class="descname">form</code><span class="sig-paren">(</span><em>*</em>, <em>encoding=None</em><span class="sig-paren">)</span><a class="headerlink" href="#aiohttp.BodyPartReader.form" title="Permalink to this definition">¶</a></dt>
+<dd><p>Like <a class="reference internal" href="#aiohttp.BodyPartReader.read" title="aiohttp.BodyPartReader.read"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read()</span></code></a>, but assumes that body parts contains form
+urlencoded data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name"/>
+<col class="field-body"/>
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>encoding</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Custom form encoding. Overrides specified
+in charset param of <code class="docutils literal notranslate"><span class="pre">Content-Type</span></code> header</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+<dl class="method">
+<dt id="aiohttp.BodyPartReader.at_eof"><a name="//apple_ref/cpp/Method/aiohttp.BodyPartReader.at_eof"></a>
+<code class="descname">at_eof</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#aiohttp.BodyPartReader.at_eof" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if the boundary was reached or <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name"/>
+<col class="field-body"/>
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+<dl class="method">
+<dt id="aiohttp.BodyPartReader.decode"><a name="//apple_ref/cpp/Method/aiohttp.BodyPartReader.decode"></a>
+<code class="descname">decode</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#aiohttp.BodyPartReader.decode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decodes data according the specified <code class="docutils literal notranslate"><span class="pre">Content-Encoding</span></code>
+or <code class="docutils literal notranslate"><span class="pre">Content-Transfer-Encoding</span></code> headers value.</p>
+<p>Supports <code class="docutils literal notranslate"><span class="pre">gzip</span></code>, <code class="docutils literal notranslate"><span class="pre">deflate</span></code> and <code class="docutils literal notranslate"><span class="pre">identity</span></code> encodings for
+<code class="docutils literal notranslate"><span class="pre">Content-Encoding</span></code> header.</p>
+<p>Supports <code class="docutils literal notranslate"><span class="pre">base64</span></code>, <code class="docutils literal notranslate"><span class="pre">quoted-printable</span></code>, <code class="docutils literal notranslate"><span class="pre">binary</span></code> encodings for
+<code class="docutils literal notranslate"><span class="pre">Content-Transfer-Encoding</span></code> header.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name"/>
+<col class="field-body"/>
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytearray" title="(in Python v3.7)"><em>bytearray</em></a>) – Data to decode.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.7)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">RuntimeError</span></code></a> - if encoding is unknown.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.7)">bytes</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+<dl class="method">
+<dt id="aiohttp.BodyPartReader.get_charset"><a name="//apple_ref/cpp/Method/aiohttp.BodyPartReader.get_charset"></a>
+<code class="descname">get_charset</code><span class="sig-paren">(</span><em>default=None</em><span class="sig-paren">)</span><a class="headerlink" href="#aiohttp.BodyPartReader.get_charset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns charset parameter from <code class="docutils literal notranslate"><span class="pre">Content-Type</span></code> header or default.</p>
+</dd></dl>
+<dl class="attribute">
+<dt id="aiohttp.BodyPartReader.name"><a name="//apple_ref/cpp/Attribute/aiohttp.BodyPartReader.name"></a>
+<code class="descname">name</code><a class="headerlink" href="#aiohttp.BodyPartReader.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>A field <em>name</em> specified in <code class="docutils literal notranslate"><span class="pre">Content-Disposition</span></code> header or <code class="docutils literal notranslate"><span class="pre">None</span></code>
+if missed or header is malformed.</p>
+<p>Readonly <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> property.</p>
+</dd></dl>
+<dl class="attribute">
+<dt>
+<code class="descname">name</code></dt>
+<dd><p>A field <em>filename</em> specified in <code class="docutils literal notranslate"><span class="pre">Content-Disposition</span></code> header or <code class="docutils literal notranslate"><span class="pre">None</span></code>
+if missed or header is malformed.</p>
+<p>Readonly <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> property.</p>
+</dd></dl>
+</dd></dl>
+<dl class="class">
+<dt id="aiohttp.MultipartReader"><a name="//apple_ref/cpp/Class/aiohttp.MultipartReader"></a>
+<em class="property">class </em><code class="descclassname">aiohttp.</code><code class="descname">MultipartReader</code><span class="sig-paren">(</span><em>headers</em>, <em>content</em><span class="sig-paren">)</span><a class="headerlink" href="#aiohttp.MultipartReader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Multipart body reader.</p>
+<dl class="classmethod">
+<dt id="aiohttp.MultipartReader.from_response"><a name="//apple_ref/cpp/Method/aiohttp.MultipartReader.from_response"></a>
+<em class="property">classmethod </em><code class="descname">from_response</code><span class="sig-paren">(</span><em>cls</em>, <em>response</em><span class="sig-paren">)</span><a class="headerlink" href="#aiohttp.MultipartReader.from_response" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructs reader instance from HTTP response.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name"/>
+<col class="field-body"/>
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>response</strong> – <code class="xref py py-class docutils literal notranslate"><span class="pre">ClientResponse</span></code> instance</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+<dl class="method">
+<dt id="aiohttp.MultipartReader.at_eof"><a name="//apple_ref/cpp/Method/aiohttp.MultipartReader.at_eof"></a>
+<code class="descname">at_eof</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#aiohttp.MultipartReader.at_eof" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if the final boundary was reached or
+<code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name"/>
+<col class="field-body"/>
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+<dl class="method">
+<dt id="aiohttp.MultipartReader.next"><a name="//apple_ref/cpp/Method/aiohttp.MultipartReader.next"></a>
+<em class="property">coroutine </em><code class="descname">next</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#aiohttp.MultipartReader.next" title="Permalink to this definition">¶</a></dt>
+<dd><p>Emits the next multipart body part.</p>
+</dd></dl>
+<dl class="method">
+<dt id="aiohttp.MultipartReader.release"><a name="//apple_ref/cpp/Method/aiohttp.MultipartReader.release"></a>
+<em class="property">coroutine </em><code class="descname">release</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#aiohttp.MultipartReader.release" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads all the body parts to the void till the final boundary.</p>
+</dd></dl>
+<dl class="method">
+<dt id="aiohttp.MultipartReader.fetch_next_part"><a name="//apple_ref/cpp/Method/aiohttp.MultipartReader.fetch_next_part"></a>
+<em class="property">coroutine </em><code class="descname">fetch_next_part</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#aiohttp.MultipartReader.fetch_next_part" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the next body part reader.</p>
+</dd></dl>
+</dd></dl>
+<dl class="class">
+<dt id="aiohttp.MultipartWriter"><a name="//apple_ref/cpp/Class/aiohttp.MultipartWriter"></a>
+<em class="property">class </em><code class="descclassname">aiohttp.</code><code class="descname">MultipartWriter</code><span class="sig-paren">(</span><em>subtype='mixed'</em>, <em>boundary=None</em>, <em>close_boundary=True</em><span class="sig-paren">)</span><a class="headerlink" href="#aiohttp.MultipartWriter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Multipart body writer.</p>
+<p><code class="docutils literal notranslate"><span class="pre">boundary</span></code> may be an ASCII-only string.</p>
+<dl class="attribute">
+<dt id="aiohttp.MultipartWriter.boundary"><a name="//apple_ref/cpp/Attribute/aiohttp.MultipartWriter.boundary"></a>
+<code class="descname">boundary</code><a class="headerlink" href="#aiohttp.MultipartWriter.boundary" title="Permalink to this definition">¶</a></dt>
+<dd><p>The string (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) representation of the boundary.</p>
+<div class="versionchanged">
+<p><span class="versionmodified">Changed in version 3.0: </span>Property type was changed from <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a> to <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>.</p>
+</div>
+</dd></dl>
+<dl class="method">
+<dt id="aiohttp.MultipartWriter.append"><a name="//apple_ref/cpp/Method/aiohttp.MultipartWriter.append"></a>
+<code class="descname">append</code><span class="sig-paren">(</span><em>obj</em>, <em>headers=None</em><span class="sig-paren">)</span><a class="headerlink" href="#aiohttp.MultipartWriter.append" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append an object to writer.</p>
+</dd></dl>
+<dl class="method">
+<dt id="aiohttp.MultipartWriter.append_payload"><a name="//apple_ref/cpp/Method/aiohttp.MultipartWriter.append_payload"></a>
+<code class="descname">append_payload</code><span class="sig-paren">(</span><em>payload</em><span class="sig-paren">)</span><a class="headerlink" href="#aiohttp.MultipartWriter.append_payload" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a new body part to multipart writer.</p>
+</dd></dl>
+<dl class="method">
+<dt id="aiohttp.MultipartWriter.append_json"><a name="//apple_ref/cpp/Method/aiohttp.MultipartWriter.append_json"></a>
+<code class="descname">append_json</code><span class="sig-paren">(</span><em>obj</em>, <em>headers=None</em><span class="sig-paren">)</span><a class="headerlink" href="#aiohttp.MultipartWriter.append_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper to append JSON part.</p>
+</dd></dl>
+<dl class="method">
+<dt id="aiohttp.MultipartWriter.append_form"><a name="//apple_ref/cpp/Method/aiohttp.MultipartWriter.append_form"></a>
+<code class="descname">append_form</code><span class="sig-paren">(</span><em>obj</em>, <em>headers=None</em><span class="sig-paren">)</span><a class="headerlink" href="#aiohttp.MultipartWriter.append_form" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper to append form urlencoded part.</p>
+</dd></dl>
+<dl class="attribute">
+<dt id="aiohttp.MultipartWriter.size"><a name="//apple_ref/cpp/Attribute/aiohttp.MultipartWriter.size"></a>
+<code class="descname">size</code><a class="headerlink" href="#aiohttp.MultipartWriter.size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Size of the payload.</p>
+</dd></dl>
+<dl class="method">
+<dt id="aiohttp.MultipartWriter.write"><a name="//apple_ref/cpp/Method/aiohttp.MultipartWriter.write"></a>
+<em class="property">coroutine </em><code class="descname">write</code><span class="sig-paren">(</span><em>writer</em>, <em>close_boundary=True</em><span class="sig-paren">)</span><a class="headerlink" href="#aiohttp.MultipartWriter.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write body.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name"/>
+<col class="field-body"/>
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>close_boundary</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – The (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) that will emit
+boundary closing. You may want to disable
+when streaming (<code class="docutils literal notranslate"><span class="pre">multipart/x-mixed-replace</span></code>)</td>
+</tr>
+</tbody>
+</table>
+<div class="versionadded">
+<p><span class="versionmodified">New in version 3.4: </span>Support <code class="docutils literal notranslate"><span class="pre">close_boundary</span></code> argument.</p>
+</div>
+</dd></dl>
+</dd></dl>
+</div>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div class="footer">
+      ©2013-2018, Aiohttp contributors.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.7</a>
+      
+      |
+      <a href="_sources/multipart_reference.rst.txt" rel="nofollow">Page source</a>
+</div>
+</body>
+</html>

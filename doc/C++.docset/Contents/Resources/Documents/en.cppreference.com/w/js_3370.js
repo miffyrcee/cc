@@ -1,0 +1,1 @@
+\small{x_{i+1}\leftarrow(a x_i + c)\mod m}

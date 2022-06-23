@@ -1,0 +1,1 @@
+\scriptsize {[0,2^w)}

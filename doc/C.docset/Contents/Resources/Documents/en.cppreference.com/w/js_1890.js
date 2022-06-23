@@ -1,0 +1,1 @@
+{\small\operatorname{artanh}{z} }

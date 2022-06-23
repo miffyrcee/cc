@@ -1,0 +1,1 @@
+\scriptsize \log{(N)}

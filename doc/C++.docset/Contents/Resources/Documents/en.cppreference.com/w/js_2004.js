@@ -1,0 +1,1 @@
+\small P(x|\lambda) = \lambda e^{-\lambda x}

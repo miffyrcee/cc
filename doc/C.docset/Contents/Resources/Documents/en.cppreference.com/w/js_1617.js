@@ -1,0 +1,1 @@
+\scriptsize \mathcal{O}(\log N)

@@ -1,0 +1,1 @@
+\operatorname{erf}(\frac{x}{\sigma \sqrt{2} })

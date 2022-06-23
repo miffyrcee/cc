@@ -1,0 +1,1 @@
+{\small\arcsin{z} }

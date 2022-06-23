@@ -1,0 +1,1 @@
+P(i|k, p) = \binom{k + i - 1}{i} \cdot p^k \cdot (1 - p)^i

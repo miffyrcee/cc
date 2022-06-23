@@ -1,0 +1,1 @@
+{\small\sin{x} }

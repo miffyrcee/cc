@@ -1,0 +1,1 @@
+{\small\operatorname{arcosh}{z} }

@@ -1,0 +1,1 @@
+\frac{2\cdot arg}{\sqrt{\pi} }

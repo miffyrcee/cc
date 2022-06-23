@@ -1,0 +1,1 @@
+\small{Y \mod 2^w}

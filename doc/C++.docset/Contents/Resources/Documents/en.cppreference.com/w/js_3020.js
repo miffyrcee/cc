@@ -1,0 +1,1 @@
+\small \log_{10}{radix}

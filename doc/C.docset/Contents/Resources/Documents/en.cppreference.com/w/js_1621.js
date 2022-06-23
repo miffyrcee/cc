@@ -1,0 +1,1 @@
+\scriptsize 4N\log{(N)}

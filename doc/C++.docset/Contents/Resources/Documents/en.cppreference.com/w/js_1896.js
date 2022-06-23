@@ -1,0 +1,1 @@
+x\ddot{y} + (m+1-x)\dot{y} + ny = 0

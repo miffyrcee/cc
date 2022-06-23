@@ -1,0 +1,1 @@
+\frac{2}{\sqrt{\pi} }\int_{arg}^{\infty}{e^{-{t^2} }\mathsf{d}t}

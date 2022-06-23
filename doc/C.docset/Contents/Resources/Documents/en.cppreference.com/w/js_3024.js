@@ -1,0 +1,1 @@
+\scriptsize r^{n-1}

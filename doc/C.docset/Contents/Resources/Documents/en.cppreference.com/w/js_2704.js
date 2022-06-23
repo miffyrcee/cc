@@ -1,0 +1,1 @@
+{\small\arccos{x} }

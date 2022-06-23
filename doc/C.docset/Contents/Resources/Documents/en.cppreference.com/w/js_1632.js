@@ -1,0 +1,1 @@
+\scriptsize \mathcal{O}(N^2)

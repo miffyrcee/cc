@@ -1,0 +1,434 @@
+<html><!-- Online page at https://en.cppreference.com/w/c/23 --><head><meta charset="utf-8"><title>C23</title><link rel="stylesheet" href="../css_1.css" type="text/css"><link rel="stylesheet" href="../css_4.css" type="text/css"><link rel="stylesheet" href="../css_5.css" type="text/css"><link rel="stylesheet" href="../css_12.css" type="text/css"><link rel="stylesheet" href="../css_11.css" type="text/css"><script type="text/javascript" src="../js_1.js"></script><script type="text/javascript" src="../js_2.js"></script><script type="text/javascript" src="../js_283.js"></script><script type="text/javascript" src="../js_4.js"></script><script type="text/javascript" src="../js_5.js"></script><script type="text/javascript" src="../js_6.js"></script><script type="text/javascript" src="../js_7.js"></script><script type="text/javascript" src="../js_8.js"></script><script type="text/javascript" src="../js_9.js"></script><script type="text/javascript" src="../js_10.js"></script><script type="text/javascript" src="../js_11.js"></script><script type="text/javascript" src="../js_12.js"></script><script type="text/javascript" src="../js_13.js"></script><script type="text/javascript" src="../js_14.js"></script><script type="text/javascript" src="../js_15.js"></script><style>.t-example-live-link {display:none !important} .t-sidebar-body {display:none}\nbody{min-width:0}\ndiv.mw-geshi{width:95%}\ndiv#content {width:auto !important} div#content{background-image:none; margin-left:0px;} .t-lines {background:inherit !important} pre, div.mw-geshi {width: 100% !important} body {background:white !important} div#content {width:100% !important} pre, div.mw-geshi {width:auto !important} .t-example-live-link, #mw-head, #cpp-footer-base {display:none !important} .t-navbar-menu > div {position:relative !important}</style></head><body class="mediawiki ltr sitedir-ltr ns-0 ns-subject page-c_23 skin-cppreference2 action-view cpp-navbar">
+        <!-- header -->
+        <div id="mw-head" class="noprint">
+            <div id="cpp-head-first-base">
+                <div id="cpp-head-first">
+                    <h5><a href="https://en.cppreference.com/">
+                        cppreference.com                        </a></h5>
+                    <div id="cpp-head-search">
+                        
+<!-- 0 -->
+<div id="p-search">
+<form action="https://duckduckgo.com/" method="get">
+  <input type="hidden" name="sites" value="cppreference.com">
+  <input type="search" name="q">
+  <input type="submit" value="Search">
+</form>
+</div>
+
+<!-- /0 -->
+                    </div>
+                    <div id="cpp-head-personal">
+                        
+<!-- 0 -->
+<div id="p-personal" class="">
+<span id="pt-createaccount"><a href="https://en.cppreference.com/mwiki/index.php?title=Special:UserLogin&amp;returnto=c%2F23&amp;type=signup">Create account</a></span>	<div class="menu">
+        <ul>
+<li id="pt-login"><a href="https://en.cppreference.com/mwiki/index.php?title=Special:UserLogin&amp;returnto=c%2F23" title="You are encouraged to log in; however, it is not mandatory [o]" accesskey="o">Log in</a></li>        </ul>
+    </div>
+</div>
+
+<!-- /0 -->
+                    </div>
+
+                </div>
+            </div>
+            <div id="cpp-head-second-base">
+                <div id="cpp-head-second">
+                    <div id="cpp-head-tools-left">
+                        
+<!-- 0 -->
+<div id="p-namespaces" class="vectorTabs">
+	<h5>Namespaces</h5>
+	<ul>
+					<li id="ca-nstab-main" class="selected"><span><a href="./23.html" title="View the content page [c]" accesskey="c">Page</a></span></li>
+					<li id="ca-talk" class="new"><span><a href="https://en.cppreference.com/mwiki/index.php?title=Talk:c/23&amp;action=edit&amp;redlink=1" title="Discussion about the content page [t]" accesskey="t">Discussion</a></span></li>
+			</ul>
+</div>
+
+<!-- /0 -->
+
+<!-- 1 -->
+<div id="p-variants" class="vectorMenu emptyPortlet">
+		<h5><span>Variants</span><a href="#"></a></h5>
+	<div class="menu">
+		<ul>
+					</ul>
+	</div>
+</div>
+
+<!-- /1 -->
+                    </div>
+                    <div id="cpp-head-tools-right">
+                        
+<!-- 0 -->
+<div id="p-views" class="vectorTabs">
+	<h5>Views</h5>
+	<ul>
+					<li id="ca-view" class="selected"><span><a href="./23.html">View</a></span></li>
+					<li id="ca-edit"><span><a href="https://en.cppreference.com/mwiki/index.php?title=c/23&amp;action=edit" title="You can edit this page. Please use the preview button before saving [e]" accesskey="e">Edit</a></span></li>
+					<li id="ca-history" class="collapsible"><span><a href="https://en.cppreference.com/mwiki/index.php?title=c/23&amp;action=history" title="Past revisions of this page [h]" accesskey="h">History</a></span></li>
+			</ul>
+</div>
+
+<!-- /0 -->
+
+<!-- 1 -->
+<div id="p-cactions" class="vectorMenu emptyPortlet">
+	<h5><span>Actions</span><a href="#"></a></h5>
+	<div class="menu">
+		<ul>
+					</ul>
+	</div>
+</div>
+
+<!-- /1 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /header -->
+        <!-- content -->
+<style type="text/css">
+#carbonads {
+  display: block;
+  overflow: hidden;
+  position: absolute;
+  text-align: center;
+  left: -170px;
+  max-width: 150px;
+  border-radius: 4px;
+  border: solid 1px hsla(0, 0%, 0%, .1);
+  background-color: hsl(0, 0%, 98%);
+  font-size: 12px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu,
+  Cantarell, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+}
+
+#carbonads a {
+  color: inherit;
+  text-decoration: none;
+}
+
+#carbonads a:hover {
+  color: inherit;
+}
+
+#carbonads span {
+  position: relative;
+  display: block;
+  overflow: hidden;
+}
+
+.carbon-img {
+  display: block;
+  margin-bottom: 8px;
+  max-width: 150px;
+  line-height: 1;
+}
+
+.carbon-img img {
+  display: block;
+  margin: 0 auto;
+  max-width: 150px !important;
+  width: 150px;
+  height: auto;
+}
+
+.carbon-text {
+  display: block;
+  padding: 0 1em 8px;
+}
+
+.carbon-poweredby {
+  display: block;
+  padding: 8px 12px;
+  background: repeating-linear-gradient(-45deg, transparent, transparent 5px, hsla(0, 0%, 0%, .025) 5px, hsla(0, 0%, 0%, .025) 10px) hsla(203, 11%, 95%, .4);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  font-weight: 600;
+  font-size: 9px;
+  line-height: 1;
+}
+html { font-variant-ligatures: no-common-ligatures; }
+</style>
+        <div id="cpp-content-base">
+            <div id="content">
+                <a id="top"></a>
+                <div id="mw-js-message" style="display:none;"></div>
+                                <!-- firstHeading -->
+<script async="" type="text/javascript" src="../../../cdn.carbonads.com/carbon.js" id="_carbonads_js"></script>
+                <h1 id="firstHeading" class="firstHeading">C23</h1>
+                <!-- /firstHeading -->
+                <!-- bodyContent -->
+                <div id="bodyContent">
+                                        <!-- tagline -->
+                    <div id="siteSub">From cppreference.com</div>
+                    <!-- /tagline -->
+                                        <!-- subtitle -->
+                    <div id="contentSub"><span class="subpages">&lt; <a href="../c.html" title="c">c</a></span></div>
+                    <!-- /subtitle -->
+                                                            <!-- bodycontent -->
+                    <div id="mw-content-text" lang="en" dir="ltr" class="mw-content-ltr"><div class="t-navbar" style=""><div class="t-navbar-sep">&nbsp;</div><div class="t-navbar-head"><a href="../c.html" title="c"> C</a><div class="t-navbar-menu"><div><div><table class="t-nv-begin" cellpadding="0" style="line-height:1.1em;">
+<tbody><tr class="t-nv"><td colspan="5"> <a href="./language.html" title="c/language"> Language</a> </td></tr>
+<tr class="t-nv"><td colspan="5"> <a href="./header.html" title="c/header"> Headers</a> </td></tr>
+<tr class="t-nv"><td colspan="5"> <a href="./types.html" title="c/types"> Type support</a> </td></tr>
+<tr class="t-nv"><td colspan="5"> <a href="./program.html" title="c/program"> Program utilities</a> </td></tr>
+<tr class="t-nv"><td colspan="5"> <a href="./variadic.html" title="c/variadic"> Variadic function support</a> </td></tr>
+<tr class="t-nv"><td colspan="5"> <a href="./error.html" title="c/error"> Error handling</a> </td></tr>
+<tr class="t-nv"><td colspan="5"> <a href="./memory.html" title="c/memory"> Dynamic memory management</a> </td></tr>
+<tr class="t-nv"><td colspan="5"> <a href="./string.html" title="c/string"> Strings library</a> </td></tr>
+<tr class="t-nv"><td colspan="5"> <a href="./algorithm.html" title="c/algorithm"> Algorithms</a> </td></tr>
+<tr class="t-nv"><td colspan="5"> <a href="./numeric.html" title="c/numeric"> Numerics</a> </td></tr>
+<tr class="t-nv"><td colspan="5"> <a href="./chrono.html" title="c/chrono"> Date and time utilities</a> </td></tr>
+<tr class="t-nv"><td colspan="5"> <a href="./io.html" title="c/io"> Input/output support</a> </td></tr>
+<tr class="t-nv"><td colspan="5"> <a href="./locale.html" title="c/locale"> Localization support</a> </td></tr>
+<tr class="t-nv"><td colspan="5"> <a href="./thread.html" title="c/thread"> Concurrency support</a> <span class="t-mark-rev t-since-c11">(C11)</span> </td></tr>
+<tr class="t-nv"><td colspan="5"> <a href="./experimental.html" title="c/experimental"> Technical Specifications</a> </td></tr>
+<tr class="t-nv"><td colspan="5"> <a href="./symbol_index.html" title="c/symbol index"> Symbol index</a> </td></tr>
+</tbody></table></div><div><span class="editsection noprint plainlinks" title="Edit this template"><a rel="nofollow" class="external text" href="https://en.cppreference.com/mwiki/index.php?title=Template:c/navbar_content&amp;action=edit">[edit]</a></span></div></div></div></div><div class="t-navbar-sep">&nbsp;</div><div class="t-navbar-head"><a href="./language/history.html" title="c/language/history"> Versions</a><div class="t-navbar-menu"><div><div><table class="t-nv-begin" cellpadding="0" style="line-height:1.1em;">
+<tbody><tr class="t-nv"><td colspan="5"> C89 </td></tr>
+<tr class="t-nv"><td colspan="5"> <a href="https://en.cppreference.com/mwiki/index.php?title=c/95&amp;action=edit&amp;redlink=1" class="new" title="c/95 (page does not exist)"> C95</a> </td></tr>
+<tr class="t-nv"><td colspan="5"> <a href="./99.html" title="c/99"> C99</a> </td></tr>
+<tr class="t-nv"><td colspan="5"> <a href="./11.html" title="c/11"> C11</a> </td></tr>
+<tr class="t-nv"><td colspan="5"> <a href="./17.html" title="c/17"> C17</a> </td></tr>
+<tr class="t-nv"><td colspan="5"> <strong class="selflink"> C23</strong> </td></tr>
+<tr class="t-nv"><td colspan="5"> <a href="./current_status.html" title="c/current status"> Current Status</a> </td></tr>
+</tbody></table></div><div><span class="editsection noprint plainlinks" title="Edit this template"><a rel="nofollow" class="external text" href="https://en.cppreference.com/mwiki/index.php?title=Template:c/version/navbar_content&amp;action=edit">[edit]</a></span></div></div></div></div><div class="t-navbar-sep">&nbsp;</div></div>
+<p>The next generation of the C standard.
+</p><p>See: <a rel="nofollow" class="external text" href="../../../www.open-std.org/jtc1/sc22/wg14/www/docs/n2984.pdf">The current IS schedule for C23</a>.
+</p>
+<table class="metadata plainlinks ambox mbox-small-left ambox-notice" style=""><tbody><tr><td class="mbox-empty-cell"></td><td class="mbox-text" style="">This section is incomplete<br>Reason:  accepted changes not yet included in the working draft </td></tr></tbody></table>
+<table id="toc" class="toc"><tbody><tr><td><div id="toctitle"><h2>Contents</h2><span class="toctoggle">&nbsp;[<a href="#" class="internal" id="togglelink">hide</a>]&nbsp;</span></div>
+<ul>
+<li class="toclevel-1 tocsection-1"><a href="#Obsolete"><span class="tocnumber">1</span> <span class="toctext">Obsolete</span></a>
+<ul>
+<li class="toclevel-2 tocsection-2"><a href="#Removed"><span class="tocnumber">1.1</span> <span class="toctext">Removed</span></a></li>
+<li class="toclevel-2 tocsection-3"><a href="#Deprecated"><span class="tocnumber">1.2</span> <span class="toctext">Deprecated</span></a></li>
+</ul>
+</li>
+<li class="toclevel-1 tocsection-4"><a href="#New_language_features"><span class="tocnumber">2</span> <span class="toctext">New language features</span></a>
+<ul>
+<li class="toclevel-2 tocsection-5"><a href="#Feature_test_macros_for_optional_features"><span class="tocnumber">2.1</span> <span class="toctext">Feature test macros for optional features</span></a></li>
+</ul>
+</li>
+<li class="toclevel-1 tocsection-6"><a href="#New_library_features"><span class="tocnumber">3</span> <span class="toctext">New library features</span></a></li>
+<li class="toclevel-1 tocsection-7"><a href="#Defect_reports"><span class="tocnumber">4</span> <span class="toctext">Defect reports</span></a></li>
+<li class="toclevel-1 tocsection-8"><a href="#Compiler_support"><span class="tocnumber">5</span> <span class="toctext">Compiler support</span></a></li>
+</ul>
+</td></tr></tbody></table>
+<h2><span class="editsection">[<a href="https://en.cppreference.com/mwiki/index.php?title=c/23&amp;action=edit&amp;section=1" title="Edit section: Obsolete">edit</a>]</span> <span class="mw-headline" id="Obsolete"> Obsolete </span></h2>
+<h3><span class="editsection">[<a href="https://en.cppreference.com/mwiki/index.php?title=c/23&amp;action=edit&amp;section=2" title="Edit section: Removed">edit</a>]</span> <span class="mw-headline" id="Removed">Removed</span></h3>
+<ul><li> Representations for <a href="./language/arithmetic_types.html" title="c/language/arithmetic types">signed integers</a> other than two's complement
+</li><li> Old-style <a href="./language/function_definition.html" title="c/language/function definition">function definitions</a>
+</li><li> Mixed wide <a href="./language/string_literal.html" title="c/language/string literal">string literal</a> concatenation
+</li><li> Support for calling <a href="./memory/realloc.html" title="c/memory/realloc"><tt>realloc()</tt></a> with zero size (the behavior becomes undefined)
+</li></ul>
+<h3><span class="editsection">[<a href="https://en.cppreference.com/mwiki/index.php?title=c/23&amp;action=edit&amp;section=3" title="Edit section: Deprecated">edit</a>]</span> <span class="mw-headline" id="Deprecated">Deprecated</span></h3>
+<ul><li> Old feature-test macros
+<ul><li> <a href="./preprocessor/replace.html" title="c/preprocessor/replace"><tt>__STDC_IEC_559__</tt></a>
+</li><li> <a href="./preprocessor/replace.html" title="c/preprocessor/replace"><tt>__STDC_IEC_559_COMPLEX__</tt></a>
+</li></ul>
+</li><li> <a href="./types/limits.html" title="c/types/limits"><tt>DECIMAL_DIG</tt></a>
+</li><li> Definition of following numeric limit macros in <code>&lt;math.h&gt;</code> (they should be used via <code>&lt;limits.h&gt;</code>)
+<ul><li> <a href="./numeric/math.html" title="c/numeric/math"><tt>INFINITY</tt></a>
+</li><li> <a href="./numeric/math.html" title="c/numeric/math"><tt>DEC_INFINITY</tt></a>
+</li><li> <a href="./numeric/math.html" title="c/numeric/math"><tt>NAN</tt></a>
+</li><li> <a href="./numeric/math.html" title="c/numeric/math"><tt>DEC_NAN</tt></a>
+</li></ul>
+</li></ul>
+<h2><span class="editsection">[<a href="https://en.cppreference.com/mwiki/index.php?title=c/23&amp;action=edit&amp;section=4" title="Edit section: New language features">edit</a>]</span> <span class="mw-headline" id="New_language_features"> New language features </span></h2>
+<ul><li> <a href="./language/arithmetic_types.html" title="c/language/arithmetic types">Decimal floating-point types</a> (<a href="./keyword/_Decimal32.html" title="c/keyword/ Decimal32"><tt>_Decimal32</tt></a>, <a href="./keyword/_Decimal64.html" title="c/keyword/ Decimal64"><tt>_Decimal64</tt></a>, and <a href="./keyword/_Decimal128.html" title="c/keyword/ Decimal128"><tt>_Decimal128</tt></a>)
+</li><li> <a href="./language/integer_constant.html" title="c/language/integer constant">Binary integer constants</a>
+</li><li> <a href="./language/character_constant.html" title="c/language/character constant"><code>u8</code> character constants</a>
+</li><li> Digit separator <code>'</code>
+</li><li> <a href="./language/attributes.html" title="c/language/attributes">Attributes</a>
+<ul><li> <code>[[<a href="./language/attributes/deprecated.html" title="c/language/attributes/deprecated">deprecated</a>]]</code>
+</li><li> <code>[[<a href="./language/attributes/fallthrough.html" title="c/language/attributes/fallthrough">fallthrough</a>]]</code>
+</li><li> <code>[[<a href="./language/attributes/maybe_unused.html" title="c/language/attributes/maybe unused">maybe_unused</a>]]</code>
+</li><li> <code>[[<a href="./language/attributes/nodiscard.html" title="c/language/attributes/nodiscard">nodiscard</a>]]</code>
+</li></ul>
+</li><li> Unnamed parameters in <a href="./language/function_definition.html" title="c/language/function definition">function definitions</a>
+</li><li> Identical cvr-qualifcations for <a href="./language/array.html" title="c/language/array">array types</a> and their element types
+</li><li> Single-argument <a href="./language/_Static_assert.html" title="c/language/ Static assert"><tt>_Static_assert</tt></a>
+</li><li> <a href="./language/goto.html" title="c/language/goto">Labels</a> followed by declarations and <code><b>}</b></code>
+</li><li> New preprocessor directives
+<ul><li> <a href="./preprocessor/conditional.html" title="c/preprocessor/conditional"><tt>
+#elifdef</tt></a>
+</li><li> <a href="./preprocessor/conditional.html" title="c/preprocessor/conditional"><tt>
+#elifndef</tt></a>
+</li></ul>
+</li><li> Pragmas for rounding direction
+<ul><li> <code>STDC</code> <a href="./preprocessor/impl.html" title="c/preprocessor/impl"><tt>FENV_ROUND</tt></a>
+</li><li> <code>STDC</code> <a href="./preprocessor/impl.html" title="c/preprocessor/impl"><tt>FENV_DEC_ROUND</tt></a>
+</li></ul>
+</li></ul>
+<h3><span class="editsection">[<a href="https://en.cppreference.com/mwiki/index.php?title=c/23&amp;action=edit&amp;section=5" title="Edit section: Feature test macros for optional features">edit</a>]</span> <span class="mw-headline" id="Feature_test_macros_for_optional_features">Feature test macros for optional features</span></h3>
+<ul><li> <a href="./preprocessor/replace.html" title="c/preprocessor/replace"><tt>__STDC_IEC_60559_BFP__</tt></a>
+<ul><li> Indicates IEEE-754 binary floating-point arithmetic and required math functions are supported.
+</li></ul>
+<dl><dd> This macro supersedes <a href="./preprocessor/replace.html" title="c/preprocessor/replace"><tt>__STDC_IEC_559__</tt></a>.
+</dd></dl>
+</li><li> <a href="./preprocessor/replace.html" title="c/preprocessor/replace"><tt>__STDC_IEC_60559_DFP__</tt></a>
+<ul><li> Indicates IEEE-754 decimal floating-point arithmetic and required math functions are supported.
+</li></ul>
+</li><li> <a href="./preprocessor/replace.html" title="c/preprocessor/replace"><tt>__STDC_IEC_60559_COMPLEX__</tt></a>
+<ul><li> Indicates IEEE-754 complex arithmetic and required math functions are supported.
+</li></ul>
+<dl><dd> This macro supersedes <a href="./preprocessor/replace.html" title="c/preprocessor/replace"><tt>__STDC_IEC_559_COMPLEX__</tt></a>.
+</dd></dl>
+</li></ul>
+<h2><span class="editsection">[<a href="https://en.cppreference.com/mwiki/index.php?title=c/23&amp;action=edit&amp;section=6" title="Edit section: New library features">edit</a>]</span> <span class="mw-headline" id="New_library_features"> New library features </span></h2>
+<ul><li> Extended binary floating-point math functions
+<ul><li> <table class="metadata plainlinks ambox mbox-small-left ambox-notice" style=""><tbody><tr><td class="mbox-empty-cell"></td><td class="mbox-text" style="">This section is incomplete<br>Reason: List TBD </td></tr></tbody></table>
+</li></ul>
+</li><li> Decimal floating-point math functions
+<ul><li> -<code>d<i>N</i></code> variants for existing and new floating-point math functions
+</li><li> <a href="https://en.cppreference.com/mwiki/index.php?title=c/numeric/math/quantize&amp;action=edit&amp;redlink=1" class="new" title="c/numeric/math/quantize (page does not exist)"><tt>quantized<i>N</i>()</tt></a>
+</li><li> <a href="https://en.cppreference.com/mwiki/index.php?title=c/numeric/math/samequantum&amp;action=edit&amp;redlink=1" class="new" title="c/numeric/math/samequantum (page does not exist)"><tt>samequantumd<i>N</i>()</tt></a>
+</li><li> <a href="https://en.cppreference.com/mwiki/index.php?title=c/numeric/math/quantum&amp;action=edit&amp;redlink=1" class="new" title="c/numeric/math/quantum (page does not exist)"><tt>quantumd<i>N</i>()</tt></a>
+</li><li> <a href="https://en.cppreference.com/mwiki/index.php?title=c/numeric/math/llquantexp&amp;action=edit&amp;redlink=1" class="new" title="c/numeric/math/llquantexp (page does not exist)"><tt>llquantexpd<i>N</i>()</tt></a>
+</li><li> <a href="https://en.cppreference.com/mwiki/index.php?title=c/numeric/math/encodedec&amp;action=edit&amp;redlink=1" class="new" title="c/numeric/math/encodedec (page does not exist)"><tt>encodedecd<i>N</i>()</tt></a>
+</li><li> <a href="https://en.cppreference.com/mwiki/index.php?title=c/numeric/math/decodedec&amp;action=edit&amp;redlink=1" class="new" title="c/numeric/math/decodedec (page does not exist)"><tt>decodedecd<i>N</i>()</tt></a>
+</li><li> <a href="https://en.cppreference.com/mwiki/index.php?title=c/numeric/math/encodebin&amp;action=edit&amp;redlink=1" class="new" title="c/numeric/math/encodebin (page does not exist)"><tt>encodebind<i>N</i>()</tt></a>
+</li><li> <a href="https://en.cppreference.com/mwiki/index.php?title=c/numeric/math/decodebin&amp;action=edit&amp;redlink=1" class="new" title="c/numeric/math/decodebin (page does not exist)"><tt>decodebind<i>N</i>()</tt></a>
+</li></ul>
+</li><li> <a href="https://en.cppreference.com/mwiki/index.php?title=c/string/byte/strfromf&amp;action=edit&amp;redlink=1" class="new" title="c/string/byte/strfromf (page does not exist)">Floating-point formatting functions</a>
+</li><li> POSIX functions
+<ul><li> <a href="./string/byte/memccpy.html" title="c/string/byte/memccpy"><tt>memccpy()</tt></a>
+</li><li> <a href="./string/byte/strdup.html" title="c/string/byte/strdup"><tt>strdup()</tt></a>
+</li><li> <a href="./string/byte/strndup.html" title="c/string/byte/strndup"><tt>strndup()</tt></a>
+</li><li> <a href="./chrono/asctime.html" title="c/chrono/asctime"><tt>asctime_r()</tt></a>
+</li><li> <a href="./chrono/ctime.html" title="c/chrono/ctime"><tt>ctime_r()</tt></a>
+</li><li> <a href="./chrono/gmtime.html" title="c/chrono/gmtime"><tt>gmtime_r()</tt></a>
+</li><li> <a href="./chrono/localtime.html" title="c/chrono/localtime"><tt>localtime_r()</tt></a>
+</li><li> Extensions for <a href="./chrono/strftime.html" title="c/chrono/strftime"><tt>strftime()</tt></a> and <a href="./chrono/wcsftime.html" title="c/chrono/wcsftime"><tt>wcsftime()</tt></a>
+</li></ul>
+</li><li> Extensions for <a href="./io/fscanf.html" title="c/io/fscanf"><tt>fscanf()</tt></a> and <a href="./io/fprintf.html" title="c/io/fprintf"><tt>fprintf()</tt></a> function families
+<ul><li> <code>w<i>N</i></code> and <code>wf<i>N</i></code> length modifiers for <a href="./types/integer.html" title="c/types/integer"><tt>[u]int<i>N</i>_t</tt></a> and <a href="./types/integer.html" title="c/types/integer"><tt>[u]int_fast<i>N</i>_t</tt></a> respectively 
+</li><li> <code>H</code>, <code>D</code>, and <code>DD</code> length modifiers for <span class="t-c"><span class="mw-geshi c source-c">_Decimal32</span></span>, <span class="t-c"><span class="mw-geshi c source-c">_Decimal64</span></span>, and <span class="t-c"><span class="mw-geshi c source-c">_Decimal128</span></span> respectively
+</li><li> <code>b</code> conversion specifier for unsigned integer types
+</li></ul>
+</li><li> <a href="./chrono/timespec_getres.html" title="c/chrono/timespec getres"><tt>timespec_getres()</tt></a>
+</li><li> Macro constants for width of integer types
+</li><li> Additional numeric limit macros for floating-point types
+</li><li> Library version-test macros
+<ul><li> <a href="./numeric/fenv.html" title="c/numeric/fenv"><tt>__STDC_VERSION_FENV_H__</tt></a>
+</li><li> <a href="./numeric/math.html" title="c/numeric/math"><tt>__STDC_VERSION_MATH_H__</tt></a>
+</li><li> <a href="./types/integer.html" title="c/types/integer"><tt>__STDC_VERSION_STDINT_H__</tt></a>
+</li><li> <a href="./string/byte.html" title="c/string/byte"><tt>__STDC_VERSION_STDLIB_H__</tt></a>
+</li><li> <a href="./numeric/tgmath.html" title="c/numeric/tgmath"><tt>__STDC_VERSION_TGMATH_H__</tt></a>
+</li><li> <a href="./chrono.html" title="c/chrono"><tt>__STDC_VERSION_TIME_H__</tt></a>
+</li></ul>
+</li><li> <a href="./types.html" title="c/types"><tt>true</tt></a> and <a href="./types.html" title="c/types"><tt>false</tt></a> of type <span class="t-c"><span class="mw-geshi c source-c">_Bool</span></span>
+</li></ul>
+<h2><span class="editsection">[<a href="https://en.cppreference.com/mwiki/index.php?title=c/23&amp;action=edit&amp;section=7" title="Edit section: Defect reports">edit</a>]</span> <span class="mw-headline" id="Defect_reports"> Defect reports </span></h2>
+<div style="margin-left:0px">
+<table class="mw-collapsible mw-collapsed" style="background: transparent; text-align: left; border: 1px solid silver; margin: 0.2em auto auto; width:100%; clear: both; padding: 1px;">
+
+<tbody><tr>
+<th style="background: #F0F2F5; font-size:87%; padding:0.2em 0.3em; text-align:center;"> <span style="font-size:115%">Defect Reports fixed in C23 (? defects)</span>
+</th></tr>
+<tr>
+<td style="border: solid 1px silver; padding: 8px; background: white;">
+<div class="div-col columns column-count column-count-4" style="-moz-column-count: 4; -webkit-column-count: 4; column-count: 4;">
+<ul><li> <a rel="nofollow" class="external text" href="https://open-std.org/JTC1/SC22/WG14/www/docs/n2379.htm">DR 440</a>
+</li><li> <a rel="nofollow" class="external text" href="https://open-std.org/JTC1/SC22/WG14/www/docs/n2326.htm">DR 432</a>
+</li><li> <a rel="nofollow" class="external text" href="https://open-std.org/JTC1/SC22/WG14/www/docs/n2326.htm">DR 467</a>
+</li><li> <a rel="nofollow" class="external text" href="https://www.open-std.org/jtc1/sc22/wg14/www/docs/n2396.htm#dr_476">DR 476</a>
+</li><li> <a rel="nofollow" class="external text" href="https://open-std.org/JTC1/SC22/WG14/www/docs/n2324.htm">DR 482</a>
+</li><li> <a rel="nofollow" class="external text" href="https://www.open-std.org/jtc1/sc22/wg14/www/docs/n2396.htm#dr_488">DR 488</a>
+</li><li> <a rel="nofollow" class="external text" href="https://open-std.org/JTC1/SC22/WG14/www/docs/n2713.htm">DR 489</a>
+</li><li> <a rel="nofollow" class="external text" href="https://www.open-std.org/jtc1/sc22/wg14/www/docs/n2396.htm#dr_494">DR 494</a>
+</li><li> <a rel="nofollow" class="external text" href="https://www.open-std.org/jtc1/sc22/wg14/www/docs/n2396.htm#dr_496">DR 496</a>
+</li><li> <a rel="nofollow" class="external text" href="https://www.open-std.org/jtc1/sc22/wg14/www/docs/n2396.htm#dr_497">DR 497</a>
+</li><li> <a rel="nofollow" class="external text" href="https://www.open-std.org/jtc1/sc22/wg14/www/docs/n2396.htm#dr_499">DR 499</a>
+</li><li> <a rel="nofollow" class="external text" href="https://www.open-std.org/jtc1/sc22/wg14/www/docs/n2396.htm#dr_500">DR 500</a>
+</li><li> <a rel="nofollow" class="external text" href="https://www.open-std.org/jtc1/sc22/wg14/www/docs/n2396.htm#dr_501">DR 501</a>
+</li></ul>
+</div>
+</td></tr></tbody></table></div>
+<h2><span class="editsection">[<a href="https://en.cppreference.com/mwiki/index.php?title=c/23&amp;action=edit&amp;section=8" title="Edit section: Compiler support">edit</a>]</span> <span class="mw-headline" id="Compiler_support"> Compiler support</span></h2>
+<p><a href="https://en.cppreference.com/mwiki/index.php?title=Template:c/compiler_support/23&amp;action=edit&amp;redlink=1" class="new" title="Template:c/compiler support/23 (page does not exist)">Template:c/compiler support/23</a>
+</p>
+<!-- 
+NewPP limit report
+Preprocessor visited node count: 2611/1000000
+Preprocessor generated node count: 7791/1000000
+Post‐expand include size: 30878/2097152 bytes
+Template argument size: 7569/2097152 bytes
+Highest expansion depth: 17/40
+Expensive parser function count: 0/100
+-->
+
+<!-- Saved in parser cache with key mwiki1-mwiki_en_:pcache:idhash:20600-0!*!0!!en!*!* and timestamp 20220510061235 -->
+</div>                    <!-- /bodycontent -->
+                                        <!-- printfooter -->
+                    <div class="printfooter">
+                    Retrieved from "<a href="https://en.cppreference.com/mwiki/index.php?title=c/23&amp;oldid=139535">https://en.cppreference.com/mwiki/index.php?title=c/23&amp;oldid=139535</a>"                    </div>
+                    <!-- /printfooter -->
+                                                            <!-- catlinks -->
+                    <div id="catlinks" class="catlinks"><div id="mw-normal-catlinks" class="mw-normal-catlinks"><a href="https://en.cppreference.com/w/Special:Categories" title="Special:Categories">Category</a>: <ul><li><a href="https://en.cppreference.com/w/Category:Todo_with_reason" title="Category:Todo with reason">Todo with reason</a></li></ul></div></div>                    <!-- /catlinks -->
+                                                            <div class="visualClear"></div>
+                    <!-- debughtml -->
+                                        <!-- /debughtml -->
+                </div>
+                <!-- /bodyContent -->
+            </div>
+        </div>
+        <!-- /content -->
+        <!-- footer -->
+        <div id="cpp-footer-base" class="noprint">
+            <div id="footer">
+                        <div id="cpp-navigation">
+            <h5>Navigation</h5>
+            <ul>
+<li id="n-Support-us"><a href="http://www.cppreference.com/support" rel="nofollow">Support us</a></li><li id="n-recentchanges"><a href="https://en.cppreference.com/w/Special:RecentChanges" title="A list of recent changes in the wiki [r]" accesskey="r">Recent changes</a></li><li id="n-FAQ"><a href="https://en.cppreference.com/w/Cppreference:FAQ">FAQ</a></li><li id="n-Offline-version"><a href="https://en.cppreference.com/w/Cppreference:Archives">Offline version</a></li>            </ul>
+        </div>
+                        <div id="cpp-toolbox">
+            <h5><span>Toolbox</span><a href="#"></a></h5>
+            <ul>
+<li id="t-whatlinkshere"><a href="https://en.cppreference.com/w/Special:WhatLinksHere/c/23" title="A list of all wiki pages that link here [j]" accesskey="j">What links here</a></li><li id="t-recentchangeslinked"><a href="https://en.cppreference.com/w/Special:RecentChangesLinked/c/23" title="Recent changes in pages linked from this page [k]" accesskey="k">Related changes</a></li><li id="t-upload"><a href="http://upload.cppreference.com/w/Special:Upload" title="Upload files [u]" accesskey="u">Upload file</a></li><li id="t-specialpages"><a href="https://en.cppreference.com/w/Special:SpecialPages" title="A list of all special pages [q]" accesskey="q">Special pages</a></li><li id="t-print"><a href="https://en.cppreference.com/mwiki/index.php?title=c/23&amp;printable=yes" rel="alternate" title="Printable version of this page [p]" accesskey="p">Printable version</a></li><li id="t-permalink"><a href="https://en.cppreference.com/mwiki/index.php?title=c/23&amp;oldid=139535" title="Permanent link to this revision of the page">Permanent link</a></li><li id="t-info"><a href="https://en.cppreference.com/mwiki/index.php?title=c/23&amp;action=info">Page information</a></li>            </ul>
+        </div>
+                        <div id="cpp-languages">
+            <div><ul><li>In other languages</li></ul></div>
+            <div><ul>
+<li class="interwiki-ar"><a href="http://ar.cppreference.com/w/c/23" title="c/23" lang="ar" hreflang="ar">العربية</a></li><li class="interwiki-cs"><a href="http://cs.cppreference.com/w/c/23" title="c/23" lang="cs" hreflang="cs">Česky</a></li><li class="interwiki-de"><a href="http://de.cppreference.com/w/c/23" title="c/23" lang="de" hreflang="de">Deutsch</a></li><li class="interwiki-es"><a href="http://es.cppreference.com/w/c/23" title="c/23" lang="es" hreflang="es">Español</a></li><li class="interwiki-fr"><a href="http://fr.cppreference.com/w/c/23" title="c/23" lang="fr" hreflang="fr">Français</a></li><li class="interwiki-it"><a href="http://it.cppreference.com/w/c/23" title="c/23" lang="it" hreflang="it">Italiano</a></li><li class="interwiki-ja"><a href="http://ja.cppreference.com/w/c/23" title="c/23" lang="ja" hreflang="ja">日本語</a></li><li class="interwiki-ko"><a href="http://ko.cppreference.com/w/c/23" title="c/23" lang="ko" hreflang="ko">한국어</a></li><li class="interwiki-pl"><a href="http://pl.cppreference.com/w/c/23" title="c/23" lang="pl" hreflang="pl">Polski</a></li><li class="interwiki-pt"><a href="http://pt.cppreference.com/w/c/23" title="c/23" lang="pt" hreflang="pt">Português</a></li><li class="interwiki-ru"><a href="http://ru.cppreference.com/w/c/23" title="c/23" lang="ru" hreflang="ru">Русский</a></li><li class="interwiki-tr"><a href="http://tr.cppreference.com/w/c/23" title="c/23" lang="tr" hreflang="tr">Türkçe</a></li><li class="interwiki-zh"><a href="http://zh.cppreference.com/w/c/23" title="c/23" lang="zh" hreflang="zh">中文</a></li>            </ul></div>
+        </div>
+            <ul id="footer-info">
+                                    <li id="footer-info-lastmod"> This page was last modified on 6 May 2022, at 19:14.</li>
+                                    <li id="footer-info-viewcount">This page has been accessed 28,416 times.</li>
+                            </ul>
+                    <ul id="footer-places">
+                                    <li id="footer-places-privacy"><a href="https://en.cppreference.com/w/Cppreference:Privacy_policy" title="Cppreference:Privacy policy">Privacy policy</a></li>
+                                    <li id="footer-places-about"><a href="https://en.cppreference.com/w/Cppreference:About" title="Cppreference:About">About cppreference.com</a></li>
+                                    <li id="footer-places-disclaimer"><a href="https://en.cppreference.com/w/Cppreference:General_disclaimer" title="Cppreference:General disclaimer">Disclaimers</a></li>
+                            </ul>
+                                    <ul id="footer-icons" class="noprint">
+                                    <li id="footer-poweredbyico">
+                                            <a href="https://www.mediawiki.org/"><img src="../../mwiki/skins/common/images/poweredby_mediawiki_88x31.png" alt="Powered by MediaWiki" width="88" height="31"></a>                                            <a href="http://qbnz.com/highlighter/"><img src="../../../upload.cppreference.com/mwiki/images/2/2b/powered_by_geshi_88x31.png" alt="Powered by GeSHi" height="31" width="88"></a>                                            <a href="http://www.tigertech.net/referral/cppreference.com"><img src="../../../upload.cppreference.com/mwiki/images/9/94/powered_by_tigertech_88x31.png" alt="Hosted by Tiger Technologies" height="31" width="88"></a>                                        </li>
+                                </ul>
+                        <div style="clear:both">
+            </div>
+            </div>
+        </div>
+        <!-- /footer -->
+        
+
+
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-2828341-1']);
+_gaq.push(['_setDomainName', 'cppreference.com']);
+_gaq.push(['_trackPageview']);
+</script><!-- Served in 0.308 secs. -->
+	
+<!-- Cached 20220510061235 -->
+
+</body></html>

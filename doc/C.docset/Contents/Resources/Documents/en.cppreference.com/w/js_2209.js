@@ -1,0 +1,1 @@
+P(i | \mu) = \frac{e^{-\mu}\mu^i}{i!}

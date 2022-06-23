@@ -1,0 +1,1 @@
+\scriptsize 2\cdot(N_1+N_2)-1

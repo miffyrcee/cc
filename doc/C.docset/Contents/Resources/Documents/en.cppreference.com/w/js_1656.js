@@ -1,0 +1,1 @@
+\small{\sqrt[3]{x} }

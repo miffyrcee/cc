@@ -1,0 +1,1 @@
+(1 - x^2) ^ {m/2} \: \frac{ \mathsf{d} ^ m}{ \mathsf{d}x ^ m} \, \mathsf{P}_n(x)

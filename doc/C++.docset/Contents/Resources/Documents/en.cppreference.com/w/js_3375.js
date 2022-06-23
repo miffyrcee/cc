@@ -1,0 +1,1 @@
+\small{Y=X_{i-s}-X_{i-r}-c}

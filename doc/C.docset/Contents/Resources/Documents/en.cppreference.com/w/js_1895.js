@@ -1,0 +1,1 @@
+\mathsf{L}_{n+m}(x)

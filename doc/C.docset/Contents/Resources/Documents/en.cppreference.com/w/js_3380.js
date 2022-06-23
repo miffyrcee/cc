@@ -1,0 +1,1 @@
+{\small P(i|a,b) =}\frac{1}{b - a + 1}

@@ -1,0 +1,1 @@
+\mathsf{P}_n(x) = \frac{1}{2^n n!} \frac{\mathsf{d}^n}{\mathsf{d}x^n} (x^2-1)^n 

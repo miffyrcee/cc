@@ -1,0 +1,1 @@
+\frac{2}{\sqrt{\pi} }\int_{0}^{arg}{e^{-{t^2} }\mathsf{d}t}

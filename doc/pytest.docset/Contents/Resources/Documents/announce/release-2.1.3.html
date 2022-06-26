@@ -1,0 +1,99 @@
+
+
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>py.test 2.1.3: just some more fixes &#8212; pytest documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments_pytest.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="py.test 2.1.2: bug fixes and fixes for jython" href="release-2.1.2.html" />
+    <link rel="prev" title="py.test 2.2.0: test marking++, parametrization++ and duration profiling" href="release-2.2.0.html" />
+  <script>DOCUMENTATION_OPTIONS.URL_ROOT = '../';</script>
+   
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="release-2.1.2.html" title="py.test 2.1.2: bug fixes and fixes for jython"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="release-2.2.0.html" title="py.test 2.2.0: test marking++, parametrization++ and duration profiling"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../contents.html">pytest-6.2</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Release announcements</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">py.test 2.1.3: just some more fixes</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="py-test-2-1-3-just-some-more-fixes">
+<h1>py.test 2.1.3: just some more fixes<a class="headerlink" href="#py-test-2-1-3-just-some-more-fixes" title="Permalink to this headline">¶</a></h1>
+<p>pytest-2.1.3 is a minor backward compatible maintenance release of the
+popular py.test testing tool.  It is commonly used for unit, functional-
+and integration testing.  See extensive docs with examples here:</p>
+<blockquote>
+<div><p><a class="reference external" href="http://pytest.org/">http://pytest.org/</a></p>
+</div></blockquote>
+<p>The release contains another fix to the perfected assertions introduced
+with the 2.1 series as well as the new possibility to customize reporting
+for assertion expressions on a per-directory level.</p>
+<p>If you want to install or upgrade pytest, just type one of:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">U</span> <span class="n">pytest</span> <span class="c1"># or</span>
+<span class="n">easy_install</span> <span class="o">-</span><span class="n">U</span> <span class="n">pytest</span>
+</pre></div>
+</div>
+<p>Thanks to the bug reporters and to Ronny Pfannschmidt, Benjamin Peterson
+and Floris Bruynooghe who implemented the fixes.</p>
+<p>best,
+holger krekel</p>
+<div class="section" id="changes-between-2-1-2-and-2-1-3">
+<h2>Changes between 2.1.2 and 2.1.3<a class="headerlink" href="#changes-between-2-1-2-and-2-1-3" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>fix issue79: assertion rewriting failed on some comparisons in boolops,</p></li>
+<li><p>correctly handle zero length arguments (a la pytest ‘’)</p></li>
+<li><p>fix issue67 / junitxml now contains correct test durations</p></li>
+<li><p>fix issue75 / skipping test failure on jython</p></li>
+<li><p>fix issue77 / Allow assertrepr_compare hook to apply to a subset of tests</p></li>
+</ul>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+      </div>
+  <span id="sidebar-top"></span>
+      <div class="clearer"></div>
+    </div>
+  
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2015–2020, holger krekel and pytest-dev team.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
+    </div>
+  <script src="../_static/version_warning_offset.js"></script>
+
+  </body>
+</html>

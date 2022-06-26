@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Class Diagram</title>
+</head>
+<body>
+
+
+
+
+
+
+
+
+
+
+
+
+<h1>Class Diagram</h1>
+
+<p>To be able to generate those diagrams, you must have <a href="graphvizdot.html">Graphviz
+software</a> installed on your machine in the default directory <code>c:\Program
+Files\GraphvizX.XX</code> or <code>/usr/bin/dot</code>.</p>
+
+<p>You can <a href="graphvizdot.html">have a look here if you have
+installed Graphviz somewhere else.</a>
+</p><p>The description of class diagram is similar to the description of
+<a href="usecase.html">use case diagrams</a>.</p>
+
+
+<a name="//apple_ref/cpp/Guide/New rendering" class="dashAnchor"></a><h2>New rendering</h2>
+This page show the rendering given by the new <a href="svek.html">Svek architecture</a>.
+<p>Note that you can disable the shadowing using the <code>skinparam shadowing false</code> command.
+
+</p><a name="//apple_ref/cpp/Guide/Relations between classes" class="dashAnchor"></a><h2 id="Relations">Relations between classes</h2>
+Relations between classes are defined using the following symbols : 
+<br><br>
+
+
+
+
+
+<p>
+It is possible to replace <code>--</code> by <code>..</code> to have a dotted
+line.
+</p><p>
+Knowing those rules, it is possible to draw the following drawings:
+</p><p>
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+scale 800 width
+Class01 &lt;|-- Class02
+Class03 *-- Class04
+Class05 o-- Class06
+Class07 .. Class08
+Class09 -- Class10
+Class11 &lt;|.. Class12
+Class13 --&gt; Class14
+Class15 ..&gt; Class16
+Class17 ..|&gt; Class18
+Class19 &lt;--* Class20
+@enduml
+		</pre></td>
+	</tr>
+	<tr>
+		<td><img border="2" src="imgp/classes.png"></td>
+	</tr>
+</table>
+
+</p><a name="//apple_ref/cpp/Guide/Label on relations" class="dashAnchor"></a><h2 id="Label">Label on relations</h2>
+
+It is possible a add a label on the relation, using &quot;<code>:</code>&quot;, followed
+by the text of the label.
+<p>For cardinality, you can use double-quotes <code>&quot;&quot;</code> on each side
+of the relation.
+
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+Class01 &quot;1&quot; *-- &quot;many&quot; Class02 : contains
+
+Class03 o-- Class04 : aggregation
+
+Class05 --&gt; &quot;1&quot; Class06
+
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/classes_001.png"></td>
+	</tr>
+</table>
+
+You can add an extra arrow pointing at one object showing
+which object acts on the other object, using <code>&lt;</code> or <code>&gt;</code>
+at the begin or at the end of the label.
+
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+class Car
+
+Driver - Car : drives &gt;
+Car *- Wheel : have 4 &gt;
+Car -- Person : &lt; owns
+
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/classes_002.png"></td>
+	</tr>
+</table>
+
+</p><a name="//apple_ref/cpp/Guide/Adding methods" class="dashAnchor"></a><h2 id="Adding">Adding methods</h2>
+
+To declare fields and methods, you can use the symbol 
+<code>&quot;:&quot;</code> followed by the field&apos;s or method&apos;s name.
+<p>The system checks for parenthesis to choose between methods and fields.
+
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+Object &lt;|-- ArrayList
+
+Object : equals()
+ArrayList : Object[] elementData
+ArrayList : size()
+
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/classes_003.png"></td>
+	</tr>
+</table>
+
+
+It is also possible to group between brackets 
+<code>{}</code> all fields and methods.
+</p><p>Note that the syntax is highly flexible about type/name order.
+
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+class Dummy {
+  String data
+  void methods()
+}
+
+class Flight {
+   flightNumber : Integer
+   departureTime : Date
+}
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/classes_004.png"></td>
+	</tr>
+</table>
+
+
+</p><a name="//apple_ref/cpp/Guide/Defining visibility" class="dashAnchor"></a><h2 id="Visibility">Defining visibility</h2>
+
+
+When you define methods or fields, you can use characters to define the
+visibility of the corresponding item:
+
+<p>
+<table border="1" cellpadding="2" cellspacing="0">
+	<tr align="center">
+		<td><b>Character</b></td>
+		<td><b>Icon for field</b></td>
+		<td><b>Icon for method</b></td>
+		<td><b>Visibility</b></td>
+	</tr>
+	<tr align="center">
+		<td><code>-</code></td>
+		<td><img src="PRIVATE_FIELD.png"></td>
+		<td><img src="PRIVATE_METHOD.png"></td>
+		<td align="left"><code>private</code></td>
+	</tr>
+	<tr align="center">
+		<td><code>#</code></td>
+		<td><img src="PROTECTED_FIELD.png"></td>
+		<td><img src="PROTECTED_METHOD.png"></td>
+		<td align="left"><code>protected</code></td>
+	</tr>
+	<tr align="center">
+		<td><code>~</code></td>
+		<td><img src="PACKAGE_PRIVATE_FIELD.png"></td>
+		<td><img src="PACKAGE_PRIVATE_METHOD.png"></td>
+		<td align="left"><code>package private</code></td>
+	</tr>
+	<tr align="center">
+		<td><code>+</code></td>
+		<td><img src="PUBLIC_FIELD.png"></td>
+		<td><img src="PUBLIC_METHOD.png"></td>
+		<td align="left"><code>public</code></td>
+	</tr>
+</table>
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+class Dummy {
+ -field1
+ #field2
+ ~method1()
+ +method2()
+}
+
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/classes_005.png"></td>
+	</tr>
+</table>
+
+
+You can turn off this feature using the
+<code>skinparam classAttributeIconSize 0</code> command :
+
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+skinparam classAttributeIconSize 0
+class Dummy {
+ -field1
+ #field2
+ ~method1()
+ +method2()
+}
+
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/classes_006.png"></td>
+	</tr>
+</table>
+
+</p><a name="//apple_ref/cpp/Guide/Abstract and Static" class="dashAnchor"></a><h2 id="AbstractStatic">Abstract and Static</h2>
+
+
+You can define static or abstract methods or fields using the <code>{static}</code>
+or  <code>{abstract}</code> modifier.
+<p>These modifiers can be used at the start or at the end of the line.
+You can also use <code>{classifier}</code> instead of <code>{static}</code>.
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+class Dummy {
+  {static} String id
+  {abstract} void methods()
+}
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/classes_007.png"></td>
+	</tr>
+</table>
+
+</p><a name="//apple_ref/cpp/Guide/Advanced class body" class="dashAnchor"></a><h2 id="Body">Advanced class body</h2>
+
+By default, methods and fields are automatically regrouped by PlantUML.
+You can use separators to define your own way of ordering fields and methods.
+The following separators are possible : <code>--</code> <code>..</code> <code>==</code> <code>__</code>.
+<p>You can also use titles within the separators:
+
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+class Foo1 {
+  You can use
+  several lines
+  ..
+  as you want
+  and group
+  ==
+  things together.
+  __
+  You can have as many groups
+  as you want
+  --
+  End of class
+}
+
+class User {
+  .. Simple Getter ..
+  + getName()
+  + getAddress()
+  .. Some setter ..
+  + setName()
+  __ private data __
+  int age
+  -- encrypted --
+  String password
+}
+
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/classes_008.png"></td>
+	</tr>
+</table>
+
+
+
+</p><a name="//apple_ref/cpp/Guide/Notes and stereotypes" class="dashAnchor"></a><h2 id="Notes">Notes and stereotypes</h2>
+
+Stereotypes are defined with the <code>class</code> keyword, &quot; <code>&lt;&lt;</code>
+&quot; and &quot; <code>&gt;&gt;</code> &quot;.
+<p>You can also define notes using <code>note left of</code> , <code>note
+right of</code> , <code>note top of</code> , <code>note bottom of</code>
+keywords.
+</p><p>You can also define a note on the last defined class using <code>note left</code>, <code>note right</code>,
+<code>note top</code>, <code>note bottom</code>.
+</p><p>A note can be also define alone with the <code>note</code>
+keywords, then linked to other objects using the <code>..</code> symbol.
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+class Object &lt;&lt; general &gt;&gt;
+Object &lt;|--- ArrayList
+
+note top of Object : In java, every class\nextends this one.
+
+note &quot;This is a floating note&quot; as N1
+note &quot;This note is connected\nto several objects.&quot; as N2
+Object .. N2
+N2 .. ArrayList
+
+class Foo
+note left: On last defined class
+
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/classes_009.png"></td>
+	</tr>
+</table>
+
+</p><a name="//apple_ref/cpp/Guide/More on notes" class="dashAnchor"></a><h2 id="More">More on notes</h2>
+It is also possible to use few html tags like :
+
+<ul>
+	<li><code>&lt;b&gt;</code></li>
+	<li><code>&lt;u&gt;</code></li>
+	<li><code>&lt;i&gt;</code></li>
+	<li><code>&lt;s&gt;</code>, <code>&lt;del&gt;</code>, <code>&lt;strike&gt;</code></li>
+	<li><code>&lt;font color=&quot;#AAAAAA&quot;&gt;</code> or <code>&lt;font color=&quot;<a href="http://www.w3schools.com/HTML/html_colornames.asp">colorName</a>&quot;&gt;</code></li>
+	<li><code>&lt;color:#AAAAAA&gt;</code> or <code>&lt;color:<a href="http://www.w3schools.com/HTML/html_colornames.asp">colorName</a>&gt;</code></li>
+	<li><code>&lt;size:nn&gt;</code> to change font size</li>
+	<li><code>&lt;img src=&quot;file&quot;&gt;</code> or <code>&lt;img:file&gt;</code>
+	: the file must be accessible by the filesystem</li>
+</ul>
+
+<p>You can also have a note on several lines</p>
+<p>You can also define a note on the last defined class using <code>note left</code>, <code>note right</code>,
+<code>note top</code>, <code>note bottom</code>.
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+class Foo
+note left: On last defined class
+
+note top of Object
+  In java, &lt;size:18&gt;every&lt;/size&gt; &lt;u&gt;class&lt;/u&gt;
+  &lt;b&gt;extends&lt;/b&gt;
+  &lt;i&gt;this&lt;/i&gt; one.
+end note
+
+note as N1
+  This note is &lt;u&gt;also&lt;/u&gt;
+  &lt;b&gt;&lt;color:royalBlue&gt;on several&lt;/color&gt;
+  &lt;s&gt;words&lt;/s&gt; lines
+  And this is hosted by &lt;img:sourceforge.jpg&gt;
+end note
+
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/classes_010.png"></td>
+	</tr>
+</table>
+
+</p><a name="//apple_ref/cpp/Guide/Note on links" class="dashAnchor"></a><h2 id="NoteLink">Note on links</h2>
+
+It is possible to add a note on a link, just after the link definition, using <code>note on link</code>.
+<p>
+You can also use <code>note left on link</code>, <code>note right on link</code>, <code>note top on link</code>, 
+<code>note bottom on link</code> if you want to change the relative position of the note with the label.
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+class Dummy
+Dummy --&gt; Foo : A link
+note on link #red: note that is red
+
+Dummy --&gt; Foo2 : Another link
+note right on link #blue
+	this is my note on right link
+	and in blue
+end note
+
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/classes_011.png"></td>
+	</tr>
+</table>
+
+</p><a name="//apple_ref/cpp/Guide/Abstract class and interface" class="dashAnchor"></a><h2 id="Abstract">Abstract class and interface</h2>
+<a name="enum" id="enum">You can declare a class as abstract using <code>&quot;abstract&quot;</code>
+or <code>&quot;abstract class&quot;</code> keywords.</a>
+
+<p>The class will be printed in <i>italic</i>.</p>
+
+<p>You can use the <code>interface</code>, <code>annotation</code> and <code>enum</code> keywords too.</p>
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+abstract class AbstractList
+abstract AbstractCollection
+interface List
+interface Collection
+
+List &lt;|-- AbstractList
+Collection &lt;|-- AbstractCollection
+
+Collection &lt;|- List
+AbstractCollection &lt;|- AbstractList
+AbstractList &lt;|-- ArrayList
+
+class ArrayList {
+  Object[] elementData
+  size()
+}
+
+enum TimeUnit {
+  DAYS
+  HOURS
+  MINUTES
+}
+
+annotation SuppressWarnings
+
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/classes_012.png"></td>
+	</tr>
+</table>
+
+
+<a name="//apple_ref/cpp/Guide/Using non-letters" class="dashAnchor"></a><h2 id="As">Using non-letters</h2>
+
+If you want to use <a href="unicode.html">non-letters</a> in the class (or enum...) display, you can either :
+<ul>
+<li>Use the <code>as</code> keyword in the class definition</li>
+<li>Put quotes <code>&quot;&quot;</code> around the class name</li> 
+</ul>
+ 
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+class &quot;This is my class&quot; as class1
+class class2 as &quot;It works this way too&quot;
+
+class2 *-- &quot;foo/dummy&quot; : use
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/classes_013.png"></td>
+	</tr>
+</table>
+
+<a name="//apple_ref/cpp/Guide/Hide attributes, methods..." class="dashAnchor"></a><h2 id="Hide">Hide attributes, methods...</h2>
+You can parameterize the display of classes using the <code>hide/show</code>
+command.
+<p>
+The basic command is: <code>hide empty members</code>. This
+command will hide attributes or methods if they are empty.
+</p><p>
+Instead of <code>empty members</code>, you can use:
+<ul>
+	<li><code>empty fields</code> or <code>empty attributes</code> for
+	empty fields,
+	</li><li><code>empty methods</code> for empty methods,
+	</li><li><code>fields</code> or <code>attributes</code> which will hide
+	fields, even if they are described,
+	</li><li><code>methods</code> which will hide methods, even if they are
+	described,
+	</li><li><code>members</code> which will hide fields <u>and</u> methods,
+	even if they are described,
+	</li><li><code>circle</code> for the circled character in front of
+	class name,
+	</li><li><code>stereotype</code> for the stereotype.
+</li></ul>
+You can also provide, just after the <code>hide</code> or <code>show</code>
+keyword:
+<ul>
+	<li><code>class</code> for all classes,
+	</li><li><code>interface</code> for all interfaces,
+	</li><li><code>enum</code> for all enums,
+	</li><li><code>&lt;&lt;foo1&gt;&gt;</code> for classes which are
+	stereotyped with <i>foo1</i>,
+	</li><li>an existing class name.
+</li></ul>
+
+You can use several <code>show/hide</code> commands to define rules and
+exceptions.
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+class Dummy1 {
+  +myMethods()
+}
+
+class Dummy2 {
+  +hiddenMethod()
+}
+
+class Dummy3 &lt;&lt;Serializable&gt;&gt; {
+	String name
+}
+
+hide members
+hide &lt;&lt;Serializable&gt;&gt; circle
+show Dummy1 methods
+show &lt;&lt;Serializable&gt;&gt; fields
+
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/classes_014.png"></td>
+	</tr>
+</table>
+
+
+</p><a name="//apple_ref/cpp/Guide/Hide classes" class="dashAnchor"></a><h2 id="Hideclass">Hide classes</h2>
+
+You can also use the <code>show/hide</code> commands to hide classes.
+<p>
+This may be useful if you define a large <a href="preprocessing.html">!included file</a>,
+and if you want to hide come classes after <a href="preprocessing.html">file inclusion</a>.
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+class Foo1
+class Foo2
+
+Foo2 *-- Foo1
+
+hide Foo2
+
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/classes_015.png"></td>
+	</tr>
+</table>
+
+
+</p><a name="//apple_ref/cpp/Guide/Use generics" class="dashAnchor"></a><h2 id="Generic">Use generics</h2>
+
+You can also use bracket <code>&lt;</code> and <code>&gt;</code> to define generics usage in a class.
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+class Foo&lt;? extends Element&gt; {
+  int size()
+}
+Foo *- Element
+
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/classes_016.png"></td>
+	</tr>
+</table>
+
+
+<a name="//apple_ref/cpp/Guide/Specific Spot" class="dashAnchor"></a><h2 id="Specific">Specific Spot</h2>
+Usually, a spotted character (C, I, E or A) is used for classes,
+interface, enum and abstract classes.
+<p>
+But you can define your own spot for a class when you define the stereotype,
+adding a single character and a color, like in this example:
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+class System &lt;&lt; (S,#FF7700) Singleton &gt;&gt;
+class Date &lt;&lt; (D,orchid) &gt;&gt;
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/classes_017.png"></td>
+	</tr>
+</table>
+
+</p><a name="//apple_ref/cpp/Guide/Packages" class="dashAnchor"></a><h2 id="Using">Packages</h2>
+You can define a package using the
+<code>package</code> keyword, and optionally declare a background color
+for your package (Using a html color code or name).
+<p>
+Note that package definitions can be nested.
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+package &quot;Classic Collections&quot; #DDDDDD {
+  Object &lt;|-- ArrayList
+}
+
+package net.sourceforge.plantuml {
+  Object &lt;|-- Demo1
+  Demo1 *- Demo2
+}
+
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/classes_018.png"></td>
+	</tr>
+</table>
+
+</p><a name="//apple_ref/cpp/Guide/Packages style" class="dashAnchor"></a><h2 id="PStyle">Packages style</h2>
+
+There are different styles available for packages.
+<p>
+You can specify them either by setting a default style with the command : <code>skinparam packageStyle</code>,
+or by using a stereotype on the package:
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+package foo1 &lt;&lt;Node&gt;&gt; {
+  class Class1
+}
+
+package foo2 &lt;&lt;Rect&gt;&gt; {
+  class Class2
+}
+
+package foo3 &lt;&lt;Folder&gt;&gt; {
+  class Class3
+}
+
+package foo4 &lt;&lt;Frame&gt;&gt; {
+  class Class4
+}
+
+package foo5 &lt;&lt;Cloud&gt;&gt; {
+  class Class5
+}
+
+package foo6 &lt;&lt;Database&gt;&gt; {
+  class Class6
+}
+
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/classes_019.png"></td>
+	</tr>
+</table>
+
+<br>
+You can also define links between packages, like in the following
+example:
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+skinparam packageStyle rect
+
+package foo1.foo2 {
+}
+
+package foo1.foo2.foo3 {
+  class Object
+}
+
+foo1.foo2 +-- foo1.foo2.foo3
+
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/classes_020.png"></td>
+	</tr>
+</table>
+
+</p><a name="//apple_ref/cpp/Guide/Namespaces" class="dashAnchor"></a><h2 id="Namespaces">Namespaces</h2>
+In packages, the name of a class is the unique identifier of this class.
+It means that you cannot have two classes with the very same name in
+different packages.
+<p>
+In that case, you should use <a href="http://en.wikipedia.org/wiki/Namespace_%28computer_science%29">namespaces</a>
+instead of packages.
+</p><p>
+You can refer to classes from other namespaces by fully qualify
+them. Classes from the default namespace are qualified with a starting
+dot.
+</p><p>
+Note that you don&apos;t have to explicitly create namespace : a fully
+qualified class is automatically put in the right namespace.
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+class BaseClass
+
+namespace net.dummy #DDDDDD {
+    .BaseClass &lt;|-- Person
+    Meeting o-- Person
+    
+    .BaseClass &lt;|- Meeting
+}
+
+namespace net.foo {
+  net.dummy.Person  &lt;|- Person
+  .BaseClass &lt;|-- Person
+
+  net.dummy.Meeting o-- Person
+}
+
+BaseClass &lt;|-- net.unused.Person
+
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/classes_021.png"></td>
+	</tr>
+</table>
+
+</p><a name="//apple_ref/cpp/Guide/Automatic namespace creation" class="dashAnchor"></a><h2 id="AutomaticNamespace">Automatic namespace creation</h2>
+
+You can define another separator (other than the dot) using
+the command : <code>set namespaceSeparator ???</code>.
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+set namespaceSeparator ::
+class X1::X2::foo {
+  some info
+}
+
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/classes_022.png"></td>
+	</tr>
+</table>
+
+You can disable automatic package creation using the command
+<code>set namespaceSeparator none</code>.
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+set namespaceSeparator none
+class X1.X2.foo {
+  some info
+}
+
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/classes_023.png"></td>
+	</tr>
+</table>
+
+
+
+<a name="//apple_ref/cpp/Guide/Lollipop interface" class="dashAnchor"></a><h2 id="Lollipop">Lollipop interface</h2>
+
+You can also define lollipops interface on classes, using the following
+syntax:
+<ul>
+	<li><code>bar ()- foo</code></li>
+	<li><code>bar ()-- foo</code></li>
+	<li><code>foo -() bar</code></li>
+</ul>
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+class foo
+bar ()- foo
+@enduml
+</pre></td>
+		<td><img border="2" src="imgp/classes_024.png"></td>
+	</tr>
+</table>
+
+<a name="//apple_ref/cpp/Guide/Changing arrows direction" class="dashAnchor"></a><h2 id="Direction">Changing arrows direction</h2>
+By default, links between classes have two dashes <code>--</code> and are vertically oriented.
+It is possible to use horizontal link by putting a single dash (or dot) like this:
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+Room o- Student
+Room *-- Chair
+@enduml
+</pre></td>
+		<td><img border="2" src="imgp/classes_025.png"></td>
+	</tr>
+</table>
+
+You can also change directions by reversing the link:
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+Student -o Room
+Chair --* Room
+@enduml
+</pre></td>
+		<td><img border="2" src="imgp/classes_026.png"></td>
+	</tr>
+</table>
+
+It is also possible to change arrow direction by adding <code>left</code>, <code>right</code>, <code>up</code>
+or <code>down</code> keywords inside the arrow:
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+foo -left-&gt; dummyLeft 
+foo -right-&gt; dummyRight 
+foo -up-&gt; dummyUp 
+foo -down-&gt; dummyDown
+@enduml
+</pre></td>
+		<td><img border="2" src="imgp/classes_027.png"></td>
+	</tr>
+</table>
+
+You can shorten the arrow by using only the first character of the direction (for example, <code>-d-</code> instead of
+<code>-down-</code>)
+or the two first characters (<code>-do-</code>).
+<p>
+Please note that you should not abuse this functionality : <i>Graphviz</i> gives usually good results without tweaking. 
+
+</p><a name="//apple_ref/cpp/Guide/Title the diagram" class="dashAnchor"></a><h2 id="Title_diagram">Title the diagram</h2>
+The <code>title</code> keyword is used to put a title.
+<p>
+You can use <code>title</code> and <code>end title</code>
+keywords for a longer title, as in sequence diagrams.
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+title Simple &lt;b&gt;example&lt;/b&gt;\nof title 
+Object &lt;|-- ArrayList
+
+@enduml
+</pre></td>
+		<td><img border="2" src="imgp/classes_028.png"></td>
+	</tr>
+</table>
+
+</p><a name="//apple_ref/cpp/Guide/Legend the diagram" class="dashAnchor"></a><h2 id="Legend">Legend the diagram</h2>
+The <code>legend</code> and <code>end legend</code> are keywords is used to put a legend.
+<p>
+You can optionally specify to have <code>left</code>, <code>right</code> or <code>center</code>
+alignment for the legend.
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+Object &lt;|- ArrayList
+
+legend right
+  &lt;b&gt;Object&lt;/b&gt; and &lt;b&gt;ArrayList&lt;/b&gt;
+  are simple class
+endlegend
+
+@enduml
+</pre></td>
+		<td><img border="2" src="imgp/classes_029.png"></td>
+	</tr>
+</table>
+
+
+</p><a name="//apple_ref/cpp/Guide/Association classes" class="dashAnchor"></a><h2 id="Association_classes">Association classes</h2>
+You can define <i>association class</i> after that a relation has been
+defined between two classes, like in this example:
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+class Student {
+  Name
+}
+Student &quot;0..*&quot; - &quot;1..*&quot; Course
+(Student, Course) .. Enrollment
+
+class Enrollment {
+  drop()
+  cancel()
+}
+@enduml
+</pre></td>
+		<td><img border="2" src="imgp/classes_030.png"></td>
+	</tr>
+</table>
+
+You can define it in another direction:
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+class Student {
+  Name
+}
+Student &quot;0..*&quot; -- &quot;1..*&quot; Course
+(Student, Course) . Enrollment
+
+class Enrollment {
+  drop()
+  cancel()
+}
+@enduml
+</pre></td>
+		<td><img border="2" src="imgp/classes_031.png"></td>
+	</tr>
+</table>
+
+<a name="//apple_ref/cpp/Guide/Skinparam" class="dashAnchor"></a><h2 id="Skinparam">Skinparam</h2>
+
+You can use the <code><a href="skinparam.html">skinparam</a></code>
+command to change colors and fonts for the drawing.
+<p>
+You can use this command :
+<ul>
+	<li>In the diagram definition, like any other commands,
+	</li><li>In an <a href="preprocessing.html">included file</a>,
+	</li><li>In a configuration file, provided in the <a href="command_line.html">command line</a> or the <a href="ant_task.html">ANT task</a>.
+</li></ul>
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+skinparam class {
+	BackgroundColor PaleGreen
+	ArrowColor SeaGreen
+	BorderColor SpringGreen
+}
+skinparam stereotypeCBackgroundColor YellowGreen
+
+Class01 &quot;1&quot; *-- &quot;many&quot; Class02 : contains
+
+Class03 o-- Class04 : aggregation
+
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/classes_032.png"></td>
+	</tr>
+</table>
+
+</p><a name="//apple_ref/cpp/Guide/Skinned Stereotypes" class="dashAnchor"></a><h2 id="SkinnedStereotypes">Skinned Stereotypes</h2>
+
+You can define specific color and fonts for stereotyped classes.
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+skinparam class {
+	BackgroundColor PaleGreen
+	ArrowColor SeaGreen
+	BorderColor SpringGreen
+	BackgroundColor&lt;&lt;Foo&gt;&gt; Wheat
+	BorderColor&lt;&lt;Foo&gt;&gt; Tomato
+}
+skinparam stereotypeCBackgroundColor YellowGreen
+skinparam stereotypeCBackgroundColor&lt;&lt; Foo &gt;&gt; DimGray
+
+Class01 &lt;&lt; Foo &gt;&gt;
+Class01 &quot;1&quot; *-- &quot;many&quot; Class02 : contains
+
+Class03&lt;&lt;Foo&gt;&gt; o-- Class04 : aggregation
+
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/classes_033.png"></td>
+	</tr>
+</table>
+
+
+<a name="//apple_ref/cpp/Guide/Color gradient" class="dashAnchor"></a><h2 id="gradient">Color gradient</h2>
+
+It&apos;s possible to declare individual color for classes or note using the # notation.
+<br>
+You can use either <a href="http://www.w3schools.com/HTML/html_colornames.asp">standard color name</a>
+or RGB code.
+<p>
+You can also use color gradient in background, with the following syntax:
+two colors names separated either by:
+<ul>
+<li><code>|</code>,
+</li><li><code>/</code>,
+</li><li><code>\</code>,
+</li><li>or <code>-</code>
+</li></ul>
+depending the direction of the gradient.
+
+For example, you could have:
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+skinparam backgroundcolor AntiqueWhite/Gold
+skinparam classBackgroundColor Wheat|CornflowerBlue
+
+class Foo #red-green
+note left of Foo #blue\9932CC {
+  this is my
+  note on this class
+}
+
+package example #GreenYellow/LightGoldenRodYellow {
+  class Dummy
+}
+
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/classes_034.png"></td>
+	</tr>
+</table>
+
+
+</p><a name="//apple_ref/cpp/Guide/Splitting large files" class="dashAnchor"></a><h2 id="Splitting">Splitting large files</h2>
+Sometimes, you will get some very large image files.
+<p>
+You can use the &quot;<code>page (hpages)x(vpages)</code>&quot; command to
+split the generated image into several files :
+</p><p>
+<code>hpages</code> is a number that indicated the number of
+horizontal pages,
+ and <code>vpages</code> is a number that indicated the
+number of vertical pages.
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td colspan="2" class="scriptplantu"><pre>
+@startuml
+&apos; Split into 4 pages
+page 2x2
+
+class BaseClass
+
+namespace net.dummy #DDDDDD {
+    .BaseClass &lt;|-- Person
+    Meeting o-- Person
+    
+    .BaseClass &lt;|- Meeting
+
+}
+
+namespace net.foo {
+  net.dummy.Person  &lt;|- Person
+  .BaseClass &lt;|-- Person
+
+  net.dummy.Meeting o-- Person
+}
+
+BaseClass &lt;|-- net.unused.Person
+@enduml
+		</pre></td>
+	</tr>
+	<tr>
+		<td><img border="2" src="imgp/classes_035.png"></td>
+		<td><img border="2" src="imgp/classes_035_002.png"></td>
+	</tr>
+	<tr>
+		<td><img border="2" src="imgp/classes_035_001.png"></td>
+		<td><img border="2" src="imgp/classes_035_003.png"></td>
+	</tr>
+</table>
+
+
+
+</p><p>
+
+
+
+
+
+</p>

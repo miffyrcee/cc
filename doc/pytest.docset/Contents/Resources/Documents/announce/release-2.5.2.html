@@ -1,0 +1,123 @@
+
+
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>pytest-2.5.2: fixes &#8212; pytest documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments_pytest.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="pytest-2.5.1: fixes and new home page styling" href="release-2.5.1.html" />
+    <link rel="prev" title="pytest-2.6.0: shorter tracebacks, new warning system, test runner compat" href="release-2.6.0.html" />
+  <script>DOCUMENTATION_OPTIONS.URL_ROOT = '../';</script>
+   
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="release-2.5.1.html" title="pytest-2.5.1: fixes and new home page styling"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="release-2.6.0.html" title="pytest-2.6.0: shorter tracebacks, new warning system, test runner compat"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../contents.html">pytest-6.2</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Release announcements</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">pytest-2.5.2: fixes</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="pytest-2-5-2-fixes">
+<h1>pytest-2.5.2: fixes<a class="headerlink" href="#pytest-2-5-2-fixes" title="Permalink to this headline">¶</a></h1>
+<p>pytest is a mature Python testing tool with more than 1000 tests
+against itself, passing on many different interpreters and platforms.</p>
+<p>The 2.5.2 release fixes a few bugs with two maybe-bugs remaining and
+actively being worked on (and waiting for the bug reporter’s input).
+We also have a new contribution guide thanks to Piotr Banaszkiewicz
+and others.</p>
+<p>See docs at:</p>
+<blockquote>
+<div><p><a class="reference external" href="http://pytest.org">http://pytest.org</a></p>
+</div></blockquote>
+<p>As usual, you can upgrade from pypi via:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">U</span> <span class="n">pytest</span>
+</pre></div>
+</div>
+<p>Thanks to the following people who contributed to this release:</p>
+<blockquote>
+<div><p>Anatoly Bubenkov
+Ronny Pfannschmidt
+Floris Bruynooghe
+Bruno Oliveira
+Andreas Pelme
+Jurko Gospodnetić
+Piotr Banaszkiewicz
+Simon Liedtke
+lakka
+Lukasz Balcerzak
+Philippe Muller
+Daniel Hahler</p>
+</div></blockquote>
+<p>have fun,
+holger krekel</p>
+<div class="section" id="id1">
+<h2>2.5.2<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>fix issue409 – better interoperate with cx_freeze by not
+trying to import from collections.abc which causes problems
+for py27/cx_freeze.  Thanks Wolfgang L. for reporting and tracking it down.</p></li>
+<li><p>fixed docs and code to use “pytest” instead of “py.test” almost everywhere.
+Thanks Jurko Gospodnetic for the complete PR.</p></li>
+<li><p>fix issue425: mention at end of “py.test -h” that –markers
+and –fixtures work according to specified test path (or current dir)</p></li>
+<li><p>fix issue413: exceptions with unicode attributes are now printed
+correctly also on python2 and with pytest-xdist runs. (the fix
+requires py-1.4.20)</p></li>
+<li><p>copy, cleanup and integrate py.io capture
+from pylib 1.4.20.dev2 (rev 13d9af95547e)</p></li>
+<li><p>address issue416: clarify docs as to conftest.py loading semantics</p></li>
+<li><p>fix issue429: comparing byte strings with non-ascii chars in assert
+expressions now work better.  Thanks Floris Bruynooghe.</p></li>
+<li><p>make capfd/capsys.capture private, its unused and shouldn’t be exposed</p></li>
+</ul>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+      </div>
+  <span id="sidebar-top"></span>
+      <div class="clearer"></div>
+    </div>
+  
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2015–2020, holger krekel and pytest-dev team.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
+    </div>
+  <script src="../_static/version_warning_offset.js"></script>
+
+  </body>
+</html>

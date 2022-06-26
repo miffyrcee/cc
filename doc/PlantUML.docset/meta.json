@@ -1,0 +1,13 @@
+{
+    "feed_url": "https://zealusercontributions.vercel.app/api/docsets/PlantUML.xml",
+    "name": "PlantUML",
+    "title": "PlantUML",
+    "urls": [
+        "https://kapeli.com/feeds/zzz/user_contributed/build/PlantUML/PlantUML.tgz",
+        "https://sanfrancisco.kapeli.com/feeds/zzz/user_contributed/build/PlantUML/PlantUML.tgz",
+        "https://newyork.kapeli.com/feeds/zzz/user_contributed/build/PlantUML/PlantUML.tgz",
+        "https://london.kapeli.com/feeds/zzz/user_contributed/build/PlantUML/PlantUML.tgz",
+        "https://frankfurt.kapeli.com/feeds/zzz/user_contributed/build/PlantUML/PlantUML.tgz"
+    ],
+    "version": "/V8011"
+}

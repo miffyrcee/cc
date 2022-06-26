@@ -1,0 +1,109 @@
+
+
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>pytest-2.2.2: bug fixes &#8212; pytest documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments_pytest.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="pytest-2.2.1: bug fixes, perfect teardowns" href="release-2.2.1.html" />
+    <link rel="prev" title="pytest-2.2.4: bug fixes, better junitxml/unittest/python3 compat" href="release-2.2.4.html" />
+  <script>DOCUMENTATION_OPTIONS.URL_ROOT = '../';</script>
+   
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="release-2.2.1.html" title="pytest-2.2.1: bug fixes, perfect teardowns"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="release-2.2.4.html" title="pytest-2.2.4: bug fixes, better junitxml/unittest/python3 compat"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../contents.html">pytest-6.2</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Release announcements</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">pytest-2.2.2: bug fixes</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="pytest-2-2-2-bug-fixes">
+<h1>pytest-2.2.2: bug fixes<a class="headerlink" href="#pytest-2-2-2-bug-fixes" title="Permalink to this headline">¶</a></h1>
+<p>pytest-2.2.2 (updated to 2.2.3 to fix packaging issues) is a minor
+backward-compatible release of the versatile py.test testing tool.   It
+contains bug fixes and a few refinements particularly to reporting with
+“–collectonly”, see below for betails.</p>
+<p>For general information see here:</p>
+<blockquote>
+<div><p><a class="reference external" href="http://pytest.org/">http://pytest.org/</a></p>
+</div></blockquote>
+<p>To install or upgrade pytest:</p>
+<blockquote>
+<div><p>pip install -U pytest # or
+easy_install -U pytest</p>
+</div></blockquote>
+<p>Special thanks for helping on this release to Ronny Pfannschmidt
+and Ralf Schmitt and the contributors of issues.</p>
+<p>best,
+holger krekel</p>
+<div class="section" id="changes-between-2-2-1-and-2-2-2">
+<h2>Changes between 2.2.1 and 2.2.2<a class="headerlink" href="#changes-between-2-2-1-and-2-2-2" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>fix issue101: wrong args to unittest.TestCase test function now
+produce better output</p></li>
+<li><p>fix issue102: report more useful errors and hints for when a
+test directory was renamed and some pyc/__pycache__ remain</p></li>
+<li><p>fix issue106: allow parametrize to be applied multiple times
+e.g. from module, class and at function level.</p></li>
+<li><p>fix issue107: actually perform session scope finalization</p></li>
+<li><p>don’t check in parametrize if indirect parameters are funcarg names</p></li>
+<li><p>add chdir method to monkeypatch funcarg</p></li>
+<li><p>fix crash resulting from calling monkeypatch undo a second time</p></li>
+<li><p>fix issue115: make –collectonly robust against early failure
+(missing files/directories)</p></li>
+<li><p>“-qq –collectonly” now shows only files and the number of tests in them</p></li>
+<li><p>“-q –collectonly” now shows test ids</p></li>
+<li><p>allow adding of attributes to test reports such that it also works
+with distributed testing (no upgrade of pytest-xdist needed)</p></li>
+</ul>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+      </div>
+  <span id="sidebar-top"></span>
+      <div class="clearer"></div>
+    </div>
+  
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2015–2020, holger krekel and pytest-dev team.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
+    </div>
+  <script src="../_static/version_warning_offset.js"></script>
+
+  </body>
+</html>

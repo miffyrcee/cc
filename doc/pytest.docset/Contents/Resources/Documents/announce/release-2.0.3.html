@@ -1,0 +1,102 @@
+
+
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>py.test 2.0.3: bug fixes and speed ups &#8212; pytest documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments_pytest.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="py.test 2.0.2: bug fixes, improved xfail/skip expressions, speed ups" href="release-2.0.2.html" />
+    <link rel="prev" title="py.test 2.1.0: perfected assertions and bug fixes" href="release-2.1.0.html" />
+  <script>DOCUMENTATION_OPTIONS.URL_ROOT = '../';</script>
+   
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="release-2.0.2.html" title="py.test 2.0.2: bug fixes, improved xfail/skip expressions, speed ups"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="release-2.1.0.html" title="py.test 2.1.0: perfected assertions and bug fixes"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../contents.html">pytest-6.2</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Release announcements</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">py.test 2.0.3: bug fixes and speed ups</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="py-test-2-0-3-bug-fixes-and-speed-ups">
+<h1>py.test 2.0.3: bug fixes and speed ups<a class="headerlink" href="#py-test-2-0-3-bug-fixes-and-speed-ups" title="Permalink to this headline">¶</a></h1>
+<p>Welcome to pytest-2.0.3, a maintenance and bug fix release of pytest,
+a mature testing tool for Python, supporting CPython 2.4-3.2, Jython
+and latest PyPy interpreters.  See the extensive docs with tested examples here:</p>
+<blockquote>
+<div><p><a class="reference external" href="http://pytest.org/">http://pytest.org/</a></p>
+</div></blockquote>
+<p>If you want to install or upgrade pytest, just type one of:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">U</span> <span class="n">pytest</span> <span class="c1"># or</span>
+<span class="n">easy_install</span> <span class="o">-</span><span class="n">U</span> <span class="n">pytest</span>
+</pre></div>
+</div>
+<p>There also is a bugfix release 1.6 of pytest-xdist, the plugin
+that enables seamless distributed and “looponfail” testing for Python.</p>
+<p>best,
+holger krekel</p>
+<div class="section" id="changes-between-2-0-2-and-2-0-3">
+<h2>Changes between 2.0.2 and 2.0.3<a class="headerlink" href="#changes-between-2-0-2-and-2-0-3" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>fix issue38: nicer tracebacks on calls to hooks, particularly early
+configure/sessionstart ones</p></li>
+<li><p>fix missing skip reason/meta information in junitxml files, reported
+via <a class="reference external" href="http://lists.idyll.org/pipermail/testing-in-python/2011-March/003928.html">http://lists.idyll.org/pipermail/testing-in-python/2011-March/003928.html</a></p></li>
+<li><p>fix issue34: avoid collection failure with “test” prefixed classes
+deriving from object.</p></li>
+<li><p>don’t require zlib (and other libs) for genscript plugin without
+–genscript actually being used.</p></li>
+<li><p>speed up skips (by not doing a full traceback representation
+internally)</p></li>
+<li><p>fix issue37: avoid invalid characters in junitxml’s output</p></li>
+</ul>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+      </div>
+  <span id="sidebar-top"></span>
+      <div class="clearer"></div>
+    </div>
+  
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2015–2020, holger krekel and pytest-dev team.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
+    </div>
+  <script src="../_static/version_warning_offset.js"></script>
+
+  </body>
+</html>

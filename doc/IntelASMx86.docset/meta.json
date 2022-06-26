@@ -1,0 +1,13 @@
+{
+    "feed_url": "https://zealusercontributions.vercel.app/api/docsets/IntelASMx86.xml",
+    "name": "IntelASMx86",
+    "title": "IntelASMx86",
+    "urls": [
+        "https://kapeli.com/feeds/zzz/user_contributed/build/IntelASMx86/IntelASMx86.tgz",
+        "https://sanfrancisco.kapeli.com/feeds/zzz/user_contributed/build/IntelASMx86/IntelASMx86.tgz",
+        "https://newyork.kapeli.com/feeds/zzz/user_contributed/build/IntelASMx86/IntelASMx86.tgz",
+        "https://london.kapeli.com/feeds/zzz/user_contributed/build/IntelASMx86/IntelASMx86.tgz",
+        "https://frankfurt.kapeli.com/feeds/zzz/user_contributed/build/IntelASMx86/IntelASMx86.tgz"
+    ],
+    "version": "2019-05-30"
+}

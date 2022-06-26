@@ -1,0 +1,89 @@
+
+
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Setting up bash completion &#8212; pytest documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments_pytest.css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Backwards Compatibility Policy" href="backwards-compatibility.html" />
+    <link rel="prev" title="Working with non-python tests" href="example/nonpython.html" />
+  <script>DOCUMENTATION_OPTIONS.URL_ROOT = './';</script>
+   
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="backwards-compatibility.html" title="Backwards Compatibility Policy"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="example/nonpython.html" title="Working with non-python tests"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="contents.html">pytest-6.2</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Setting up bash completion</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="setting-up-bash-completion">
+<span id="bash-completion"></span><h1>Setting up bash completion<a class="headerlink" href="#setting-up-bash-completion" title="Permalink to this headline">¶</a></h1>
+<p>When using bash as your shell, <code class="docutils literal notranslate"><span class="pre">pytest</span></code> can use argcomplete
+(<a class="reference external" href="https://argcomplete.readthedocs.io/">https://argcomplete.readthedocs.io/</a>) for auto-completion.
+For this <code class="docutils literal notranslate"><span class="pre">argcomplete</span></code> needs to be installed <strong>and</strong> enabled.</p>
+<p>Install argcomplete using:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo pip install <span class="s1">&#39;argcomplete&gt;=0.5.7&#39;</span>
+</pre></div>
+</div>
+<p>For global activation of all argcomplete enabled python applications run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo activate-global-python-argcomplete
+</pre></div>
+</div>
+<p>For permanent (but not global) <code class="docutils literal notranslate"><span class="pre">pytest</span></code> activation, use:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>register-python-argcomplete pytest &gt;&gt; ~/.bashrc
+</pre></div>
+</div>
+<p>For one-time activation of argcomplete for <code class="docutils literal notranslate"><span class="pre">pytest</span></code> only, use:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">eval</span> <span class="s2">&quot;</span><span class="k">$(</span>register-python-argcomplete pytest<span class="k">)</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+      </div>
+  <span id="sidebar-top"></span>
+      <div class="clearer"></div>
+    </div>
+  
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2015–2020, holger krekel and pytest-dev team.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
+    </div>
+  <script src="_static/version_warning_offset.js"></script>
+
+  </body>
+</html>

@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Component Diagram</title>
+</head>
+<body>
+
+
+
+
+
+
+
+
+
+
+
+
+<h1>Component Diagram</h1>
+
+<p>To be able to generate those diagrams, you must have <a href="graphvizdot.html">Graphviz
+software</a> installed on your machine in the default directory <code>c:\Program
+Files\GraphvizX.XX</code> or <code>/usr/bin/dot</code>.</p>
+
+<p>You can <a href="graphvizdot.html">have a look here if you have installed Graphviz somewhere else.</a>
+
+</p><p>Let&apos;s have a fews examples :
+</p><a name="//apple_ref/cpp/Guide/Components" class="dashAnchor"></a><h2 id="Component">Components</h2>
+Components must be bracketed.
+<p>
+You can also use the <code>component</code> keyword to defines a
+component.
+And you can define an alias, using the <code>as</code>
+keyword.
+This alias will be used latter, when defining relations.
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+[First component]
+[Another component] as Comp2  
+component Comp3
+component [Last\ncomponent] as Comp4
+
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/component.png"></td>
+	</tr>
+</table>
+
+</p><a name="//apple_ref/cpp/Guide/Interfaces" class="dashAnchor"></a><h2 id="Interface">Interfaces</h2>
+Interface can be defined using the <code>()</code> symbol (because this looks like a circle).
+<p>
+You can also use the <code>interface</code> keyword to defines an interface.
+And you can define an alias, using the <code>as</code> keyword.
+This alias will be used latter, when defining relations.
+</p><p>
+We will see latter that interface definition is optional.
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+() &quot;First Interface&quot;
+() &quot;Another interface&quot; as Interf2
+interface Interf3
+interface &quot;Last\ninterface&quot; as Interf4
+
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/component_001.png"></td>
+	</tr>
+</table>
+
+
+</p><a name="//apple_ref/cpp/Guide/Basic example" class="dashAnchor"></a><h2 id="Basic">Basic example</h2>
+<p>
+Links between elements are made using combinations of dotted line
+(<code>..</code>), straight line (<code>--</code>), and arrows (<code>--&gt;</code>)
+symbols.
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+DataAccess - [First Component] 
+[First Component] ..&gt; HTTP : use
+
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/component_002.png"></td>
+	</tr>
+</table>
+
+
+
+</p><a name="//apple_ref/cpp/Guide/Using notes" class="dashAnchor"></a><h2 id="Using_notes">Using notes</h2>
+You can use the 
+<code>note left of</code> , <code>note right of</code> ,
+<code>note top of</code> , <code>note bottom of</code>
+keywords to define notes related to a single object.
+
+<p>
+A note can be also define alone with the <code>note</code>
+keywords, then linked to other objects using the <code>..</code> symbol.
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+interface &quot;Data Access&quot; as DA
+
+DA - [First Component] 
+[First Component] ..&gt; HTTP : use
+
+note left of HTTP : Web Service only
+
+note right of [First Component]
+  A note can also
+  be on several lines
+end note
+
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/component_003.png"></td>
+	</tr>
+</table>
+
+
+</p><a name="//apple_ref/cpp/Guide/Grouping Components" class="dashAnchor"></a><h2 id="Packages">Grouping Components</h2>
+You can use several keywords to group components and interfaces together:
+<ul>
+<li><code>package</code></li>
+<li><code>node</code></li>
+<li><code>folder</code></li>
+<li><code>frame</code></li>
+<li><code>cloud</code></li>
+<li><code>database</code></li>
+</ul>
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+package &quot;Some Group&quot; {
+  HTTP - [First Component]
+  [Another Component]
+}
+ 
+node &quot;Other Groups&quot; {
+  FTP - [Second Component]
+  [First Component] --&gt; FTP
+} 
+
+cloud {
+  [Example 1]
+}
+
+
+database &quot;MySql&quot; {
+  folder &quot;This is my folder&quot; {
+    [Folder 3]
+  }
+  frame &quot;Foo&quot; {
+    [Frame 4]
+  }
+}
+
+
+[Another Component] --&gt; [Example 1]
+[Example 1] --&gt; [Folder 3]
+[Folder 3] --&gt; [Frame 4]
+
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/component_004.png"></td>
+	</tr>
+</table>
+
+<a name="//apple_ref/cpp/Guide/Changing arrows direction" class="dashAnchor"></a><h2 id="Direction">Changing arrows direction</h2>
+By default, links between classes have two dashes <code>--</code> and are vertically oriented.
+It is possible to use horizontal link by putting a single dash (or dot) like this:
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+[Component] --&gt; Interface1
+[Component] -&gt; Interface2
+@enduml
+</pre></td>
+		<td><img border="2" src="imgp/component_005.png"></td>
+	</tr>
+</table>
+
+You can also change directions by reversing the link:
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+Interface1 &lt;-- [Component]
+Interface2 &lt;- [Component]
+@enduml
+</pre></td>
+		<td><img border="2" src="imgp/component_006.png"></td>
+	</tr>
+</table>
+
+It is also possible to change arrow direction by adding <code>left</code>, <code>right</code>, <code>up</code>
+or <code>down</code> keywords inside the arrow:
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+[Component] -left-&gt; left 
+[Component] -right-&gt; right 
+[Component] -up-&gt; up
+[Component] -down-&gt; down
+@enduml
+</pre></td>
+		<td><img border="2" src="imgp/component_007.png"></td>
+	</tr>
+</table>
+
+You can shorten the arrow by using only the first character of the direction (for example, <code>-d-</code> instead of
+<code>-down-</code>)
+or the two first characters (<code>-do-</code>).
+<p>
+Please note that you should not abuse this functionality : <i>Graphviz</i> gives usually good results without tweaking.
+
+
+
+</p><a name="//apple_ref/cpp/Guide/Title the diagram" class="dashAnchor"></a><h2 id="Title_diagram">Title the diagram</h2>
+The <code>title</code> keywords is used to put a title.
+<p>
+You can use <code>title</code> and <code>end title</code>
+keywords for a longer title, as in sequence diagrams.
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+title Very simple component\ndiagram
+
+interface &quot;Data Access&quot; as DA
+
+DA - [First Component] 
+[First Component] ..&gt; HTTP : use
+
+@enduml
+</pre></td>
+		<td><img border="2" src="imgp/component_008.png"></td>
+	</tr>
+</table>
+
+</p><a name="//apple_ref/cpp/Guide/Use UML2 notation" class="dashAnchor"></a><h2 id="uml2">Use UML2 notation</h2>
+The <code>skinparam componentStyle uml2</code> command is used to switch to UML2 notation.
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+skinparam componentStyle uml2
+
+interface &quot;Data Access&quot; as DA
+
+DA - [First Component] 
+[First Component] ..&gt; HTTP : use
+
+@enduml
+</pre></td>
+		<td><img border="2" src="imgp/component_009.png"></td>
+	</tr>
+</table>
+
+
+
+<a name="//apple_ref/cpp/Guide/Skinparam" class="dashAnchor"></a><h2 id="Skinparam">Skinparam</h2>
+
+You can use the <code><a href="skinparam.html">skinparam</a></code>
+command to change colors and fonts for the drawing.
+<p>
+You can use this command :
+<ul>
+	<li>In the diagram definition, like any other commands,
+	</li><li>In an <a href="preprocessing.html">included file</a>,
+	</li><li>In a configuration file, provided in the <a href="command_line.html">command line</a> or the <a href="ant_task.html">ANT task</a>.
+</li></ul>
+
+You can define specific color and fonts for stereotyped components and interfaces.
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+skinparam component {
+  FontSize 13
+  InterfaceBackgroundColor RosyBrown
+  InterfaceBorderColor orange
+  BackgroundColor&lt;&lt;Apache&gt;&gt; Red
+  BorderColor&lt;&lt;Apache&gt;&gt; #FF6655
+  FontName Courier
+  BorderColor black
+  BackgroundColor gold
+  ArrowFontName Impact
+  ArrowColor #FF6655
+  ArrowFontColor #777777
+}
+
+() &quot;Data Access&quot; as DA
+
+DA - [First Component] 
+[First Component] ..&gt; () HTTP : use
+HTTP - [Web Server] &lt;&lt; Apache &gt;&gt;
+
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/component_010.png"></td>
+	</tr>
+</table>
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+[AA] &lt;&lt;static lib&gt;&gt;
+[BB] &lt;&lt;shared lib&gt;&gt;
+[CC] &lt;&lt;static lib&gt;&gt;
+
+node node1
+node node2 &lt;&lt;shared node&gt;&gt;
+database Production
+
+skinparam component {
+    backgroundColor&lt;&lt;static lib&gt;&gt; DarkKhaki
+    backgroundColor&lt;&lt;shared lib&gt;&gt; Green
+}
+
+skinparam node {
+	borderColor Green
+	backgroundColor Yellow
+	backgroundColor&lt;&lt;shared node&gt;&gt; Magenta
+}
+skinparam databaseBackgroundColor Aqua
+
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/component_011.png"></td>
+	</tr>
+</table>
+</p><p>
+
+
+
+
+
+</p>

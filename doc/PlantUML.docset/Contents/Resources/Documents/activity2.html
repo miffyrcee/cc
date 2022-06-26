@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Activity Diagram (beta)</title>
+</head>
+<body>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h1>Activity Diagram (beta)</h1>
+
+Current <a href="activity.html">syntax for activity diagram</a> has several limitations and
+drawbacks (for example, it&apos;s difficult to maintain).
+<p>
+So a completely new syntax and implementation is proposed as <b>beta version</b> to users (starting with V7947), so that
+we could define a better format and syntax.
+<br>
+Another advantage of this new implementation is that it&apos;s done without the need of having
+Graphviz installed (as for sequence diagrams).
+</p><p>
+The new syntax will replace the old one. However, for compatibility reason, the old syntax will still
+be recognized, to ensure <i>ascending compatibility</i>.
+<br>
+Users are simply encouraged to migrate to the new syntax.
+</p><p>
+
+</p><a name="//apple_ref/cpp/Guide/Simple Activity" class="dashAnchor"></a><h2 id="simple">Simple Activity</h2>
+Activities label starts with <code>:</code> and ends with <code>;</code>.
+<p>
+Text formatting can be done using <a href="creole.html">creole wiki syntax</a>.
+</p><p>
+They are implicitly linked in their definition order.
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+:Hello world;
+:This is on defined on
+several **lines**;
+@enduml
+        </pre></td>
+		<td><img border="2" src="imgp/activity2.png"></td>
+	</tr>
+</table>
+
+
+</p><a name="//apple_ref/cpp/Guide/Start/Stop" class="dashAnchor"></a><h2 id="startstop">Start/Stop</h2>
+You can use <code>start</code> and <code>stop</code> keywords to denote the
+beginning and the end of a diagram.
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+start
+:Hello world;
+:This is on defined on
+several **lines**;
+stop
+@enduml
+        </pre></td>
+		<td><img border="2" src="imgp/activity2_001.png"></td>
+	</tr>
+</table>
+
+
+<a name="//apple_ref/cpp/Guide/Conditional" class="dashAnchor"></a><h2 id="conditional">Conditional</h2>
+You can use <code>if</code>, <code>then</code> and <code>else</code> keywords to put tests if your diagram.
+Labels can be provided using parentheses.
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+start
+
+if (Graphviz installed?) then (yes)
+  :process all\ndiagrams;
+else (no)
+  :process only
+  __sequence__ and __activity__ diagrams;
+endif
+
+stop
+
+@enduml
+        </pre></td>
+		<td><img border="2" src="imgp/activity2_002.png"></td>
+	</tr>
+</table>
+
+You can use the <code>elseif</code> keyword to have several tests :
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+start
+if (condition A) then (yes)
+  :Text 1;
+elseif (condition B) then (yes)
+  :Text 2;
+  stop
+elseif (condition C) then (yes)
+  :Text 3;
+elseif (condition D) then (yes)
+  :Text 4;
+else (nothing)
+  :Text else;
+endif
+stop
+@enduml
+        </pre></td>
+		<td><img border="2" src="imgp/activity2_003.png"></td>
+	</tr>
+</table>
+
+<a name="//apple_ref/cpp/Guide/Repeat loop" class="dashAnchor"></a><h2 id="repeat">Repeat loop</h2>
+You can use <code>repeat</code> and <code>repeatwhile</code> keywords to have repeat loops.
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+start
+
+repeat
+  :read data;
+  :generate diagrams;
+repeat while (more data?)
+
+stop
+
+@enduml
+        </pre></td>
+		<td><img border="2" src="imgp/activity2_004.png"></td>
+	</tr>
+</table>
+
+<a name="//apple_ref/cpp/Guide/While loop" class="dashAnchor"></a><h2 id="while">While loop</h2>
+You can use <code>while</code> and <code>end while</code> keywords to have repeat loops.
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+start
+
+while (data available?)
+  :read data;
+  :generate diagrams;
+endwhile
+
+stop
+
+@enduml
+        </pre></td>
+		<td><img border="2" src="imgp/activity2_005.png"></td>
+	</tr>
+</table>
+
+It is possible to provide a label after the <code>endwhile</code> keyword, or using the <code>is</code> keyword.
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+while (check filesize ?) is (not empty)
+  :read file;
+endwhile (empty)
+:close file;
+@enduml
+        </pre></td>
+		<td><img border="2" src="imgp/activity2_006.png"></td>
+	</tr>
+</table>
+
+
+<a name="//apple_ref/cpp/Guide/Parallel processing" class="dashAnchor"></a><h2 id="fork">Parallel processing</h2>
+You can use <code>fork</code>, <code>fork again</code> and <code>end fork</code> keywords to denote parallel processing.
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+start
+
+if (multiprocessor?) then (yes)
+  fork
+    :Treatment 1;
+  fork again
+    :Treatment 2;
+  end fork
+else (monoproc)
+  :Treatment 1;
+  :Treatment 2;
+endif
+
+
+@enduml
+        </pre></td>
+		<td><img border="2" src="imgp/activity2_007.png"></td>
+	</tr>
+</table>
+
+<a name="//apple_ref/cpp/Guide/Notes" class="dashAnchor"></a><h2 id="note">Notes</h2>
+Text formatting can be done using <a href="creole.html">creole wiki syntax</a>.
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+start
+:foo1;
+note left: This is a note
+:foo2;
+note right
+  This note is on several
+  //lines// and can
+  contain &lt;b&gt;HTML&lt;/b&gt;
+  ====
+  * Calling the method &quot;&quot;foo()&quot;&quot; is prohibited
+end note
+stop
+
+@enduml
+        </pre></td>
+		<td><img border="2" src="imgp/activity2_008.png"></td>
+	</tr>
+</table>
+
+
+<a name="//apple_ref/cpp/Guide/Title &amp; Legend" class="dashAnchor"></a><h2 id="title">Title &amp; Legend</h2>
+You can add title, header, footer, legend to a diagram:
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+title this is my title
+if (condition?) then (yes)
+  :yes;
+else (no)
+  :no;
+  note right
+    this is a note
+  end note
+endif
+stop
+
+legend
+this is the legend
+endlegend
+
+footer dummy footer
+header
+  this is
+  a long __dummy__ header
+end header
+
+@enduml
+        </pre></td>
+		<td><img border="2" src="imgp/activity2_009.png"></td>
+	</tr>
+</table>
+
+<a name="//apple_ref/cpp/Guide/Colors" class="dashAnchor"></a><h2 id="color">Colors</h2>
+You can use specify a <a href="http://www.w3schools.com/HTML/html_colornames.asp">color</a> for some activities.
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+start
+:starting progress;
+#HotPink:reading configuration files
+These files should edited at this point!;
+#AAAAAA:ending of the process;
+
+@enduml
+        </pre></td>
+		<td><img border="2" src="imgp/activity2_010.png"></td>
+	</tr>
+</table>
+
+<a name="//apple_ref/cpp/Guide/Arrows" class="dashAnchor"></a><h2 id="arrow">Arrows</h2>
+Using the <code>-&gt;</code> notation, you can add texts to arrow, and change
+their <a href="http://www.w3schools.com/HTML/html_colornames.asp">color</a>.
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+:foo1;
+-&gt; You can put text on arrows;
+if (test) then
+  -[#blue]-&gt;
+  :foo2;
+  -[#green]-&gt; The text can
+  also be on several lines
+  and **very** long...;
+  :foo3;
+else
+  -[#black]-&gt;
+  :foo4;
+endif
+-[#gray]-&gt;
+:foo5;
+@enduml
+        </pre></td>
+		<td><img border="2" src="imgp/activity2_011.png"></td>
+	</tr>
+</table>
+
+<a name="//apple_ref/cpp/Guide/Grouping" class="dashAnchor"></a><h2 id="grouping">Grouping</h2>
+You can group activity together by defining partition:
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+start
+partition Initialization {
+    :read config file;
+    :init internal variable;
+}
+partition Running {
+    :wait for user interaction;
+    :print information;
+}
+
+stop
+@enduml
+        </pre></td>
+		<td><img border="2" src="imgp/activity2_012.png"></td>
+	</tr>
+</table>
+
+
+<a name="//apple_ref/cpp/Guide/Swimlanes" class="dashAnchor"></a><h2 id="swimlane">Swimlanes</h2>
+Using pipe <code>|</code>, you can define swimlanes.
+<br>
+It&apos;s also possible to change swimlanes <a href="http://www.w3schools.com/HTML/html_colornames.asp">color</a>.
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+|Swimlane1|
+start
+:foo1;
+|#AntiqueWhite|Swimlane2|
+:foo2;
+:foo3;
+|Swimlane1|
+:foo4;
+|Swimlane2|
+:foo5;
+stop
+@enduml
+        </pre></td>
+		<td><img border="2" src="imgp/activity2_013.png"></td>
+	</tr>
+</table>
+
+<a name="//apple_ref/cpp/Guide/Detach" class="dashAnchor"></a><h2 id="detach">Detach</h2>
+It&apos;s possible to remove an arrow using the <code>detach</code> keyword.
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+ :start;
+ fork
+   :foo1;
+   :foo2;
+ fork again
+   :foo3;
+   detach
+ endfork
+ if (foo4) then
+   :foo5;
+   detach
+ endif
+ :foo6;
+ detach
+ :foo7;
+ stop
+@enduml
+        </pre></td>
+		<td><img border="2" src="imgp/activity2_014.png"></td>
+	</tr>
+</table>
+
+<a name="//apple_ref/cpp/Guide/SDL" class="dashAnchor"></a><h2 id="sdl">SDL</h2>
+By changing the final <code>;</code> separator, you can set different rendering for the activity:
+<ul>
+<li><code>|</code></li>
+<li><code>&lt;</code></li>
+<li><code>&gt;</code></li>
+<li><code>/</code></li>
+<li><code>]</code></li>
+<li><code>}</code></li>
+</ul>
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+:Ready;
+:next(o)|
+:Receiving;
+split
+ :nak(i)&lt;
+ :ack(o)&gt;
+split again
+ :ack(i)&lt;
+ :next(o)
+ on several line|
+ :i := i + 1]
+ :ack(o)&gt;
+split again
+ :err(i)&lt;
+ :nak(o)&gt;
+split again
+ :foo/
+split again
+ :i &gt; 5}
+stop
+end split
+:finish;
+@enduml
+        </pre></td>
+		<td><img border="2" src="imgp/activity2_015.png"></td>
+	</tr>
+</table>
+
+<a name="//apple_ref/cpp/Guide/Complete example" class="dashAnchor"></a><h2 id="complete">Complete example</h2>
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+start
+:ClickServlet.handleRequest();
+:new page;
+if (Page.onSecurityCheck) then (true)
+  :Page.onInit();
+  if (isForward?) then (no)
+    :Process controls;
+    if (continue processing?) then (no)
+      stop
+    endif
+    
+    if (isPost?) then (yes)
+      :Page.onPost();
+    else (no)
+      :Page.onGet();
+    endif
+    :Page.onRender();
+  endif
+else (false)
+endif
+
+if (do redirect?) then (yes)
+  :redirect process;
+else
+  if (do forward?) then (yes)
+    :Forward request;
+  else (no)
+    :Render page template;
+  endif
+endif
+
+stop
+
+@enduml
+        </pre></td>
+		<td><img border="2" src="imgp/activity2_016.png"></td>
+	</tr>
+</table>
+
+
+<p>
+
+
+
+
+
+</p>

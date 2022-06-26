@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Object Diagram</title>
+</head>
+<body>
+
+
+
+
+
+
+
+
+
+
+
+
+<h1>Object Diagram</h1>
+
+<p>To be able to generate those diagrams, you must have <a href="graphvizdot.html">Graphviz
+software</a> installed on your machine in the default directory <code>c:\Program
+Files\GraphvizX.XX</code> or <code>/usr/bin/dot</code>.</p>
+
+<p>You can <a href="graphvizdot.html">have a look here if you have
+installed Graphviz somewhere else.</a>
+</p><p>The description of object diagram is similar to the description
+of <a href="classes.html">class diagram</a>.</p>
+
+<a name="//apple_ref/cpp/Guide/New rendering" class="dashAnchor"></a><h2>New rendering</h2>
+This page show the rendering given by the new <a href="svek.html">Svek architecture</a>.
+<p>Note that you can disable the shadowing using the <code>skinparam shadowing false</code> command.
+
+</p><a name="//apple_ref/cpp/Guide/Definition of objects" class="dashAnchor"></a><h2 id="Definition">Definition of objects</h2>
+<p>
+You define instance of objects using the <code>object</code>
+keywords.
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+object firstObject
+object &quot;My Second Object&quot; as o2
+@enduml
+		</pre></td>
+	</tr>
+	<tr>
+		<td><img border="2" src="imgp/objects.png"></td>
+	</tr>
+</table>
+
+</p><a name="//apple_ref/cpp/Guide/Relations between objects" class="dashAnchor"></a><h2 id="Relations">Relations between objects</h2>
+Relations between objects are defined using the following symbols :
+<br><br>
+
+
+
+
+
+<p>
+It is possible to replace <code>--</code> by <code>..</code> to
+have a dotted line.
+</p><p>
+Knowing those rules, it is possible to draw the following drawings.
+</p><p>
+It is possible a add a label on the relation, using &quot; <code>:</code>
+&quot;, followed by the text of the label.
+</p><p>
+For cardinality, you can use double-quotes <code>&quot;&quot;</code> on
+each side of the relation.
+
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+object Object01
+object Object02
+object Object03
+object Object04
+object Object05
+object Object06
+object Object07
+object Object08
+
+Object01 &lt;|-- Object02
+Object03 *-- Object04
+Object05 o-- &quot;4&quot; Object06
+Object07 .. Object08 : some labels
+@enduml
+		</pre></td>
+	</tr>
+	<tr>
+		<td><img border="2" src="imgp/objects_001.png"></td>
+	</tr>
+</table>
+
+</p><a name="//apple_ref/cpp/Guide/Adding fields" class="dashAnchor"></a><h2 id="Adding">Adding fields</h2>
+To declare fields, you can use the symbol <code>&quot;:&quot;</code> followed by
+the field&apos;s name.
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+object user
+
+user : name = &quot;Dummy&quot;
+user : id = 123
+
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/objects_002.png"></td>
+	</tr>
+</table>
+
+It is also possible to ground between brackets <code>{}</code> all
+fields.
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+object user {
+  name = &quot;Dummy&quot;
+  id = 123
+}
+
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/objects_003.png"></td>
+	</tr>
+</table>
+
+<a name="//apple_ref/cpp/Guide/Common features with class diagrams" class="dashAnchor"></a><h2>Common features with class diagrams</h2>
+<ul>
+	<li><a href="classes.html#Visibility">Visibility</a>
+	</li><li><a href="classes.html#Notes">Defines notes</a>
+	</li><li><a href="classes.html#Using">Use packages</a>
+	</li><li><a href="classes.html#Title_diagram">Title the diagram</a>
+	</li><li><a href="classes.html#Skinparam">Skin the output</a>
+	</li><li><a href="classes.html#Splitting">Split the image</a>
+</li></ul>
+
+<p>
+
+
+
+
+
+</p>

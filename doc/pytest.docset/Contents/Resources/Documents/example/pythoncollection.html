@@ -1,0 +1,338 @@
+
+
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Changing standard (Python) test discovery &#8212; pytest documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments_pytest.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Working with non-python tests" href="nonpython.html" />
+    <link rel="prev" title="A session-fixture which can look at all collected tests" href="special.html" />
+  <script>DOCUMENTATION_OPTIONS.URL_ROOT = '../';</script>
+   
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="nonpython.html" title="Working with non-python tests"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="special.html" title="A session-fixture which can look at all collected tests"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../contents.html">pytest-6.2</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Examples and customization tricks</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Changing standard (Python) test discovery</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="changing-standard-python-test-discovery">
+<h1>Changing standard (Python) test discovery<a class="headerlink" href="#changing-standard-python-test-discovery" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="ignore-paths-during-test-collection">
+<h2>Ignore paths during test collection<a class="headerlink" href="#ignore-paths-during-test-collection" title="Permalink to this headline">¶</a></h2>
+<p>You can easily ignore certain test directories and modules during collection
+by passing the <code class="docutils literal notranslate"><span class="pre">--ignore=path</span></code> option on the cli. <code class="docutils literal notranslate"><span class="pre">pytest</span></code> allows multiple
+<code class="docutils literal notranslate"><span class="pre">--ignore</span></code> options. Example:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>tests/
+|-- example
+|   |-- test_example_01.py
+|   |-- test_example_02.py
+|   &#39;-- test_example_03.py
+|-- foobar
+|   |-- test_foobar_01.py
+|   |-- test_foobar_02.py
+|   &#39;-- test_foobar_03.py
+&#39;-- hello
+    &#39;-- world
+        |-- test_world_01.py
+        |-- test_world_02.py
+        &#39;-- test_world_03.py
+</pre></div>
+</div>
+<p>Now if you invoke <code class="docutils literal notranslate"><span class="pre">pytest</span></code> with <code class="docutils literal notranslate"><span class="pre">--ignore=tests/foobar/test_foobar_03.py</span> <span class="pre">--ignore=tests/hello/</span></code>,
+you will see that <code class="docutils literal notranslate"><span class="pre">pytest</span></code> only collects test-modules, which do not match the patterns specified:</p>
+<div class="highlight-pytest notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Bold">=========================== test session starts ============================</span>
+platform linux -- Python 3.x.y, pytest-5.x.y, py-1.x.y, pluggy-0.x.y
+rootdir: $REGENDOC_TMPDIR, inifile:
+collected 5 items
+
+tests/example/test_example_01.py <span class=" -Color -Color-Green">.</span>                                   <span class=" -Color -Color-Green">[ 20%]</span>
+tests/example/test_example_02.py <span class=" -Color -Color-Green">.</span>                                   <span class=" -Color -Color-Green">[ 40%]</span>
+tests/example/test_example_03.py <span class=" -Color -Color-Green">.</span>                                   <span class=" -Color -Color-Green">[ 60%]</span>
+tests/foobar/test_foobar_01.py <span class=" -Color -Color-Green">.</span>                                     <span class=" -Color -Color-Green">[ 80%]</span>
+tests/foobar/test_foobar_02.py <span class=" -Color -Color-Green">.</span>                                     <span class=" -Color -Color-Green">[100%]</span>
+
+========================= 5 passed in 0.02 seconds =========================
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">--ignore-glob</span></code> option allows to ignore test file paths based on Unix shell-style wildcards.
+If you want to exclude test-modules that end with <code class="docutils literal notranslate"><span class="pre">_01.py</span></code>, execute <code class="docutils literal notranslate"><span class="pre">pytest</span></code> with <code class="docutils literal notranslate"><span class="pre">--ignore-glob='*_01.py'</span></code>.</p>
+</div>
+<div class="section" id="deselect-tests-during-test-collection">
+<h2>Deselect tests during test collection<a class="headerlink" href="#deselect-tests-during-test-collection" title="Permalink to this headline">¶</a></h2>
+<p>Tests can individually be deselected during collection by passing the <code class="docutils literal notranslate"><span class="pre">--deselect=item</span></code> option.
+For example, say <code class="docutils literal notranslate"><span class="pre">tests/foobar/test_foobar_01.py</span></code> contains <code class="docutils literal notranslate"><span class="pre">test_a</span></code> and <code class="docutils literal notranslate"><span class="pre">test_b</span></code>.
+You can run all of the tests within <code class="docutils literal notranslate"><span class="pre">tests/</span></code> <em>except</em> for <code class="docutils literal notranslate"><span class="pre">tests/foobar/test_foobar_01.py::test_a</span></code>
+by invoking <code class="docutils literal notranslate"><span class="pre">pytest</span></code> with <code class="docutils literal notranslate"><span class="pre">--deselect</span> <span class="pre">tests/foobar/test_foobar_01.py::test_a</span></code>.
+<code class="docutils literal notranslate"><span class="pre">pytest</span></code> allows multiple <code class="docutils literal notranslate"><span class="pre">--deselect</span></code> options.</p>
+</div>
+<div class="section" id="keeping-duplicate-paths-specified-from-command-line">
+<h2>Keeping duplicate paths specified from command line<a class="headerlink" href="#keeping-duplicate-paths-specified-from-command-line" title="Permalink to this headline">¶</a></h2>
+<p>Default behavior of <code class="docutils literal notranslate"><span class="pre">pytest</span></code> is to ignore duplicate paths specified from the command line.
+Example:</p>
+<div class="highlight-pytest notranslate"><div class="highlight"><pre><span></span>pytest path_a path_a
+
+...
+collected 1 item
+...
+</pre></div>
+</div>
+<p>Just collect tests once.</p>
+<p>To collect duplicate tests, use the <code class="docutils literal notranslate"><span class="pre">--keep-duplicates</span></code> option on the cli.
+Example:</p>
+<div class="highlight-pytest notranslate"><div class="highlight"><pre><span></span>pytest --keep-duplicates path_a path_a
+
+...
+collected 2 items
+...
+</pre></div>
+</div>
+<p>As the collector just works on directories, if you specify twice a single test file, <code class="docutils literal notranslate"><span class="pre">pytest</span></code> will
+still collect it twice, no matter if the <code class="docutils literal notranslate"><span class="pre">--keep-duplicates</span></code> is not specified.
+Example:</p>
+<div class="highlight-pytest notranslate"><div class="highlight"><pre><span></span>pytest test_a.py test_a.py
+
+...
+collected 2 items
+...
+</pre></div>
+</div>
+</div>
+<div class="section" id="changing-directory-recursion">
+<h2>Changing directory recursion<a class="headerlink" href="#changing-directory-recursion" title="Permalink to this headline">¶</a></h2>
+<p>You can set the <a class="reference internal" href="../reference.html#confval-norecursedirs"><code class="xref std std-confval docutils literal notranslate"><span class="pre">norecursedirs</span></code></a> option in an ini-file, for example your <code class="docutils literal notranslate"><span class="pre">pytest.ini</span></code> in the project root directory:</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="c1"># content of pytest.ini</span>
+<span class="k">[pytest]</span>
+<span class="na">norecursedirs</span> <span class="o">=</span> <span class="s">.svn _build tmp*</span>
+</pre></div>
+</div>
+<p>This would tell <code class="docutils literal notranslate"><span class="pre">pytest</span></code> to not recurse into typical subversion or sphinx-build directories or into any <code class="docutils literal notranslate"><span class="pre">tmp</span></code> prefixed directory.</p>
+</div>
+<div class="section" id="changing-naming-conventions">
+<span id="change-naming-conventions"></span><h2>Changing naming conventions<a class="headerlink" href="#changing-naming-conventions" title="Permalink to this headline">¶</a></h2>
+<p>You can configure different naming conventions by setting
+the <a class="reference internal" href="../reference.html#confval-python_files"><code class="xref std std-confval docutils literal notranslate"><span class="pre">python_files</span></code></a>, <a class="reference internal" href="../reference.html#confval-python_classes"><code class="xref std std-confval docutils literal notranslate"><span class="pre">python_classes</span></code></a> and
+<a class="reference internal" href="../reference.html#confval-python_functions"><code class="xref std std-confval docutils literal notranslate"><span class="pre">python_functions</span></code></a> in your <a class="reference internal" href="../customize.html#config-file-formats"><span class="std std-ref">configuration file</span></a>.
+Here is an example:</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="c1"># content of pytest.ini</span>
+<span class="c1"># Example 1: have pytest look for &quot;check&quot; instead of &quot;test&quot;</span>
+<span class="k">[pytest]</span>
+<span class="na">python_files</span> <span class="o">=</span> <span class="s">check_*.py</span>
+<span class="na">python_classes</span> <span class="o">=</span> <span class="s">Check</span>
+<span class="na">python_functions</span> <span class="o">=</span> <span class="s">*_check</span>
+</pre></div>
+</div>
+<p>This would make <code class="docutils literal notranslate"><span class="pre">pytest</span></code> look for tests in files that match the <code class="docutils literal notranslate"><span class="pre">check_*</span>
+<span class="pre">.py</span></code> glob-pattern, <code class="docutils literal notranslate"><span class="pre">Check</span></code> prefixes in classes, and functions and methods
+that match <code class="docutils literal notranslate"><span class="pre">*_check</span></code>. For example, if we have:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># content of check_myapp.py</span>
+<span class="k">class</span> <span class="nc">CheckMyApp</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">simple_check</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">complex_check</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+</pre></div>
+</div>
+<p>The test collection would look like this:</p>
+<div class="highlight-pytest notranslate"><div class="highlight"><pre><span></span>$ pytest --collect-only
+<span class=" -Color -Color-Bold">=========================== test session starts ============================</span>
+platform linux -- Python 3.x.y, pytest-6.x.y, py-1.x.y, pluggy-1.x.y
+cachedir: $PYTHON_PREFIX/.pytest_cache
+rootdir: $REGENDOC_TMPDIR, configfile: pytest.ini
+collected 2 items
+
+&lt;Module check_myapp.py&gt;
+  &lt;Class CheckMyApp&gt;
+      &lt;Function simple_check&gt;
+      &lt;Function complex_check&gt;
+
+======================== 2 tests collected in 0.12s ========================
+</pre></div>
+</div>
+<p>You can check for multiple glob patterns by adding a space between the patterns:</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example 2: have pytest look for files with &quot;test&quot; and &quot;example&quot;</span>
+<span class="c1"># content of pytest.ini</span>
+<span class="k">[pytest]</span>
+<span class="na">python_files</span> <span class="o">=</span> <span class="s">test_*.py example_*.py</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>the <code class="docutils literal notranslate"><span class="pre">python_functions</span></code> and <code class="docutils literal notranslate"><span class="pre">python_classes</span></code> options has no effect
+for <code class="docutils literal notranslate"><span class="pre">unittest.TestCase</span></code> test discovery because pytest delegates
+discovery of test case methods to unittest code.</p>
+</div>
+</div>
+<div class="section" id="interpreting-cmdline-arguments-as-python-packages">
+<h2>Interpreting cmdline arguments as Python packages<a class="headerlink" href="#interpreting-cmdline-arguments-as-python-packages" title="Permalink to this headline">¶</a></h2>
+<p>You can use the <code class="docutils literal notranslate"><span class="pre">--pyargs</span></code> option to make <code class="docutils literal notranslate"><span class="pre">pytest</span></code> try
+interpreting arguments as python package names, deriving
+their file system path and then running the test. For
+example if you have unittest2 installed you can type:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest --pyargs unittest2.test.test_skipping -q
+</pre></div>
+</div>
+<p>which would run the respective test module.  Like with
+other options, through an ini-file and the <a class="reference internal" href="../reference.html#confval-addopts"><code class="xref std std-confval docutils literal notranslate"><span class="pre">addopts</span></code></a> option you
+can make this change more permanently:</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="c1"># content of pytest.ini</span>
+<span class="k">[pytest]</span>
+<span class="na">addopts</span> <span class="o">=</span> <span class="s">--pyargs</span>
+</pre></div>
+</div>
+<p>Now a simple invocation of <code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">NAME</span></code> will check
+if NAME exists as an importable package/module and otherwise
+treat it as a filesystem path.</p>
+</div>
+<div class="section" id="finding-out-what-is-collected">
+<h2>Finding out what is collected<a class="headerlink" href="#finding-out-what-is-collected" title="Permalink to this headline">¶</a></h2>
+<p>You can always peek at the collection tree without running tests like this:</p>
+<div class="highlight-pytest notranslate"><div class="highlight"><pre><span></span>. $ pytest --collect-only pythoncollection.py
+<span class=" -Color -Color-Bold">=========================== test session starts ============================</span>
+platform linux -- Python 3.x.y, pytest-6.x.y, py-1.x.y, pluggy-1.x.y
+cachedir: $PYTHON_PREFIX/.pytest_cache
+rootdir: $REGENDOC_TMPDIR, configfile: pytest.ini
+collected 3 items
+
+&lt;Module CWD/pythoncollection.py&gt;
+  &lt;Function test_function&gt;
+  &lt;Class TestClass&gt;
+      &lt;Function test_method&gt;
+      &lt;Function test_anothermethod&gt;
+
+======================== 3 tests collected in 0.12s ========================
+</pre></div>
+</div>
+</div>
+<div class="section" id="customizing-test-collection">
+<span id="id1"></span><h2>Customizing test collection<a class="headerlink" href="#customizing-test-collection" title="Permalink to this headline">¶</a></h2>
+<p>You can easily instruct <code class="docutils literal notranslate"><span class="pre">pytest</span></code> to discover tests from every Python file:</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="c1"># content of pytest.ini</span>
+<span class="k">[pytest]</span>
+<span class="na">python_files</span> <span class="o">=</span> <span class="s">*.py</span>
+</pre></div>
+</div>
+<p>However, many projects will have a <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> which they don’t want to be
+imported. Moreover, there may files only importable by a specific python
+version. For such cases you can dynamically define files to be ignored by
+listing them in a <code class="docutils literal notranslate"><span class="pre">conftest.py</span></code> file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># content of conftest.py</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="n">collect_ignore</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;setup.py&quot;</span><span class="p">]</span>
+<span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+    <span class="n">collect_ignore</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;pkg/module_py2.py&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>and then if you have a module file like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># content of pkg/module_py2.py</span>
+<span class="k">def</span> <span class="nf">test_only_on_python2</span><span class="p">():</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="mi">0</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">pass</span>
+</pre></div>
+</div>
+<p>and a <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> dummy file like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># content of setup.py</span>
+<span class="mi">0</span> <span class="o">/</span> <span class="mi">0</span>  <span class="c1"># will raise exception if imported</span>
+</pre></div>
+</div>
+<p>If you run with a Python 2 interpreter then you will find the one test and will
+leave out the <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> file:</p>
+<div class="highlight-pytest notranslate"><div class="highlight"><pre><span></span>#$ pytest --collect-only
+<span class=" -Color -Color-Bold">====== test session starts ======</span>
+platform linux2 -- Python 2.7.10, pytest-2.9.1, py-1.4.31, pluggy-0.3.1
+rootdir: $REGENDOC_TMPDIR, inifile: pytest.ini
+collected 1 items
+&lt;Module &#39;pkg/module_py2.py&#39;&gt;
+  &lt;Function &#39;test_only_on_python2&#39;&gt;
+
+====== 1 tests found in 0.04 seconds ======
+</pre></div>
+</div>
+<p>If you run with a Python 3 interpreter both the one test and the <code class="docutils literal notranslate"><span class="pre">setup.py</span></code>
+file will be left out:</p>
+<div class="highlight-pytest notranslate"><div class="highlight"><pre><span></span>$ pytest --collect-only
+<span class=" -Color -Color-Bold">=========================== test session starts ============================</span>
+platform linux -- Python 3.x.y, pytest-6.x.y, py-1.x.y, pluggy-1.x.y
+cachedir: $PYTHON_PREFIX/.pytest_cache
+rootdir: $REGENDOC_TMPDIR, configfile: pytest.ini
+collected 0 items
+
+======================= no tests collected in 0.12s ========================
+</pre></div>
+</div>
+<p>It’s also possible to ignore files based on Unix shell-style wildcards by adding
+patterns to <a class="reference internal" href="../reference.html#globalvar-collect_ignore_glob"><code class="xref std std-globalvar docutils literal notranslate"><span class="pre">collect_ignore_glob</span></code></a>.</p>
+<p>The following example <code class="docutils literal notranslate"><span class="pre">conftest.py</span></code> ignores the file <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> and in
+addition all files that end with <code class="docutils literal notranslate"><span class="pre">*_py2.py</span></code> when executed with a Python 3
+interpreter:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># content of conftest.py</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="n">collect_ignore</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;setup.py&quot;</span><span class="p">]</span>
+<span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+    <span class="n">collect_ignore_glob</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;*_py2.py&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Since Pytest 2.6, users can prevent pytest from discovering classes that start
+with <code class="docutils literal notranslate"><span class="pre">Test</span></code> by setting a boolean <code class="docutils literal notranslate"><span class="pre">__test__</span></code> attribute to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Will not be discovered as a test</span>
+<span class="k">class</span> <span class="nc">TestClass</span><span class="p">:</span>
+    <span class="n">__test__</span> <span class="o">=</span> <span class="kc">False</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+      </div>
+  <span id="sidebar-top"></span>
+      <div class="clearer"></div>
+    </div>
+  
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2015–2020, holger krekel and pytest-dev team.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
+    </div>
+  <script src="../_static/version_warning_offset.js"></script>
+
+  </body>
+</html>

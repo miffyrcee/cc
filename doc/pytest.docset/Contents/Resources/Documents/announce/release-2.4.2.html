@@ -1,0 +1,101 @@
+
+
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>pytest-2.4.2: colorama on windows, plugin/tmpdir fixes &#8212; pytest documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments_pytest.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="pytest-2.4.1: fixing three regressions compared to 2.3.5" href="release-2.4.1.html" />
+    <link rel="prev" title="pytest-2.5.0: now down to ZERO reported bugs!" href="release-2.5.0.html" />
+  <script>DOCUMENTATION_OPTIONS.URL_ROOT = '../';</script>
+   
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="release-2.4.1.html" title="pytest-2.4.1: fixing three regressions compared to 2.3.5"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="release-2.5.0.html" title="pytest-2.5.0: now down to ZERO reported bugs!"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../contents.html">pytest-6.2</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Release announcements</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">pytest-2.4.2: colorama on windows, plugin/tmpdir fixes</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="pytest-2-4-2-colorama-on-windows-plugin-tmpdir-fixes">
+<h1>pytest-2.4.2: colorama on windows, plugin/tmpdir fixes<a class="headerlink" href="#pytest-2-4-2-colorama-on-windows-plugin-tmpdir-fixes" title="Permalink to this headline">¶</a></h1>
+<p>pytest-2.4.2 is another bug-fixing release:</p>
+<ul class="simple">
+<li><p>on Windows require colorama and a newer py lib so that py.io.TerminalWriter()
+now uses colorama instead of its own ctypes hacks. (fixes issue365)
+thanks Paul Moore for bringing it up.</p></li>
+<li><p>fix “-k” matching of tests where “repr” and “attr” and other names would
+cause wrong matches because of an internal implementation quirk
+(don’t ask) which is now properly implemented. fixes issue345.</p></li>
+<li><p>avoid tmpdir fixture to create too long filenames especially
+when parametrization is used (issue354)</p></li>
+<li><p>fix pytest-pep8 and pytest-flakes / pytest interactions
+(collection names in mark plugin was assuming an item always
+has a function which is not true for those plugins etc.)
+Thanks Andi Zeidler.</p></li>
+<li><p>introduce node.get_marker/node.add_marker API for plugins
+like pytest-pep8 and pytest-flakes to avoid the messy
+details of the node.keywords  pseudo-dicts.  Adapted
+docs.</p></li>
+<li><p>remove attempt to “dup” stdout at startup as it’s icky.
+the normal capturing should catch enough possibilities
+of tests messing up standard FDs.</p></li>
+<li><p>add pluginmanager.do_configure(config) as a link to
+config.do_configure() for plugin-compatibility</p></li>
+</ul>
+<p>as usual, docs at <a class="reference external" href="http://pytest.org">http://pytest.org</a> and upgrades via:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">U</span> <span class="n">pytest</span>
+</pre></div>
+</div>
+<p>have fun,
+holger krekel</p>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+      </div>
+  <span id="sidebar-top"></span>
+      <div class="clearer"></div>
+    </div>
+  
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2015–2020, holger krekel and pytest-dev team.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
+    </div>
+  <script src="../_static/version_warning_offset.js"></script>
+
+  </body>
+</html>

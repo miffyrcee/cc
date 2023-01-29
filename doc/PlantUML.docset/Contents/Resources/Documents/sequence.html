@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Sequence Diagram</title>
+</head>
+<body>
+
+
+
+
+
+
+
+
+
+
+
+
+<h1>Sequence Diagram</h1>
+
+<a name="//apple_ref/cpp/Guide/Basic examples" class="dashAnchor"></a><h2 id="Basic_examples">Basic examples</h2>
+The sequence <code>&quot;-&gt;&quot;</code> is used to draw a message between two
+participants.
+Participants do not have to be explicitly declared.
+<p>
+To have a dotted arrow, you use <code>--&gt;</code> 
+</p><p>
+It is also possible to use <code>&lt;-</code> and <code>&lt;--</code>.
+That does not change the drawing, but may improve readability.
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+Alice -&gt; Bob: Authentication Request
+Bob --&gt; Alice: Authentication Response
+
+Alice -&gt; Bob: Another authentication Request
+Alice &lt;-- Bob: another authentication Response
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/sequence.png"></td>
+	</tr>
+</table>
+
+</p><a name="//apple_ref/cpp/Guide/Comments" class="dashAnchor"></a><h2 id="Comment">Comments</h2>
+<p>
+Everything that starts with <code>simple quote &apos;</code> is a
+comment.
+</p><p>
+You can also put comments on several lines using <code>/&apos;</code> to start and <code>&apos;/</code> to end.
+
+</p><a name="//apple_ref/cpp/Guide/Declaring participant" class="dashAnchor"></a><h2 id="Declaring_participant">Declaring participant</h2>
+It is possible to change participant order using the <code>participant</code>
+keyword.
+
+<p>
+It is also possible to use other keywords to declare a participant:
+<ul>
+<li><code>actor</code></li>
+<li><code>boundary</code></li>
+<li><code>control</code></li>
+<li><code>entity</code></li>
+<li><code>database</code></li>
+</ul>
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+actor Foo1
+boundary Foo2
+control Foo3
+entity Foo4
+database Foo5
+Foo1 -&gt; Foo2 : To boundary
+Foo1 -&gt; Foo3 : To control
+Foo1 -&gt; Foo4 : To entity
+Foo1 -&gt; Foo5 : To database
+
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/sequence_001.png"></td>
+	</tr>
+</table>
+
+</p><p>
+You can rename a participant using the <code>as</code> keyword.
+</p><p>
+You can also change the background <a href="http://www.w3schools.com/HTML/html_colornames.asp">color</a> of
+actor or participant.
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+actor Bob #red
+&apos; The only difference between actor
+&apos;and participant is the drawing
+participant Alice
+participant &quot;I have a really\nlong name&quot; as L #99FF99
+/&apos; You can also declare:
+   participant L as &quot;I have a really\nlong name&quot;  #99FF99
+  &apos;/
+
+Alice-&gt;Bob: Authentication Request
+Bob-&gt;Alice: Authentication Response
+Bob-&gt;L: Log transaction
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/sequence_002.png"></td>
+	</tr>
+</table>
+
+
+
+
+</p><a name="//apple_ref/cpp/Guide/Use non-letters in participants" class="dashAnchor"></a><h2 id="Non_letter">Use non-letters in participants</h2>
+You can use quotes to define participants.
+And you can use the <code>as</code> keyword to give an alias to those participants.
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+Alice -&gt; &quot;Bob()&quot; : Hello
+&quot;Bob()&quot; -&gt; &quot;This is very\nlong&quot; as Long
+&apos; You can also declare:
+&apos; &quot;Bob()&quot; -&gt; Long as &quot;This is very\nlong&quot;
+Long --&gt; &quot;Bob()&quot; : ok
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/sequence_003.png"></td>
+	</tr>
+</table>
+
+
+<a name="//apple_ref/cpp/Guide/Message to Self" class="dashAnchor"></a><h2 id="Message_self">Message to Self</h2>
+A participant can send a message to itself.
+<p>
+It is also possible to have multi-line using <code>\n</code>.
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+Alice-&gt;Alice: This is a signal to self.\nIt also demonstrates\nmultiline \ntext
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/sequence_004.png"></td>
+	</tr>
+</table>
+
+</p><a name="//apple_ref/cpp/Guide/Change arrow style" class="dashAnchor"></a><h2 id="Arrow">Change arrow style</h2>
+You can change arrow style by several ways:
+<ul>
+<li>add a final <code>x</code> to denote a lost message
+</li><li>use <code>\</code> or <code>/</code> instead of <code>&lt;</code> or <code>&gt;</code> to
+have only the bottom or top part of the arrow
+</li><li>repeat the arrow head (for example, <code>&gt;&gt;</code> or <code>//</code>) head to have a thin drawing
+</li><li>use <code>--</code> instead of <code>-</code> to have a dotted arrow
+</li><li>add a final &quot;o&quot; at arrow head
+</li><li>use bidirectional arrow
+</li></ul>
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+Bob -&gt;x Alice
+Bob -&gt; Alice
+Bob -&gt;&gt; Alice
+Bob -\ Alice
+Bob \\- Alice
+Bob //-- Alice
+
+Bob -&gt;o Alice
+Bob o\\-- Alice
+
+Bob &lt;-&gt; Alice
+Bob &lt;-&gt;o Alice
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/sequence_005.png"></td>
+	</tr>
+</table>
+
+<a name="//apple_ref/cpp/Guide/Change arrow color" class="dashAnchor"></a><h2 id="ColorArrow">Change arrow color</h2>
+You can change the color of individual arrows using the following notation:
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+Bob -[#red]&gt; Alice : hello
+Alice -[#0000FF]-&gt;Bob : ok
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/sequence_006.png"></td>
+	</tr>
+</table>
+
+
+<a name="//apple_ref/cpp/Guide/Message sequence numbering" class="dashAnchor"></a><h2 id="Message_sequence_numbering">Message sequence numbering</h2>
+The keyword <code>autonumber</code> is used to
+automatically add number to messages.
+
+<table cellspacing="20" cellpadding="20">
+	<tr valign="top">
+		<td><pre>
+@startuml
+autonumber
+Bob -&gt; Alice : Authentication Request
+Bob &lt;- Alice : Authentication Response
+@enduml
+</pre></td>
+		<td><img border="2" src="imgp/sequence_007.png"></td>
+	</tr>
+</table>
+
+You can specify a startnumber with <code>autonumber &apos;start&apos;</code> , and
+also an increment with <code>autonumber &apos;start&apos; &apos;increment&apos;</code>.
+
+
+<table cellspacing="20" cellpadding="20">
+	<tr valign="top">
+		<td><pre>
+@startuml
+autonumber
+Bob -&gt; Alice : Authentication Request
+Bob &lt;- Alice : Authentication Response
+
+autonumber 15
+Bob -&gt; Alice : Another authentication Request
+Bob &lt;- Alice : Another authentication Response
+
+autonumber 40 10
+Bob -&gt; Alice : Yet another authentication Request
+Bob &lt;- Alice : Yet another authentication Response
+
+@enduml
+</pre></td>
+		<td><img border="2" src="imgp/sequence_008.png"></td>
+	</tr>
+</table>
+
+
+You can specify a format for your number by using between double-quote.
+<p>
+The formatting is done with the Java class <code>DecimalFormat</code>
+(&apos;<code>0</code>&apos; means digit, &apos;<code>#</code>&apos; means digit and zero if absent).
+</p><p>
+You can use some html tag in the format.
+<table cellspacing="20" cellpadding="20">
+	<tr valign="top">
+		<td><pre>
+@startuml
+autonumber &quot;&lt;b&gt;[000]&quot;
+Bob -&gt; Alice : Authentication Request
+Bob &lt;- Alice : Authentication Response
+
+autonumber 15 &quot;&lt;b&gt;(&lt;u&gt;##&lt;/u&gt;)&quot;
+Bob -&gt; Alice : Another authentication Request
+Bob &lt;- Alice : Another authentication Response
+
+autonumber 40 10 &quot;&lt;font color=red&gt;&lt;b&gt;Message 0  &quot;
+Bob -&gt; Alice : Yet another authentication Request
+Bob &lt;- Alice : Yet another authentication Response
+
+@enduml
+</pre></td>
+		<td><img border="2" src="imgp/sequence_009.png"></td>
+	</tr>
+</table>
+
+</p><a name="//apple_ref/cpp/Guide/Title" class="dashAnchor"></a><h2 id="Simple_title">Title</h2>
+The <code>title</code> keywords is used to put a title.
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+title Simple communication example
+
+Alice -&gt; Bob: Authentication Request
+Bob --&gt; Alice: Authentication Response
+
+@enduml
+</pre></td>
+		<td><img border="2" src="imgp/sequence_010.png"></td>
+	</tr>
+</table>
+
+<a name="//apple_ref/cpp/Guide/Legend the diagram" class="dashAnchor"></a><h2 id="Legend">Legend the diagram</h2>
+The <code>legend</code> and <code>end legend</code> are keywords is used to put a legend.
+<p>
+You can optionally specify to have <code>left</code>, <code>right</code> or <code>center</code>
+alignment for the legend.
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+Alice -&gt; Bob : Hello
+legend right
+  Short
+  legend
+endlegend
+
+@enduml
+</pre></td>
+		<td><img border="2" src="imgp/sequence_011.png"></td>
+	</tr>
+</table>
+
+
+</p><a name="//apple_ref/cpp/Guide/Splitting diagrams" class="dashAnchor"></a><h2 id="Splitting_diagrams">Splitting diagrams</h2>
+The <code>newpage</code> keyword is used to split a diagram into several images.
+<p>
+You can put a title for the new page just after the <code>newpage</code>
+keyword.
+</p><p>
+This is very handy with <i>Word</i> to print long diagram on
+several pages.
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td rowspan="3" class="scriptplantu"><pre>
+@startuml
+
+Alice -&gt; Bob : message 1
+Alice -&gt; Bob : message 2
+
+newpage
+
+Alice -&gt; Bob : message 3
+Alice -&gt; Bob : message 4
+
+newpage A title for the\nlast page
+
+Alice -&gt; Bob : message 5
+Alice -&gt; Bob : message 6
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/sequence_012.png"></td>
+	</tr>
+
+	<tr>
+		<td><img border="2" src="imgp/sequence_012_001.png"></td>
+	</tr>
+
+	<tr>
+		<td><img border="2" src="imgp/sequence_012_002.png"></td>
+	</tr>
+</table>
+
+</p><a name="//apple_ref/cpp/Guide/Grouping message" class="dashAnchor"></a><h2 id="Grouping_message">Grouping message</h2>
+<p>
+It is possible to group messages together using the following
+keywords:
+<ul>
+	<li><code>alt/else</code></li>
+	<li><code>opt</code></li>
+	<li><code>loop</code></li>
+	<li><code>par</code></li>
+	<li><code>break</code></li>
+	<li><code>critical</code></li>
+	<li><code>group</code>, followed by a text to be displayed</li>
+</ul>
+
+</p><p>
+It is possible a add a text that will be displayed into the
+header (except for <code>group</code>).
+</p><p>
+The <code>end</code> keyword is used to close the group.
+</p><p>
+Note that it is possible to nest groups.
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+Alice -&gt; Bob: Authentication Request
+
+alt successful case
+
+    Bob -&gt; Alice: Authentication Accepted
+    
+else some kind of failure
+
+    Bob -&gt; Alice: Authentication Failure
+    group My own label
+    	Alice -&gt; Log : Log attack start
+        loop 1000 times
+            Alice -&gt; Bob: DNS Attack
+        end
+    	Alice -&gt; Log : Log attack end
+    end
+    
+else Another type of failure
+
+   Bob -&gt; Alice: Please repeat
+   
+end
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/sequence_013.png"></td>
+	</tr>
+</table>
+
+</p><a name="//apple_ref/cpp/Guide/Notes on messages" class="dashAnchor"></a><h2 id="Notes_on_messages">Notes on messages</h2>
+It is possible to put notes on message using the <code>note left</code>
+or <code>note right</code> keywords <i>just after the message</i>.
+<p>
+You can have a multi-line note using the <code>end note</code>
+keywords.
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+Alice-&gt;Bob : hello
+note left: this is a first note
+
+Bob-&gt;Alice : ok
+note right: this is another note
+
+Bob-&gt;Bob : I am thinking
+note left
+	a note
+	can also be defined
+	on several lines
+end note
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/sequence_014.png"></td>
+	</tr>
+</table>
+
+</p><a name="//apple_ref/cpp/Guide/Some other notes" class="dashAnchor"></a><h2 id="Some_other_notes">Some other notes</h2>
+It is also possible to place notes relative to participant with <code>note
+left of</code> , <code>note right of</code> or <code>note over</code> keywords.
+
+<p>
+It is possible to highlight a note by changing its background
+<a href="http://www.w3schools.com/HTML/html_colornames.asp">color</a>.
+</p><p>
+You can also have a multi-line note using the <code>end note</code>
+keywords.
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+participant Alice
+participant Bob
+note left of Alice #aqua
+	This is displayed 
+	left of Alice. 
+end note
+ 
+note right of Alice: This is displayed right of Alice.
+
+note over Alice: This is displayed over Alice.
+
+note over Alice, Bob #FFAAAA: This is displayed\n over Bob and Alice.
+
+note over Bob, Alice
+	This is yet another
+	example of
+	a long note.
+end note
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/sequence_015.png"></td>
+	</tr>
+</table>
+
+</p><a name="//apple_ref/cpp/Guide/Changing notes shape" class="dashAnchor"></a><h2 id="Notes_shape">Changing notes shape</h2>
+You can use <code>hnote</code> and <code>rnote</code> keywords
+to change note shapes.
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+caller -&gt; server : conReq
+hnote over caller : idle
+caller &lt;- server : conConf
+rnote over server
+ &quot;r&quot; as rectangle
+ &quot;h&quot; as hexagon
+endrnote
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/sequence_016.png"></td>
+	</tr>
+</table>
+
+<a name="//apple_ref/cpp/Guide/Creole and HTML" class="dashAnchor"></a><h2 id="Formatting_using_html">Creole and HTML</h2>
+<a href="creole.html">It is also possible to use creole formatting:</a>
+
+<table cellspacing="10" cellpadding="30">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+participant Alice
+participant &quot;The **Famous** Bob&quot; as Bob
+
+Alice -&gt; Bob : hello --there--
+... Some ~~long delay~~ ...
+Bob -&gt; Alice : ok
+note left
+  This is **bold**
+  This is //italics//
+  This is &quot;&quot;monospaced&quot;&quot;
+  This is --stroked--
+  This is __underlined__
+  This is ~~waved~~
+end note
+
+Alice -&gt; Bob : A //well formatted// message
+note right of Alice 
+ This is &lt;back:cadetblue&gt;&lt;size:18&gt;displayed&lt;/size&gt;&lt;/back&gt; 
+ __left of__ Alice. 
+end note
+note left of Bob 
+ &lt;u:red&gt;This&lt;/u&gt; is &lt;color #118888&gt;displayed&lt;/color&gt; 
+ **&lt;color purple&gt;left of&lt;/color&gt; &lt;s:red&gt;Alice&lt;/strike&gt; Bob**. 
+end note
+note over Alice, Bob
+ &lt;w:#FF33FF&gt;This is hosted&lt;/w&gt; by &lt;img sourceforge.jpg&gt;
+end note 
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/sequence_017.png"></td>
+	</tr>
+</table>
+
+<a name="//apple_ref/cpp/Guide/Divider" class="dashAnchor"></a><h2 id="Divider">Divider</h2>
+If you want, you can split a diagram using <code>==</code> separator to
+divide your diagram into logical steps.
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+== Initialization ==
+
+Alice -&gt; Bob: Authentication Request
+Bob --&gt; Alice: Authentication Response
+
+== Repetition ==
+
+Alice -&gt; Bob: Another authentication Request
+Alice &lt;-- Bob: another authentication Response
+
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/sequence_018.png"></td>
+	</tr>
+</table>
+
+<a name="//apple_ref/cpp/Guide/Reference" class="dashAnchor"></a><h2 id="Reference">Reference</h2>
+You can use reference in a diagram, using the keyword <code>ref over</code>.
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+participant Alice
+actor Bob
+
+ref over Alice, Bob : init
+
+Alice -&gt; Bob : hello
+
+ref over Bob
+  This can be on
+  several lines
+end ref
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/sequence_019.png"></td>
+	</tr>
+</table>
+
+<a name="//apple_ref/cpp/Guide/Delay" class="dashAnchor"></a><h2 id="Delay">Delay</h2>
+You can use <code>...</code> to indicate a delay in the diagram.
+And it is also possible to put a message with this delay.
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+Alice -&gt; Bob: Authentication Request
+...
+Bob --&gt; Alice: Authentication Response
+...5 minutes latter...
+Bob --&gt; Alice: Bye !
+
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/sequence_020.png"></td>
+	</tr>
+</table>
+
+<a name="//apple_ref/cpp/Guide/Space" class="dashAnchor"></a><h2 id="Space">Space</h2>
+You can use <code>|||</code> to indicate some spacing in the diagram.
+<br>
+It is also possible to specify a number of pixel to be used.
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+Alice -&gt; Bob: message 1
+Bob --&gt; Alice: ok
+|||
+Alice -&gt; Bob: message 2
+Bob --&gt; Alice: ok
+||45||
+Alice -&gt; Bob: message 3
+Bob --&gt; Alice: ok
+
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/sequence_021.png"></td>
+	</tr>
+</table>
+
+
+<a name="//apple_ref/cpp/Guide/Lifeline Activation and Destruction" class="dashAnchor"></a><h2 id="Lifeline_activation_destruction">Lifeline Activation and Destruction</h2>
+The <code>activate</code> and <code>deactivate</code> are used to denote
+participant activation.
+<p>
+Once a participant is activated, its lifeline appears.
+</p><p>
+The <code>activate</code> and <code>deactivate</code> apply on
+the previous message.
+</p><p>
+The <code>destroy</code> denote the end of the lifeline of a
+participant.
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+participant User
+
+User -&gt; A: DoWork
+activate A
+
+A -&gt; B: &lt;&lt; createRequest &gt;&gt;
+activate B
+
+B -&gt; C: DoWork
+activate C
+C --&gt; B: WorkDone
+destroy C
+
+B --&gt; A: RequestCreated
+deactivate B
+
+A -&gt; User: Done
+deactivate A
+
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/sequence_022.png"></td>
+	</tr>
+</table>
+
+</p><p>
+Nested lifeline can be used, and it is possible to add a
+<a href="http://www.w3schools.com/HTML/html_colornames.asp">color</a> on the
+lifeline.
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+participant User
+
+User -&gt; A: DoWork
+activate A #FFBBBB
+
+A -&gt; A: Internal call
+activate A #DarkSalmon
+
+A -&gt; B: &lt;&lt; createRequest &gt;&gt;
+activate B
+
+B --&gt; A: RequestCreated
+deactivate B
+deactivate A
+A -&gt; User: Done
+deactivate A
+
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/sequence_023.png"></td>
+	</tr>
+</table>
+
+</p><a name="//apple_ref/cpp/Guide/Participant creation" class="dashAnchor"></a><h2 id="create">Participant creation</h2>
+You can use the <code>create</code> keyword just before the first
+reception of a message to emphasize the fact that this message is
+actually <i>creating</i> this new object.
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+Bob -&gt; Alice : hello
+
+create Other
+Alice -&gt; Other : new
+
+create control String
+Alice -&gt; String
+note right : You can also put notes!
+
+Alice --&gt; Bob : ok
+
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/sequence_024.png"></td>
+	</tr>
+</table>
+
+
+
+<a name="//apple_ref/cpp/Guide/Incoming and outgoing messages" class="dashAnchor"></a><h2 id="inout">Incoming and outgoing messages</h2>
+You can use incoming or outgoing arrows if you want to focus on a part
+of the diagram.
+<p>
+Use square brackets to denote the left &quot;<code>[</code>&quot; or the
+right &quot;<code>]</code>&quot; side of the diagram.
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+[-&gt; A: DoWork
+
+activate A
+
+A -&gt; A: Internal call
+activate A
+
+A -&gt;] : &lt;&lt; createRequest &gt;&gt;
+
+A&lt;--] : RequestCreated
+deactivate A
+[&lt;- A: Done
+deactivate A
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/sequence_025.png"></td>
+	</tr>
+</table>
+
+</p><p>
+You can also have the following syntax:
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+[-&gt; Bob
+[o-&gt; Bob
+[o-&gt;o Bob
+[x-&gt; Bob
+
+[&lt;- Bob
+[x&lt;- Bob
+
+Bob -&gt;]
+Bob -&gt;o]
+Bob o-&gt;o]
+Bob -&gt;x]
+
+Bob &lt;-]
+Bob x&lt;-]
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/sequence_026.png"></td>
+	</tr>
+</table>
+
+
+
+</p><a name="//apple_ref/cpp/Guide/Stereotypes and Spots" class="dashAnchor"></a><h2 id="Spot">Stereotypes and Spots</h2>
+
+It is possible to add stereotypes to participants using <code>&lt;&lt;</code>
+and <code>&gt;&gt;</code>.
+<p>
+In the stereotype, you can add a spotted character
+in a colored circle using the syntax <code>(X,color)</code>.
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+participant &quot;Famous Bob&quot; as Bob &lt;&lt; Generated &gt;&gt;
+participant Alice &lt;&lt; (C,#ADD1B2) Testable &gt;&gt;
+
+Bob-&gt;Alice: First message
+
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/sequence_027.png"></td>
+	</tr>
+</table>
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+participant Bob &lt;&lt; (C,#ADD1B2) &gt;&gt;
+participant Alice &lt;&lt; (C,#ADD1B2) &gt;&gt;
+
+Bob-&gt;Alice: First message
+
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/sequence_028.png"></td>
+	</tr>
+</table>
+
+</p><a name="//apple_ref/cpp/Guide/More information on titles" class="dashAnchor"></a><h2 id="Title_diagram">More information on titles</h2>
+You can use <a href="creole.html">creole formatting</a> in the title.
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+title __Simple__ **communication** example
+
+Alice -&gt; Bob: Authentication Request
+Bob -&gt; Alice: Authentication Response
+
+@enduml
+</pre></td>
+		<td><img border="2" src="imgp/sequence_029.png"></td>
+	</tr>
+</table>
+You can add newline using <code>\n</code> in the title description.
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+title __Simple__ communication example\non several lines
+
+Alice -&gt; Bob: Authentication Request
+Bob -&gt; Alice: Authentication Response
+
+@enduml
+</pre></td>
+		<td><img border="2" src="imgp/sequence_030.png"></td>
+	</tr>
+</table>
+You can also define title on several lines using <code>title</code>
+and <code>end title</code> keywords.
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+title
+ &lt;u&gt;Simple&lt;/u&gt; communication example
+ on &lt;i&gt;several&lt;/i&gt; lines and using &lt;font color=red&gt;html&lt;/font&gt;
+ This is hosted by &lt;img:sourceforge.jpg&gt;
+end title
+
+Alice -&gt; Bob: Authentication Request
+Bob -&gt; Alice: Authentication Response
+
+@enduml
+</pre></td>
+		<td><img border="2" src="imgp/sequence_031.png"></td>
+	</tr>
+</table>
+ 
+ <a name="//apple_ref/cpp/Guide/Participants encompass" class="dashAnchor"></a><h2 id="Englober">Participants encompass</h2>
+
+It is possible to draw a box around some participants, using <code>box</code>
+and <code>end box</code> commands.
+<p>
+You can add an optional title or a
+optional background color, after the <code>box</code> keyword.
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+box &quot;Internal Service&quot; #LightBlue
+	participant Bob
+	participant Alice
+end box
+participant Other
+
+Bob -&gt; Alice : hello
+Alice -&gt; Other : hello
+
+@enduml
+</pre></td>
+		<td><img border="2" src="imgp/sequence_032.png"></td>
+	</tr>
+</table>
+ 
+
+</p><a name="//apple_ref/cpp/Guide/Removing Footer" class="dashAnchor"></a><h2 id="Footer">Removing Footer</h2>
+You can use the <code>hide footbox</code> keywords to remove the footer
+of the diagram.
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+hide footbox
+title Footer removed
+
+Alice -&gt; Bob: Authentication Request
+Bob --&gt; Alice: Authentication Response
+
+@enduml
+</pre></td>
+		<td><img border="2" src="imgp/sequence_033.png"></td>
+	</tr>
+</table>
+
+
+<a name="//apple_ref/cpp/Guide/Skinparam" class="dashAnchor"></a><h2 id="Skinparam">Skinparam</h2>
+
+You can use the <code><a href="skinparam.html">skinparam</a></code>
+command to change colors and fonts for the drawing.
+
+<p>
+You can use this command: 
+<ul>
+	<li>In the diagram definition, like any other commands,</li>
+	<li>In an <a href="preprocessing.html">included file</a>,</li>
+	<li>In a configuration file, provided in the
+<a href="command_line.html">command line</a> or the <a href="ant_task.html">ANT task</a>.
+</li>
+</ul>
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+skinparam backgroundColor #EEEBDC
+
+skinparam sequence {
+	ArrowColor DeepSkyBlue
+	ActorBorderColor DeepSkyBlue
+	LifeLineBorderColor blue
+	LifeLineBackgroundColor #A9DCDF
+	
+	ParticipantBorderColor DeepSkyBlue
+	ParticipantBackgroundColor DodgerBlue
+	ParticipantFontName Impact
+	ParticipantFontSize 17
+	ParticipantFontColor #A9DCDF
+	
+	ActorBackgroundColor aqua
+	ActorFontColor DeepSkyBlue
+	ActorFontSize 17
+	ActorFontName Aapex
+}
+
+actor User
+participant &quot;First Class&quot; as A
+participant &quot;Second Class&quot; as B
+participant &quot;Last Class&quot; as C
+
+User -&gt; A: DoWork
+activate A
+
+A -&gt; B: Create Request
+activate B
+
+B -&gt; C: DoWork
+activate C
+C --&gt; B: WorkDone
+destroy C
+
+B --&gt; A: Request Created
+deactivate B
+
+A --&gt; User: Done
+deactivate A
+
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/sequence_034.png"></td>
+	</tr>
+</table>
+
+
+
+</p><p>
+
+
+
+
+
+</p>

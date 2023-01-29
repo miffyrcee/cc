@@ -1,0 +1,151 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-type" content="text/html; charset=ISO-8859-1">
+<TITLE>Nvim documentation: pi_health</TITLE>
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<H1>Nvim documentation: pi_health</H1>
+<A NAME="top"></A>
+<A HREF="index.html">main help file</A>
+
+<HR>
+<PRE>
+
+*<A NAME="pi_health.txt"></A><B>pi_health.txt</B>*   Healthcheck framework
+
+Author: TJ DeVries <A HREF="mailto:devries.timothyj@gmail.com">&lt;devries.timothyj@gmail.com&gt;</A> 
+
+                                      Type |<A HREF="various.html#gO">gO</A>| to see the table of contents.
+
+==============================================================================
+
+Introduction                            *<A NAME="health"></A><B>health</B>*
+
+health.vim is a minimal framework to help users troubleshoot configuration and
+any other environment conditions that a <A HREF="usr_05.html#plugin">plugin</A> might care about. Nvim ships
+with healthchecks for configuration, performance, <A HREF="if_pyth.html#python">python</A> support, <A HREF="if_ruby.html#ruby">ruby</A>
+support, <A HREF="provider.html#clipboard">clipboard</A> support, and more.
+
+To run all healthchecks, use:
+
+<B>        :checkhealth</B>
+ 
+Plugin authors are encouraged to write new healthchecks. |<A HREF="#health-dev">health-dev</A>|
+
+==============================================================================
+
+Commands                                *<A NAME="health-commands"></A><B>health-commands</B>*
+
+
+                                        *<A NAME=":checkhealth"></A><B>:checkhealth</B>* *<A NAME=":CheckHealth"></A><B>:CheckHealth</B>*
+<A HREF="#:checkhealth">:checkhealth</A>    Run all healthchecks.
+
+                                        *<A NAME="E5009"></A><B>E5009</B>*
+                Nvim depends on |<A HREF="starting.html#$VIMRUNTIME">$VIMRUNTIME</A>|, <A HREF="options.html#'runtimepath'">'runtimepath'</A> and <A HREF="options.html#'packpath'">'packpath'</A> to
+                find the standard &quot;runtime files&quot; for <A HREF="syntax.html#syntax">syntax</A> highlighting,
+                filetype-specific behavior, and standard plugins (including
+                <A HREF="#:checkhealth">:checkhealth</A>).  If the runtime files cannot be found then
+                those features will not work.
+
+<A HREF="#:checkhealth">:checkhealth</A> {plugins}
+                Run healthcheck(s) for one or more plugins. E.g. to run only
+                the standard Nvim healthcheck:
+<B>                        :checkhealth nvim</B>
+ 
+                To run the healthchecks for the &quot;foo&quot; and &quot;<A HREF="motion.html#bar">bar</A>&quot; plugins
+                (assuming they are on <A HREF="options.html#'runtimepath'">'runtimepath'</A> and they have implemented
+                the <A HREF="lua.html#Lua">Lua</A> `require(&quot;foo.health&quot;).check()` interface):
+<B>                        :checkhealth foo bar</B>
+ 
+                To run healthchecks for <A HREF="lua.html#Lua">Lua</A> submodules, use dot <A HREF="intro.html#notation">notation</A> or
+                &quot;*&quot; to refer to all submodules. For example Nvim provides
+                `vim.lsp` and `vim.treesitter`: 
+<B>                        :checkhealth vim.lsp vim.treesitter</B>
+<B>                        :checkhealth vim*</B>
+ 
+==============================================================================
+
+Functions                               *<A NAME="health-functions"></A><B>health-functions</B>* *<A NAME="vim.health"></A><B>vim.health</B>*
+
+The <A HREF="lua.html#Lua">Lua</A> &quot;<A HREF="#health">health</A>&quot; module can be used to create new healthchecks. To get started
+see |<A HREF="#health-dev">health-dev</A>|.
+
+
+vim.health.report_start({name})                         *<A NAME="vim.health.report_start()"></A><B>vim.health.report_start()</B>*
+        Starts a new report. Most plugins should call this only once, but if
+        you want different sections to appear in your report, call this once
+        per section.
+
+
+vim.health.report_info({msg})                           *<A NAME="vim.health.report_info()"></A><B>vim.health.report_info()</B>*
+        Reports an informational message.
+
+
+vim.health.report_ok({msg})                             *<A NAME="vim.health.report_ok()"></A><B>vim.health.report_ok()</B>*
+        Reports a &quot;success&quot; message.
+
+
+vim.health.report_warn({msg} [, {advice}])              *<A NAME="vim.health.report_warn()"></A><B>vim.health.report_warn()</B>*
+        Reports a warning. {advice} is an optional <A HREF="eval.html#list">list</A> of suggestions to
+        present to the user.
+
+
+vim.health.report_error({msg} [, {advice}])             *<A NAME="vim.health.report_error()"></A><B>vim.health.report_error()</B>*
+        Reports an error. {advice} is an optional <A HREF="eval.html#list">list</A> of suggestions to
+        present to the user.
+
+==============================================================================
+
+Create a healthcheck                                    *<A NAME="health-dev"></A><B>health-dev</B>*
+
+Healthchecks are <A HREF="eval.html#functions">functions</A> that check the user environment, configuration, or
+any other prerequisites that a <A HREF="usr_05.html#plugin">plugin</A> cares about. Nvim ships with
+healthchecks in:
+        - $VIMRUNTIME/autoload/health/
+        - $VIMRUNTIME/lua/vim/lsp/health.lua
+        - $VIMRUNTIME/lua/vim/treesitter/health.lua
+        - and more...
+
+To add a new healthcheck for your own <A HREF="usr_05.html#plugin">plugin</A>, simply create a &quot;health.lua&quot;
+module on <A HREF="options.html#'runtimepath'">'runtimepath'</A> that returns a table with a &quot;check()&quot; function. Then
+|<A HREF="#:checkhealth">:checkhealth</A>| will automatically find and invoke the function.
+
+For example if your <A HREF="usr_05.html#plugin">plugin</A> is named &quot;foo&quot;, define your healthcheck module at
+one of these locations (on 'runtimepath'):
+        - lua/foo/health/init.lua
+        - lua/foo/health.lua
+
+If your <A HREF="usr_05.html#plugin">plugin</A> also provides a submodule named &quot;<A HREF="motion.html#bar">bar</A>&quot; for which you want
+a separate healthcheck, define the healthcheck at one of these locations:
+        - lua/foo/bar/health/init.lua
+        - lua/foo/bar/health.lua
+
+All such <A HREF="#health">health</A> modules must return a <A HREF="lua.html#Lua">Lua</A> table containing a `check()`
+function.
+
+Copy this sample code into `lua/foo/health.lua`, <A HREF="change.html#replacing">replacing</A> &quot;foo&quot; in the path
+with your <A HREF="usr_05.html#plugin">plugin</A> name:
+
+<B>        local M = {}</B>
+
+<B>        M.check = function()</B>
+<B>          vim.health.report_start("my_plugin report")</B>
+<B>          -- make sure setup function parameters are ok</B>
+<B>          if check_setup() then</B>
+<B>            vim.health.report_ok("Setup is correct")</B>
+<B>          else</B>
+<B>            vim.health.report_error("Setup is incorrect")</B>
+<B>          end</B>
+<B>          -- do some more checking</B>
+<B>          -- ...</B>
+<B>        end</B>
+
+<B>        return M</B>
+
+
+<A HREF="#top">top</A> - <A HREF="index.html">main help file</A>
+</PRE>
+</BODY>
+
+
+</HTML>

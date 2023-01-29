@@ -1,0 +1,215 @@
+<html><!-- Mirrored from doc.rust-lang.org/1.66.1/std/os/linux/fs/trait.MetadataExt.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 11 Jan 2023 03:06:14 GMT --><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="OS-specific extensions to `fs::Metadata`."><meta name="keywords" content="rust, rustlang, rust-lang, MetadataExt"><title>MetadataExt in std::os::linux::fs</title><link rel="preload" as="font" type="font/woff2" crossorigin="" href="../../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin="" href="../../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin="" href="../../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin="" href="../../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin="" href="../../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin="" href="../../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../../../normalize1.66.1.css"><link rel="stylesheet" href="../../../../rustdoc1.66.1.css" id="mainThemeStyle"><link rel="stylesheet" href="../../../../ayu1.66.1.css" disabled=""><link rel="stylesheet" href="../../../../dark1.66.1.css" disabled=""><link rel="stylesheet" href="../../../../light1.66.1.css" id="themeStyle"><script id="default-settings"></script><script src="../../../../storage1.66.1.js"></script><script defer="" src="sidebar-items1.66.1.js"></script><script defer="" src="../../../../main1.66.1.js"></script><noscript>&amp;lt;link rel="stylesheet" href="../../../../noscript1.66.1.css"&amp;gt;</noscript><link rel="alternate icon" type="image/png" href="../../../../favicon-16x161.66.1.png"><link rel="alternate icon" type="image/png" href="../../../../favicon-32x321.66.1.png"><link rel="icon" type="image/svg+xml" href="../../../../favicon1.66.1.svg"></head><body class="rustdoc trait"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">☰</button><a class="sidebar-logo" href="../../../index.html"><div class="logo-container"><img class="rust-logo" src="../../../../rust-logo1.66.1.svg" alt="logo"></div></a><h2></h2></nav><main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../wheel1.66.1.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1 class="fqn">Trait <a href="../../../index.html">std</a>::<wbr><a href="../../index.html">os</a>::<wbr><a href="../index.html">linux</a>::<wbr><a href="index.html">fs</a>::<wbr><a class="trait" href="#">MetadataExt</a></h1><span class="out-of-band"><span class="since" title="Stable since Rust version 1.1.0">1.1.0</span> · <a class="srclink" href="../../../../src/std/os/linux/fs.rs.html#17-326">source</a> · <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">−</span>]</a></span></div><div class="item-decl"><pre class="rust trait"><code>pub trait MetadataExt {
+<details class="rustdoc-toggle type-contents-toggle" open="true"><summary class="hideme"><span>Show 17 methods</span></summary>    fn <a href="#tymethod.as_raw_stat" class="fnname">as_raw_stat</a>(&amp;self) -&gt; &amp;<a class="struct" href="../raw/struct.stat.html" title="struct std::os::linux::raw::stat">stat</a>;
+<span class="item-spacer"></span>    fn <a href="#tymethod.st_dev" class="fnname">st_dev</a>(&amp;self) -&gt; <a class="primitive" href="../../../primitive.u64.html">u64</a>;
+<span class="item-spacer"></span>    fn <a href="#tymethod.st_ino" class="fnname">st_ino</a>(&amp;self) -&gt; <a class="primitive" href="../../../primitive.u64.html">u64</a>;
+<span class="item-spacer"></span>    fn <a href="#tymethod.st_mode" class="fnname">st_mode</a>(&amp;self) -&gt; <a class="primitive" href="../../../primitive.u32.html">u32</a>;
+<span class="item-spacer"></span>    fn <a href="#tymethod.st_nlink" class="fnname">st_nlink</a>(&amp;self) -&gt; <a class="primitive" href="../../../primitive.u64.html">u64</a>;
+<span class="item-spacer"></span>    fn <a href="#tymethod.st_uid" class="fnname">st_uid</a>(&amp;self) -&gt; <a class="primitive" href="../../../primitive.u32.html">u32</a>;
+<span class="item-spacer"></span>    fn <a href="#tymethod.st_gid" class="fnname">st_gid</a>(&amp;self) -&gt; <a class="primitive" href="../../../primitive.u32.html">u32</a>;
+<span class="item-spacer"></span>    fn <a href="#tymethod.st_rdev" class="fnname">st_rdev</a>(&amp;self) -&gt; <a class="primitive" href="../../../primitive.u64.html">u64</a>;
+<span class="item-spacer"></span>    fn <a href="#tymethod.st_size" class="fnname">st_size</a>(&amp;self) -&gt; <a class="primitive" href="../../../primitive.u64.html">u64</a>;
+<span class="item-spacer"></span>    fn <a href="#tymethod.st_atime" class="fnname">st_atime</a>(&amp;self) -&gt; <a class="primitive" href="../../../primitive.i64.html">i64</a>;
+<span class="item-spacer"></span>    fn <a href="#tymethod.st_atime_nsec" class="fnname">st_atime_nsec</a>(&amp;self) -&gt; <a class="primitive" href="../../../primitive.i64.html">i64</a>;
+<span class="item-spacer"></span>    fn <a href="#tymethod.st_mtime" class="fnname">st_mtime</a>(&amp;self) -&gt; <a class="primitive" href="../../../primitive.i64.html">i64</a>;
+<span class="item-spacer"></span>    fn <a href="#tymethod.st_mtime_nsec" class="fnname">st_mtime_nsec</a>(&amp;self) -&gt; <a class="primitive" href="../../../primitive.i64.html">i64</a>;
+<span class="item-spacer"></span>    fn <a href="#tymethod.st_ctime" class="fnname">st_ctime</a>(&amp;self) -&gt; <a class="primitive" href="../../../primitive.i64.html">i64</a>;
+<span class="item-spacer"></span>    fn <a href="#tymethod.st_ctime_nsec" class="fnname">st_ctime_nsec</a>(&amp;self) -&gt; <a class="primitive" href="../../../primitive.i64.html">i64</a>;
+<span class="item-spacer"></span>    fn <a href="#tymethod.st_blksize" class="fnname">st_blksize</a>(&amp;self) -&gt; <a class="primitive" href="../../../primitive.u64.html">u64</a>;
+<span class="item-spacer"></span>    fn <a href="#tymethod.st_blocks" class="fnname">st_blocks</a>(&amp;self) -&gt; <a class="primitive" href="../../../primitive.u64.html">u64</a>;
+</details>}</code></pre></div><span class="item-info"><div class="stab portability">Available on <strong>Linux</strong> only.</div></span><details class="rustdoc-toggle top-doc" open="true"><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>OS-specific extensions to <a href="../../../fs/struct.Metadata.html"><code>fs::Metadata</code></a>.</p>
+</div></details><a class="dashAnchor" name="//dash_ref_115503/Method/Required%20Methods/1"></a><h2 id="required-methods" class="small-section-header">Required Methods<a href="#required-methods" class="anchor"></a></h2><div class="methods"><details class="rustdoc-toggle method-toggle" open="true"><summary><a class="dashAnchor" name="//dash_ref_115486/Method/as%5Fraw%5Fstat/0"></a><section id="tymethod.as_raw_stat" class="method has-srclink"><a class="srclink rightside" href="../../../../src/std/os/linux/fs.rs.html#43">source</a><h4 class="code-header">fn <a href="#tymethod.as_raw_stat" class="fnname">as_raw_stat</a>(&amp;self) -&gt; &amp;<a class="struct" href="../raw/struct.stat.html" title="struct std::os::linux::raw::stat">stat</a></h4></section></summary><span class="item-info"><div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated since 1.8.0: other methods of this trait are now preferred</span></div></span><div class="docblock"><p>Gain a reference to the underlying <code>stat</code> structure which contains
+the raw information returned by the OS.</p>
+<p>The contents of the returned <a href="../raw/struct.stat.html"><code>stat</code></a> are <strong>not</strong> consistent across
+Unix platforms. The <code>os::unix::fs::MetadataExt</code> trait contains the
+cross-Unix abstractions contained within the raw stat.</p>
+<h5 id="examples"><a href="#examples">Examples</a></h5>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::fs;
+<span class="kw">use </span>std::io;
+<span class="kw">use </span>std::os::linux::fs::MetadataExt;
+
+<span class="kw">fn </span>main() -&gt; io::Result&lt;()&gt; {
+    <span class="kw">let </span>meta = fs::metadata(<span class="string">"some_file"</span>)<span class="question-mark">?</span>;
+    <span class="kw">let </span>stat = meta.as_raw_stat();
+    <span class="prelude-val">Ok</span>(())
+}</code></pre><a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=%23!%5Ballow(unused)%5D%0Ause%20std%3A%3Afs%3B%0Ause%20std%3A%3Aio%3B%0Ause%20std%3A%3Aos%3A%3Alinux%3A%3Afs%3A%3AMetadataExt%3B%0A%0Afn%20main()%20-%3E%20io%3A%3AResult%3C()%3E%20%7B%0A%20%20%20%20let%20meta%20%3D%20fs%3A%3Ametadata(%22some_file%22)%3F%3B%0A%20%20%20%20let%20stat%20%3D%20meta.as_raw_stat()%3B%0A%20%20%20%20Ok(())%0A%7D&amp;edition=2021">Run</a></div>
+</div></details><details class="rustdoc-toggle method-toggle" open="true"><summary><a class="dashAnchor" name="//dash_ref_115487/Method/st%5Fdev/0"></a><section id="tymethod.st_dev" class="method has-srclink"><span class="rightside"><span class="since" title="Stable since Rust version 1.8.0">1.8.0</span> · <a class="srclink" href="../../../../src/std/os/linux/fs.rs.html#61">source</a></span><h4 class="code-header">fn <a href="#tymethod.st_dev" class="fnname">st_dev</a>(&amp;self) -&gt; <a class="primitive" href="../../../primitive.u64.html">u64</a></h4></section></summary><div class="docblock"><p>Returns the device ID on which this file resides.</p>
+<h5 id="examples-1"><a href="#examples-1">Examples</a></h5>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::fs;
+<span class="kw">use </span>std::io;
+<span class="kw">use </span>std::os::linux::fs::MetadataExt;
+
+<span class="kw">fn </span>main() -&gt; io::Result&lt;()&gt; {
+    <span class="kw">let </span>meta = fs::metadata(<span class="string">"some_file"</span>)<span class="question-mark">?</span>;
+    <span class="macro">println!</span>(<span class="string">"{}"</span>, meta.st_dev());
+    <span class="prelude-val">Ok</span>(())
+}</code></pre><a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=%23!%5Ballow(unused)%5D%0Ause%20std%3A%3Afs%3B%0Ause%20std%3A%3Aio%3B%0Ause%20std%3A%3Aos%3A%3Alinux%3A%3Afs%3A%3AMetadataExt%3B%0A%0Afn%20main()%20-%3E%20io%3A%3AResult%3C()%3E%20%7B%0A%20%20%20%20let%20meta%20%3D%20fs%3A%3Ametadata(%22some_file%22)%3F%3B%0A%20%20%20%20println!(%22%7B%7D%22%2C%20meta.st_dev())%3B%0A%20%20%20%20Ok(())%0A%7D&amp;edition=2021">Run</a></div>
+</div></details><details class="rustdoc-toggle method-toggle" open="true"><summary><a class="dashAnchor" name="//dash_ref_115488/Method/st%5Fino/0"></a><section id="tymethod.st_ino" class="method has-srclink"><span class="rightside"><span class="since" title="Stable since Rust version 1.8.0">1.8.0</span> · <a class="srclink" href="../../../../src/std/os/linux/fs.rs.html#78">source</a></span><h4 class="code-header">fn <a href="#tymethod.st_ino" class="fnname">st_ino</a>(&amp;self) -&gt; <a class="primitive" href="../../../primitive.u64.html">u64</a></h4></section></summary><div class="docblock"><p>Returns the inode number.</p>
+<h5 id="examples-2"><a href="#examples-2">Examples</a></h5>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::fs;
+<span class="kw">use </span>std::io;
+<span class="kw">use </span>std::os::linux::fs::MetadataExt;
+
+<span class="kw">fn </span>main() -&gt; io::Result&lt;()&gt; {
+    <span class="kw">let </span>meta = fs::metadata(<span class="string">"some_file"</span>)<span class="question-mark">?</span>;
+    <span class="macro">println!</span>(<span class="string">"{}"</span>, meta.st_ino());
+    <span class="prelude-val">Ok</span>(())
+}</code></pre><a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=%23!%5Ballow(unused)%5D%0Ause%20std%3A%3Afs%3B%0Ause%20std%3A%3Aio%3B%0Ause%20std%3A%3Aos%3A%3Alinux%3A%3Afs%3A%3AMetadataExt%3B%0A%0Afn%20main()%20-%3E%20io%3A%3AResult%3C()%3E%20%7B%0A%20%20%20%20let%20meta%20%3D%20fs%3A%3Ametadata(%22some_file%22)%3F%3B%0A%20%20%20%20println!(%22%7B%7D%22%2C%20meta.st_ino())%3B%0A%20%20%20%20Ok(())%0A%7D&amp;edition=2021">Run</a></div>
+</div></details><details class="rustdoc-toggle method-toggle" open="true"><summary><a class="dashAnchor" name="//dash_ref_115489/Method/st%5Fmode/0"></a><section id="tymethod.st_mode" class="method has-srclink"><span class="rightside"><span class="since" title="Stable since Rust version 1.8.0">1.8.0</span> · <a class="srclink" href="../../../../src/std/os/linux/fs.rs.html#95">source</a></span><h4 class="code-header">fn <a href="#tymethod.st_mode" class="fnname">st_mode</a>(&amp;self) -&gt; <a class="primitive" href="../../../primitive.u32.html">u32</a></h4></section></summary><div class="docblock"><p>Returns the file type and mode.</p>
+<h5 id="examples-3"><a href="#examples-3">Examples</a></h5>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::fs;
+<span class="kw">use </span>std::io;
+<span class="kw">use </span>std::os::linux::fs::MetadataExt;
+
+<span class="kw">fn </span>main() -&gt; io::Result&lt;()&gt; {
+    <span class="kw">let </span>meta = fs::metadata(<span class="string">"some_file"</span>)<span class="question-mark">?</span>;
+    <span class="macro">println!</span>(<span class="string">"{}"</span>, meta.st_mode());
+    <span class="prelude-val">Ok</span>(())
+}</code></pre><a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=%23!%5Ballow(unused)%5D%0Ause%20std%3A%3Afs%3B%0Ause%20std%3A%3Aio%3B%0Ause%20std%3A%3Aos%3A%3Alinux%3A%3Afs%3A%3AMetadataExt%3B%0A%0Afn%20main()%20-%3E%20io%3A%3AResult%3C()%3E%20%7B%0A%20%20%20%20let%20meta%20%3D%20fs%3A%3Ametadata(%22some_file%22)%3F%3B%0A%20%20%20%20println!(%22%7B%7D%22%2C%20meta.st_mode())%3B%0A%20%20%20%20Ok(())%0A%7D&amp;edition=2021">Run</a></div>
+</div></details><details class="rustdoc-toggle method-toggle" open="true"><summary><a class="dashAnchor" name="//dash_ref_115490/Method/st%5Fnlink/0"></a><section id="tymethod.st_nlink" class="method has-srclink"><span class="rightside"><span class="since" title="Stable since Rust version 1.8.0">1.8.0</span> · <a class="srclink" href="../../../../src/std/os/linux/fs.rs.html#112">source</a></span><h4 class="code-header">fn <a href="#tymethod.st_nlink" class="fnname">st_nlink</a>(&amp;self) -&gt; <a class="primitive" href="../../../primitive.u64.html">u64</a></h4></section></summary><div class="docblock"><p>Returns the number of hard links to file.</p>
+<h5 id="examples-4"><a href="#examples-4">Examples</a></h5>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::fs;
+<span class="kw">use </span>std::io;
+<span class="kw">use </span>std::os::linux::fs::MetadataExt;
+
+<span class="kw">fn </span>main() -&gt; io::Result&lt;()&gt; {
+    <span class="kw">let </span>meta = fs::metadata(<span class="string">"some_file"</span>)<span class="question-mark">?</span>;
+    <span class="macro">println!</span>(<span class="string">"{}"</span>, meta.st_nlink());
+    <span class="prelude-val">Ok</span>(())
+}</code></pre><a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=%23!%5Ballow(unused)%5D%0Ause%20std%3A%3Afs%3B%0Ause%20std%3A%3Aio%3B%0Ause%20std%3A%3Aos%3A%3Alinux%3A%3Afs%3A%3AMetadataExt%3B%0A%0Afn%20main()%20-%3E%20io%3A%3AResult%3C()%3E%20%7B%0A%20%20%20%20let%20meta%20%3D%20fs%3A%3Ametadata(%22some_file%22)%3F%3B%0A%20%20%20%20println!(%22%7B%7D%22%2C%20meta.st_nlink())%3B%0A%20%20%20%20Ok(())%0A%7D&amp;edition=2021">Run</a></div>
+</div></details><details class="rustdoc-toggle method-toggle" open="true"><summary><a class="dashAnchor" name="//dash_ref_115491/Method/st%5Fuid/0"></a><section id="tymethod.st_uid" class="method has-srclink"><span class="rightside"><span class="since" title="Stable since Rust version 1.8.0">1.8.0</span> · <a class="srclink" href="../../../../src/std/os/linux/fs.rs.html#129">source</a></span><h4 class="code-header">fn <a href="#tymethod.st_uid" class="fnname">st_uid</a>(&amp;self) -&gt; <a class="primitive" href="../../../primitive.u32.html">u32</a></h4></section></summary><div class="docblock"><p>Returns the user ID of the file owner.</p>
+<h5 id="examples-5"><a href="#examples-5">Examples</a></h5>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::fs;
+<span class="kw">use </span>std::io;
+<span class="kw">use </span>std::os::linux::fs::MetadataExt;
+
+<span class="kw">fn </span>main() -&gt; io::Result&lt;()&gt; {
+    <span class="kw">let </span>meta = fs::metadata(<span class="string">"some_file"</span>)<span class="question-mark">?</span>;
+    <span class="macro">println!</span>(<span class="string">"{}"</span>, meta.st_uid());
+    <span class="prelude-val">Ok</span>(())
+}</code></pre><a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=%23!%5Ballow(unused)%5D%0Ause%20std%3A%3Afs%3B%0Ause%20std%3A%3Aio%3B%0Ause%20std%3A%3Aos%3A%3Alinux%3A%3Afs%3A%3AMetadataExt%3B%0A%0Afn%20main()%20-%3E%20io%3A%3AResult%3C()%3E%20%7B%0A%20%20%20%20let%20meta%20%3D%20fs%3A%3Ametadata(%22some_file%22)%3F%3B%0A%20%20%20%20println!(%22%7B%7D%22%2C%20meta.st_uid())%3B%0A%20%20%20%20Ok(())%0A%7D&amp;edition=2021">Run</a></div>
+</div></details><details class="rustdoc-toggle method-toggle" open="true"><summary><a class="dashAnchor" name="//dash_ref_115492/Method/st%5Fgid/0"></a><section id="tymethod.st_gid" class="method has-srclink"><span class="rightside"><span class="since" title="Stable since Rust version 1.8.0">1.8.0</span> · <a class="srclink" href="../../../../src/std/os/linux/fs.rs.html#146">source</a></span><h4 class="code-header">fn <a href="#tymethod.st_gid" class="fnname">st_gid</a>(&amp;self) -&gt; <a class="primitive" href="../../../primitive.u32.html">u32</a></h4></section></summary><div class="docblock"><p>Returns the group ID of the file owner.</p>
+<h5 id="examples-6"><a href="#examples-6">Examples</a></h5>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::fs;
+<span class="kw">use </span>std::io;
+<span class="kw">use </span>std::os::linux::fs::MetadataExt;
+
+<span class="kw">fn </span>main() -&gt; io::Result&lt;()&gt; {
+    <span class="kw">let </span>meta = fs::metadata(<span class="string">"some_file"</span>)<span class="question-mark">?</span>;
+    <span class="macro">println!</span>(<span class="string">"{}"</span>, meta.st_gid());
+    <span class="prelude-val">Ok</span>(())
+}</code></pre><a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=%23!%5Ballow(unused)%5D%0Ause%20std%3A%3Afs%3B%0Ause%20std%3A%3Aio%3B%0Ause%20std%3A%3Aos%3A%3Alinux%3A%3Afs%3A%3AMetadataExt%3B%0A%0Afn%20main()%20-%3E%20io%3A%3AResult%3C()%3E%20%7B%0A%20%20%20%20let%20meta%20%3D%20fs%3A%3Ametadata(%22some_file%22)%3F%3B%0A%20%20%20%20println!(%22%7B%7D%22%2C%20meta.st_gid())%3B%0A%20%20%20%20Ok(())%0A%7D&amp;edition=2021">Run</a></div>
+</div></details><details class="rustdoc-toggle method-toggle" open="true"><summary><a class="dashAnchor" name="//dash_ref_115493/Method/st%5Frdev/0"></a><section id="tymethod.st_rdev" class="method has-srclink"><span class="rightside"><span class="since" title="Stable since Rust version 1.8.0">1.8.0</span> · <a class="srclink" href="../../../../src/std/os/linux/fs.rs.html#163">source</a></span><h4 class="code-header">fn <a href="#tymethod.st_rdev" class="fnname">st_rdev</a>(&amp;self) -&gt; <a class="primitive" href="../../../primitive.u64.html">u64</a></h4></section></summary><div class="docblock"><p>Returns the device ID that this file represents. Only relevant for special file.</p>
+<h5 id="examples-7"><a href="#examples-7">Examples</a></h5>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::fs;
+<span class="kw">use </span>std::io;
+<span class="kw">use </span>std::os::linux::fs::MetadataExt;
+
+<span class="kw">fn </span>main() -&gt; io::Result&lt;()&gt; {
+    <span class="kw">let </span>meta = fs::metadata(<span class="string">"some_file"</span>)<span class="question-mark">?</span>;
+    <span class="macro">println!</span>(<span class="string">"{}"</span>, meta.st_rdev());
+    <span class="prelude-val">Ok</span>(())
+}</code></pre><a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=%23!%5Ballow(unused)%5D%0Ause%20std%3A%3Afs%3B%0Ause%20std%3A%3Aio%3B%0Ause%20std%3A%3Aos%3A%3Alinux%3A%3Afs%3A%3AMetadataExt%3B%0A%0Afn%20main()%20-%3E%20io%3A%3AResult%3C()%3E%20%7B%0A%20%20%20%20let%20meta%20%3D%20fs%3A%3Ametadata(%22some_file%22)%3F%3B%0A%20%20%20%20println!(%22%7B%7D%22%2C%20meta.st_rdev())%3B%0A%20%20%20%20Ok(())%0A%7D&amp;edition=2021">Run</a></div>
+</div></details><details class="rustdoc-toggle method-toggle" open="true"><summary><a class="dashAnchor" name="//dash_ref_115494/Method/st%5Fsize/0"></a><section id="tymethod.st_size" class="method has-srclink"><span class="rightside"><span class="since" title="Stable since Rust version 1.8.0">1.8.0</span> · <a class="srclink" href="../../../../src/std/os/linux/fs.rs.html#183">source</a></span><h4 class="code-header">fn <a href="#tymethod.st_size" class="fnname">st_size</a>(&amp;self) -&gt; <a class="primitive" href="../../../primitive.u64.html">u64</a></h4></section></summary><div class="docblock"><p>Returns the size of the file (if it is a regular file or a symbolic link) in bytes.</p>
+<p>The size of a symbolic link is the length of the pathname it contains,
+without a terminating null byte.</p>
+<h5 id="examples-8"><a href="#examples-8">Examples</a></h5>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::fs;
+<span class="kw">use </span>std::io;
+<span class="kw">use </span>std::os::linux::fs::MetadataExt;
+
+<span class="kw">fn </span>main() -&gt; io::Result&lt;()&gt; {
+    <span class="kw">let </span>meta = fs::metadata(<span class="string">"some_file"</span>)<span class="question-mark">?</span>;
+    <span class="macro">println!</span>(<span class="string">"{}"</span>, meta.st_size());
+    <span class="prelude-val">Ok</span>(())
+}</code></pre><a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=%23!%5Ballow(unused)%5D%0Ause%20std%3A%3Afs%3B%0Ause%20std%3A%3Aio%3B%0Ause%20std%3A%3Aos%3A%3Alinux%3A%3Afs%3A%3AMetadataExt%3B%0A%0Afn%20main()%20-%3E%20io%3A%3AResult%3C()%3E%20%7B%0A%20%20%20%20let%20meta%20%3D%20fs%3A%3Ametadata(%22some_file%22)%3F%3B%0A%20%20%20%20println!(%22%7B%7D%22%2C%20meta.st_size())%3B%0A%20%20%20%20Ok(())%0A%7D&amp;edition=2021">Run</a></div>
+</div></details><details class="rustdoc-toggle method-toggle" open="true"><summary><a class="dashAnchor" name="//dash_ref_115495/Method/st%5Fatime/0"></a><section id="tymethod.st_atime" class="method has-srclink"><span class="rightside"><span class="since" title="Stable since Rust version 1.8.0">1.8.0</span> · <a class="srclink" href="../../../../src/std/os/linux/fs.rs.html#200">source</a></span><h4 class="code-header">fn <a href="#tymethod.st_atime" class="fnname">st_atime</a>(&amp;self) -&gt; <a class="primitive" href="../../../primitive.i64.html">i64</a></h4></section></summary><div class="docblock"><p>Returns the last access time of the file, in seconds since Unix Epoch.</p>
+<h5 id="examples-9"><a href="#examples-9">Examples</a></h5>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::fs;
+<span class="kw">use </span>std::io;
+<span class="kw">use </span>std::os::linux::fs::MetadataExt;
+
+<span class="kw">fn </span>main() -&gt; io::Result&lt;()&gt; {
+    <span class="kw">let </span>meta = fs::metadata(<span class="string">"some_file"</span>)<span class="question-mark">?</span>;
+    <span class="macro">println!</span>(<span class="string">"{}"</span>, meta.st_atime());
+    <span class="prelude-val">Ok</span>(())
+}</code></pre><a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=%23!%5Ballow(unused)%5D%0Ause%20std%3A%3Afs%3B%0Ause%20std%3A%3Aio%3B%0Ause%20std%3A%3Aos%3A%3Alinux%3A%3Afs%3A%3AMetadataExt%3B%0A%0Afn%20main()%20-%3E%20io%3A%3AResult%3C()%3E%20%7B%0A%20%20%20%20let%20meta%20%3D%20fs%3A%3Ametadata(%22some_file%22)%3F%3B%0A%20%20%20%20println!(%22%7B%7D%22%2C%20meta.st_atime())%3B%0A%20%20%20%20Ok(())%0A%7D&amp;edition=2021">Run</a></div>
+</div></details><details class="rustdoc-toggle method-toggle" open="true"><summary><a class="dashAnchor" name="//dash_ref_115496/Method/st%5Fatime%5Fnsec/0"></a><section id="tymethod.st_atime_nsec" class="method has-srclink"><span class="rightside"><span class="since" title="Stable since Rust version 1.8.0">1.8.0</span> · <a class="srclink" href="../../../../src/std/os/linux/fs.rs.html#219">source</a></span><h4 class="code-header">fn <a href="#tymethod.st_atime_nsec" class="fnname">st_atime_nsec</a>(&amp;self) -&gt; <a class="primitive" href="../../../primitive.i64.html">i64</a></h4></section></summary><div class="docblock"><p>Returns the last access time of the file, in nanoseconds since <a href="trait.MetadataExt.html#tymethod.st_atime"><code>st_atime</code></a>.</p>
+<h5 id="examples-10"><a href="#examples-10">Examples</a></h5>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::fs;
+<span class="kw">use </span>std::io;
+<span class="kw">use </span>std::os::linux::fs::MetadataExt;
+
+<span class="kw">fn </span>main() -&gt; io::Result&lt;()&gt; {
+    <span class="kw">let </span>meta = fs::metadata(<span class="string">"some_file"</span>)<span class="question-mark">?</span>;
+    <span class="macro">println!</span>(<span class="string">"{}"</span>, meta.st_atime_nsec());
+    <span class="prelude-val">Ok</span>(())
+}</code></pre><a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=%23!%5Ballow(unused)%5D%0Ause%20std%3A%3Afs%3B%0Ause%20std%3A%3Aio%3B%0Ause%20std%3A%3Aos%3A%3Alinux%3A%3Afs%3A%3AMetadataExt%3B%0A%0Afn%20main()%20-%3E%20io%3A%3AResult%3C()%3E%20%7B%0A%20%20%20%20let%20meta%20%3D%20fs%3A%3Ametadata(%22some_file%22)%3F%3B%0A%20%20%20%20println!(%22%7B%7D%22%2C%20meta.st_atime_nsec())%3B%0A%20%20%20%20Ok(())%0A%7D&amp;edition=2021">Run</a></div>
+</div></details><details class="rustdoc-toggle method-toggle" open="true"><summary><a class="dashAnchor" name="//dash_ref_115497/Method/st%5Fmtime/0"></a><section id="tymethod.st_mtime" class="method has-srclink"><span class="rightside"><span class="since" title="Stable since Rust version 1.8.0">1.8.0</span> · <a class="srclink" href="../../../../src/std/os/linux/fs.rs.html#236">source</a></span><h4 class="code-header">fn <a href="#tymethod.st_mtime" class="fnname">st_mtime</a>(&amp;self) -&gt; <a class="primitive" href="../../../primitive.i64.html">i64</a></h4></section></summary><div class="docblock"><p>Returns the last modification time of the file, in seconds since Unix Epoch.</p>
+<h5 id="examples-11"><a href="#examples-11">Examples</a></h5>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::fs;
+<span class="kw">use </span>std::io;
+<span class="kw">use </span>std::os::linux::fs::MetadataExt;
+
+<span class="kw">fn </span>main() -&gt; io::Result&lt;()&gt; {
+    <span class="kw">let </span>meta = fs::metadata(<span class="string">"some_file"</span>)<span class="question-mark">?</span>;
+    <span class="macro">println!</span>(<span class="string">"{}"</span>, meta.st_mtime());
+    <span class="prelude-val">Ok</span>(())
+}</code></pre><a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=%23!%5Ballow(unused)%5D%0Ause%20std%3A%3Afs%3B%0Ause%20std%3A%3Aio%3B%0Ause%20std%3A%3Aos%3A%3Alinux%3A%3Afs%3A%3AMetadataExt%3B%0A%0Afn%20main()%20-%3E%20io%3A%3AResult%3C()%3E%20%7B%0A%20%20%20%20let%20meta%20%3D%20fs%3A%3Ametadata(%22some_file%22)%3F%3B%0A%20%20%20%20println!(%22%7B%7D%22%2C%20meta.st_mtime())%3B%0A%20%20%20%20Ok(())%0A%7D&amp;edition=2021">Run</a></div>
+</div></details><details class="rustdoc-toggle method-toggle" open="true"><summary><a class="dashAnchor" name="//dash_ref_115498/Method/st%5Fmtime%5Fnsec/0"></a><section id="tymethod.st_mtime_nsec" class="method has-srclink"><span class="rightside"><span class="since" title="Stable since Rust version 1.8.0">1.8.0</span> · <a class="srclink" href="../../../../src/std/os/linux/fs.rs.html#255">source</a></span><h4 class="code-header">fn <a href="#tymethod.st_mtime_nsec" class="fnname">st_mtime_nsec</a>(&amp;self) -&gt; <a class="primitive" href="../../../primitive.i64.html">i64</a></h4></section></summary><div class="docblock"><p>Returns the last modification time of the file, in nanoseconds since <a href="trait.MetadataExt.html#tymethod.st_mtime"><code>st_mtime</code></a>.</p>
+<h5 id="examples-12"><a href="#examples-12">Examples</a></h5>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::fs;
+<span class="kw">use </span>std::io;
+<span class="kw">use </span>std::os::linux::fs::MetadataExt;
+
+<span class="kw">fn </span>main() -&gt; io::Result&lt;()&gt; {
+    <span class="kw">let </span>meta = fs::metadata(<span class="string">"some_file"</span>)<span class="question-mark">?</span>;
+    <span class="macro">println!</span>(<span class="string">"{}"</span>, meta.st_mtime_nsec());
+    <span class="prelude-val">Ok</span>(())
+}</code></pre><a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=%23!%5Ballow(unused)%5D%0Ause%20std%3A%3Afs%3B%0Ause%20std%3A%3Aio%3B%0Ause%20std%3A%3Aos%3A%3Alinux%3A%3Afs%3A%3AMetadataExt%3B%0A%0Afn%20main()%20-%3E%20io%3A%3AResult%3C()%3E%20%7B%0A%20%20%20%20let%20meta%20%3D%20fs%3A%3Ametadata(%22some_file%22)%3F%3B%0A%20%20%20%20println!(%22%7B%7D%22%2C%20meta.st_mtime_nsec())%3B%0A%20%20%20%20Ok(())%0A%7D&amp;edition=2021">Run</a></div>
+</div></details><details class="rustdoc-toggle method-toggle" open="true"><summary><a class="dashAnchor" name="//dash_ref_115499/Method/st%5Fctime/0"></a><section id="tymethod.st_ctime" class="method has-srclink"><span class="rightside"><span class="since" title="Stable since Rust version 1.8.0">1.8.0</span> · <a class="srclink" href="../../../../src/std/os/linux/fs.rs.html#272">source</a></span><h4 class="code-header">fn <a href="#tymethod.st_ctime" class="fnname">st_ctime</a>(&amp;self) -&gt; <a class="primitive" href="../../../primitive.i64.html">i64</a></h4></section></summary><div class="docblock"><p>Returns the last status change time of the file, in seconds since Unix Epoch.</p>
+<h5 id="examples-13"><a href="#examples-13">Examples</a></h5>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::fs;
+<span class="kw">use </span>std::io;
+<span class="kw">use </span>std::os::linux::fs::MetadataExt;
+
+<span class="kw">fn </span>main() -&gt; io::Result&lt;()&gt; {
+    <span class="kw">let </span>meta = fs::metadata(<span class="string">"some_file"</span>)<span class="question-mark">?</span>;
+    <span class="macro">println!</span>(<span class="string">"{}"</span>, meta.st_ctime());
+    <span class="prelude-val">Ok</span>(())
+}</code></pre><a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=%23!%5Ballow(unused)%5D%0Ause%20std%3A%3Afs%3B%0Ause%20std%3A%3Aio%3B%0Ause%20std%3A%3Aos%3A%3Alinux%3A%3Afs%3A%3AMetadataExt%3B%0A%0Afn%20main()%20-%3E%20io%3A%3AResult%3C()%3E%20%7B%0A%20%20%20%20let%20meta%20%3D%20fs%3A%3Ametadata(%22some_file%22)%3F%3B%0A%20%20%20%20println!(%22%7B%7D%22%2C%20meta.st_ctime())%3B%0A%20%20%20%20Ok(())%0A%7D&amp;edition=2021">Run</a></div>
+</div></details><details class="rustdoc-toggle method-toggle" open="true"><summary><a class="dashAnchor" name="//dash_ref_115500/Method/st%5Fctime%5Fnsec/0"></a><section id="tymethod.st_ctime_nsec" class="method has-srclink"><span class="rightside"><span class="since" title="Stable since Rust version 1.8.0">1.8.0</span> · <a class="srclink" href="../../../../src/std/os/linux/fs.rs.html#291">source</a></span><h4 class="code-header">fn <a href="#tymethod.st_ctime_nsec" class="fnname">st_ctime_nsec</a>(&amp;self) -&gt; <a class="primitive" href="../../../primitive.i64.html">i64</a></h4></section></summary><div class="docblock"><p>Returns the last status change time of the file, in nanoseconds since <a href="trait.MetadataExt.html#tymethod.st_ctime"><code>st_ctime</code></a>.</p>
+<h5 id="examples-14"><a href="#examples-14">Examples</a></h5>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::fs;
+<span class="kw">use </span>std::io;
+<span class="kw">use </span>std::os::linux::fs::MetadataExt;
+
+<span class="kw">fn </span>main() -&gt; io::Result&lt;()&gt; {
+    <span class="kw">let </span>meta = fs::metadata(<span class="string">"some_file"</span>)<span class="question-mark">?</span>;
+    <span class="macro">println!</span>(<span class="string">"{}"</span>, meta.st_ctime_nsec());
+    <span class="prelude-val">Ok</span>(())
+}</code></pre><a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=%23!%5Ballow(unused)%5D%0Ause%20std%3A%3Afs%3B%0Ause%20std%3A%3Aio%3B%0Ause%20std%3A%3Aos%3A%3Alinux%3A%3Afs%3A%3AMetadataExt%3B%0A%0Afn%20main()%20-%3E%20io%3A%3AResult%3C()%3E%20%7B%0A%20%20%20%20let%20meta%20%3D%20fs%3A%3Ametadata(%22some_file%22)%3F%3B%0A%20%20%20%20println!(%22%7B%7D%22%2C%20meta.st_ctime_nsec())%3B%0A%20%20%20%20Ok(())%0A%7D&amp;edition=2021">Run</a></div>
+</div></details><details class="rustdoc-toggle method-toggle" open="true"><summary><a class="dashAnchor" name="//dash_ref_115501/Method/st%5Fblksize/0"></a><section id="tymethod.st_blksize" class="method has-srclink"><span class="rightside"><span class="since" title="Stable since Rust version 1.8.0">1.8.0</span> · <a class="srclink" href="../../../../src/std/os/linux/fs.rs.html#308">source</a></span><h4 class="code-header">fn <a href="#tymethod.st_blksize" class="fnname">st_blksize</a>(&amp;self) -&gt; <a class="primitive" href="../../../primitive.u64.html">u64</a></h4></section></summary><div class="docblock"><p>Returns the “preferred” block size for efficient filesystem I/O.</p>
+<h5 id="examples-15"><a href="#examples-15">Examples</a></h5>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::fs;
+<span class="kw">use </span>std::io;
+<span class="kw">use </span>std::os::linux::fs::MetadataExt;
+
+<span class="kw">fn </span>main() -&gt; io::Result&lt;()&gt; {
+    <span class="kw">let </span>meta = fs::metadata(<span class="string">"some_file"</span>)<span class="question-mark">?</span>;
+    <span class="macro">println!</span>(<span class="string">"{}"</span>, meta.st_blksize());
+    <span class="prelude-val">Ok</span>(())
+}</code></pre><a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=%23!%5Ballow(unused)%5D%0Ause%20std%3A%3Afs%3B%0Ause%20std%3A%3Aio%3B%0Ause%20std%3A%3Aos%3A%3Alinux%3A%3Afs%3A%3AMetadataExt%3B%0A%0Afn%20main()%20-%3E%20io%3A%3AResult%3C()%3E%20%7B%0A%20%20%20%20let%20meta%20%3D%20fs%3A%3Ametadata(%22some_file%22)%3F%3B%0A%20%20%20%20println!(%22%7B%7D%22%2C%20meta.st_blksize())%3B%0A%20%20%20%20Ok(())%0A%7D&amp;edition=2021">Run</a></div>
+</div></details><details class="rustdoc-toggle method-toggle" open="true"><summary><a class="dashAnchor" name="//dash_ref_115502/Method/st%5Fblocks/0"></a><section id="tymethod.st_blocks" class="method has-srclink"><span class="rightside"><span class="since" title="Stable since Rust version 1.8.0">1.8.0</span> · <a class="srclink" href="../../../../src/std/os/linux/fs.rs.html#325">source</a></span><h4 class="code-header">fn <a href="#tymethod.st_blocks" class="fnname">st_blocks</a>(&amp;self) -&gt; <a class="primitive" href="../../../primitive.u64.html">u64</a></h4></section></summary><div class="docblock"><p>Returns the number of blocks allocated to the file, 512-byte units.</p>
+<h5 id="examples-16"><a href="#examples-16">Examples</a></h5>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::fs;
+<span class="kw">use </span>std::io;
+<span class="kw">use </span>std::os::linux::fs::MetadataExt;
+
+<span class="kw">fn </span>main() -&gt; io::Result&lt;()&gt; {
+    <span class="kw">let </span>meta = fs::metadata(<span class="string">"some_file"</span>)<span class="question-mark">?</span>;
+    <span class="macro">println!</span>(<span class="string">"{}"</span>, meta.st_blocks());
+    <span class="prelude-val">Ok</span>(())
+}</code></pre><a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=%23!%5Ballow(unused)%5D%0Ause%20std%3A%3Afs%3B%0Ause%20std%3A%3Aio%3B%0Ause%20std%3A%3Aos%3A%3Alinux%3A%3Afs%3A%3AMetadataExt%3B%0A%0Afn%20main()%20-%3E%20io%3A%3AResult%3C()%3E%20%7B%0A%20%20%20%20let%20meta%20%3D%20fs%3A%3Ametadata(%22some_file%22)%3F%3B%0A%20%20%20%20println!(%22%7B%7D%22%2C%20meta.st_blocks())%3B%0A%20%20%20%20Ok(())%0A%7D&amp;edition=2021">Run</a></div>
+</div></details></div><h2 id="implementors" class="small-section-header">Implementors<a href="#implementors" class="anchor"></a></h2><div id="implementors-list"><section id="impl-MetadataExt-for-Metadata" class="impl has-srclink"><a class="srclink rightside" href="../../../../src/std/os/linux/fs.rs.html#329-397">source</a><a href="#impl-MetadataExt-for-Metadata" class="anchor"></a><h3 class="code-header">impl <a class="trait" href="trait.MetadataExt.html" title="trait std::os::linux::fs::MetadataExt">MetadataExt</a> for <a class="struct" href="../../../fs/struct.Metadata.html" title="struct std::fs::Metadata">Metadata</a></h3></section></div><script src="../../../../implementors/std/os/linux/fs/trait.MetadataExt.js" async=""></script></section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="std" data-themes="ayu,dark,light" data-resource-suffix="1.66.1" data-rustdoc-version="1.66.1 (90743e729 2023-01-10)"></div>
+<!-- Mirrored from doc.rust-lang.org/1.66.1/std/os/linux/fs/trait.MetadataExt.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 11 Jan 2023 03:06:14 GMT -->
+</body></html>

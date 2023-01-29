@@ -1,0 +1,13 @@
+{
+    "feed_url": "https://zealusercontributions.vercel.app/api/cheatsheets/GDB.xml",
+    "name": "GDB",
+    "title": "GDB",
+    "urls": [
+        "https://kapeli.com/feeds/zzz/cheatsheets/GDB.tgz",
+        "https://sanfrancisco.kapeli.com/feeds/zzz/cheatsheets/GDB.tgz",
+        "https://newyork.kapeli.com/feeds/zzz/cheatsheets/GDB.tgz",
+        "https://london.kapeli.com/feeds/zzz/cheatsheets/GDB.tgz",
+        "https://frankfurt.kapeli.com/feeds/zzz/cheatsheets/GDB.tgz"
+    ],
+    "version": "1.0.0"
+}

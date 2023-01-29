@@ -1,0 +1,42 @@
+/*
+Taken from the reference.
+Warnings and notes:
+Write the <div>s on their own line. E.g.
+<div class="warning">
+Warning: This is bad!
+</div>
+*/
+main .warning p {
+    padding: 10px 20px;
+    margin: 20px 0;
+}
+
+main .warning p::before {
+    content: "⚠️ ";
+}
+
+.light main .warning p,
+.rust main .warning p {
+    border: 2px solid red;
+    background: #ffcece;
+}
+
+.rust main .warning p {
+    /* overrides previous declaration */
+    border-color: #961717;
+}
+
+.coal main .warning p,
+.navy main .warning p,
+.ayu main .warning p {
+    background: #542626
+}
+
+/* Make the links higher contrast on dark themes */
+.coal main .warning p a,
+.navy main .warning p a,
+.ayu main .warning p a {
+    color: #80d0d0
+}
+
+h1.section-link:hover a:after, h2.section-link:hover a:after, h3.section-link:hover a:after, h4.section-link:hover a:after, h5.section-link:hover a:after, h6.section-link:hover a:after {content:normal !important} .content main {max-width:none !important} .sidebar-visible .page-wrapper {margin-left:0 !important} #versioninfo {display:none !important} body.rustdoc {max-width:none !important} .nav-wide-wrapper { display:none !important} .nav-wrapper {display:block !important} h1.title {padding-top:0px !important; margin-top:10px !important} .sidebar {display:none !important} .sub {display:none !important} .section-header:hover a:after {content:normal !important} #toc, #nav {display:none !important} #page-wrapper {position:static !important; padding:0px !important} #page {max-width:none !important} .impl-methods .stability, .methods .stability {margin-right:0px !important; margin-left:20px !important} .tooltip {display:none !important} #collapse-all, #expand-all, .toggle-wrapper, .collapse-toggle {display:none !important} #menu-bar {display:none !important} .page {position:static !important;} body.rustdoc, body.rustdoc #main { padding-top:0px !important; } .play-button, .theme-picker {display:none !important} h1,h2,h3 {margin-top:0.67em !important} .content {margin:0px !important; max-width: none !important;} .anchor {display:none !important} h1, h2, h3, h4, h5, h6 {padding-left:0px !important} .section-header:hover a:before {content: '' !important} body {background: white !important} .hidden-by-impl-hider, .hidden-by-usual-hider {display:block !important} .docblock > .section-header:first-child {margin-left:0} h4 > .important-traits {left:-24px !important} h1 a.header:target::before, h2 a.header:target::before, h3 a.header:target::before, h4 a.header:target::before {content: none !important} .collapse-toggle {display:none !important} .impl-items .hidden {display:block !important} #sidebar-toggle { display:none !important} .content pre.line-numbers {margin-top:0 !important} .important-traits {display: none !important} #main>h2+div, #main>h2+h3, #main>h3+div {display:block !important} #sidebar-toggle { display:none !important} .content pre.line-numbers {margin-top:0 !important} .attributes {margin-left:0 !important} #main>h2+div, #main>h2+h3, #main>h3+div {display:block !important} .impl-items .hidden {display:flex !important} details.rustdoc-toggle>summary:not(.hideme)::before {display:none} div.docblock {width:auto !important} #toggle-all-docs {display:none !important} #main div.toggle-wrapper {display:none !important} .summary::before {display:none !important} :target {padding-right:0; background:transparent; border-right:none} .width-limiter {max-width:none !important;} main {padding:10px 30px 40px 30px !important} .mobile-topbar {display:none !important}

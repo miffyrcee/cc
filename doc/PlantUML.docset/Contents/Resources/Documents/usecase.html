@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Use Case Diagram</title>
+</head>
+<body>
+
+
+
+
+
+
+
+
+
+
+
+
+<h1>Use Case Diagram</h1>
+
+<p>To be able to generate those diagrams, you must have <a href="graphvizdot.html">Graphviz
+software</a> installed on your machine in the default directory <code>c:\Program
+Files\GraphvizX.XX</code> or <code>/usr/bin/dot</code>.</p>
+
+<p>You can <a href="graphvizdot.html">have a look here if you have installed Graphviz somewhere else.</a>
+
+
+</p><p>Let&apos;s have a fews examples :
+</p><p>Note that you can disable the shadowing using the <code>skinparam shadowing false</code> command.
+</p><a name="//apple_ref/cpp/Guide/Usecases" class="dashAnchor"></a><h2 id="Usecase">Usecases</h2>
+Use cases are enclosed using between parentheses (because two
+parentheses looks like an oval).
+<p>
+You can also use the <code>usecase</code> keyword to define a
+usecase.
+And you can define an alias, using the <code>as</code> keyword.
+This alias will be used latter, when defining relations.
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+(First usecase)
+(Another usecase) as (UC2)  
+usecase UC3
+usecase (Last\nusecase) as UC4
+
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/usecase.png"></td>
+	</tr>
+</table>
+
+</p><a name="//apple_ref/cpp/Guide/Actors" class="dashAnchor"></a><h2 id="Actor">Actors</h2>
+Actor are enclosed using between two points.
+<p>
+You can also use the <code>actor</code> keyword to define an
+actor.
+And you can define an alias, using the <code>as</code> keyword.
+This alias will be used latter, when defining relations.
+</p><p>
+We will see later that the actor definitions are optional.
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+:First Actor:
+:Another\nactor: as Men2  
+actor Men3
+actor :Last actor: as Men4
+
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/usecase_001.png"></td>
+	</tr>
+</table>
+
+</p><a name="//apple_ref/cpp/Guide/Usecases description" class="dashAnchor"></a><h2 id="Body">Usecases description</h2>
+
+If you want to have description on several lines, you can use quotes.
+<p>
+You can also use the following separators: <code>--</code>
+<code>..</code> <code>==</code> <code>__</code>.
+And you can put titles within the separators.
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+usecase UC1 as &quot;You can use
+several lines to define your usecase.
+You can also use separators.
+--
+Several separators are possible.
+==
+And you can add titles:
+..Conclusion..
+This allows large description.&quot;
+
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/usecase_002.png"></td>
+	</tr>
+</table>
+
+
+
+</p><a name="//apple_ref/cpp/Guide/Basic example" class="dashAnchor"></a><h2 id="Basic">Basic example</h2>
+<p>
+To link actors and use cases, the arrow <code>--&gt;</code> is
+used.
+</p><p>
+The more dashes <code>&quot;-&quot;</code> in the arrow, the longer the
+arrow.
+You can add a label on the arrow, by adding a &quot;<code>:</code>&quot;
+character in the arrow definition.
+</p><p>
+In this example, you see that <i>User</i> has not been defined
+before, and is used as an actor.
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+User -&gt; (Start)
+User --&gt; (Use the application) : A small label
+
+:Main Admin: ---&gt; (Use the application) : This is\nyet another\nlabel
+
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/usecase_003.png"></td>
+	</tr>
+</table>
+
+
+</p><a name="//apple_ref/cpp/Guide/Extension" class="dashAnchor"></a><h2 id="Extension">Extension</h2>
+If one actor/use case extends another one, you can use the symbol <code>&lt;|--</code>
+(which stands for <img width="40" src="img/extends01.png">).
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+:Main Admin: as Admin
+(Use the application) as (Use)
+
+User &lt;|-- Admin
+(Start) &lt;|-- (Use)
+
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/usecase_004.png"></td>
+	</tr>
+</table>
+
+<a name="//apple_ref/cpp/Guide/Using notes" class="dashAnchor"></a><h2 id="Using_notes">Using notes</h2>
+You can use the <code>note left of</code> , <code>note right of</code> ,
+<code>note top of</code> , <code>note bottom of</code> keywords to
+define notes related to a single object.
+<p>
+A note can be also define alone with the <code>note</code>
+keywords, then linked to other objects using the <code>..</code> symbol.
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+:Main Admin: as Admin
+(Use the application) as (Use)
+
+User -&gt; (Start)
+User --&gt; (Use)
+
+Admin ---&gt; (Use)
+
+note right of Admin : This is an example.
+
+note right of (Use)
+  A note can also
+  be on several lines
+end note
+
+note &quot;This note is connected\nto several objects.&quot; as N2
+(Start) .. N2
+N2 .. (Use)
+@enduml
+		</pre></td>
+	</tr>
+	<tr>
+		<td><img border="2" src="imgp/usecase_005.png"></td>
+	</tr>
+</table>
+
+</p><a name="//apple_ref/cpp/Guide/Stereotypes" class="dashAnchor"></a><h2 id="Stereotypes">Stereotypes</h2>
+You can add stereotypes while defining actors and use cases using &quot; <code>&lt;&lt;</code>
+&quot; and &quot; <code>&gt;&gt;</code> &quot;.
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+User &lt;&lt; Human &gt;&gt;
+:Main Database: as MySql &lt;&lt; Application &gt;&gt;
+(Start) &lt;&lt; One Shot &gt;&gt;
+(Use the application) as (Use) &lt;&lt; Main &gt;&gt;
+
+User -&gt; (Start)
+User --&gt; (Use)
+
+MySql --&gt; (Use)
+
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/usecase_006.png"></td>
+	</tr>
+</table>
+
+<a name="//apple_ref/cpp/Guide/Changing arrows direction" class="dashAnchor"></a><h2 id="Direction">Changing arrows direction</h2>
+By default, links between classes have two dashes <code>--</code> and are vertically oriented.
+It is possible to use horizontal link by putting a single dash (or dot) like this:
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+:user: --&gt; (Use case 1)
+:user: -&gt; (Use case 2)
+@enduml
+</pre></td>
+		<td><img border="2" src="imgp/usecase_007.png"></td>
+	</tr>
+</table>
+
+You can also change directions by reversing the link:
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+(Use case 1) &lt;.. :user:
+(Use case 2) &lt;- :user:
+@enduml
+</pre></td>
+		<td><img border="2" src="imgp/usecase_008.png"></td>
+	</tr>
+</table>
+
+It is also possible to change arrow direction by adding <code>left</code>, <code>right</code>, <code>up</code>
+or <code>down</code> keywords inside the arrow:
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+:user: -left-&gt; (dummyLeft) 
+:user: -right-&gt; (dummyRight) 
+:user: -up-&gt; (dummyUp)
+:user: -down-&gt; (dummyDown)
+@enduml
+</pre></td>
+		<td><img border="2" src="imgp/usecase_009.png"></td>
+	</tr>
+</table>
+
+You can shorten the arrow by using only the first character of the direction (for example, <code>-d-</code> instead of
+<code>-down-</code>)
+or the two first characters (<code>-do-</code>).
+<p>
+Please note that you should not abuse this functionality : <i>Graphviz</i> gives usually good results without
+tweaking.
+
+</p><a name="//apple_ref/cpp/Guide/Title the diagram" class="dashAnchor"></a><h2 id="Title_diagram">Title the diagram</h2>
+The <code>title</code> keywords is used to put a title.
+<p>
+You can use <code>title</code> and <code>end title</code>
+keywords for a longer title, as in sequence diagrams.
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+title Simple &lt;b&gt;Usecase&lt;/b&gt;\nwith one actor
+
+&quot;Use the application&quot; as (Use)
+User -&gt; (Use)
+
+@enduml
+</pre></td>
+		<td><img border="2" src="imgp/usecase_010.png"></td>
+	</tr>
+</table>
+
+</p><a name="//apple_ref/cpp/Guide/Splitting diagrams" class="dashAnchor"></a><h2 id="Newpage">Splitting diagrams</h2>
+The <code>newpage</code> keywords to split your diagram into several pages or images.
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+:actor1: --&gt; (Usecase1)
+newpage
+:actor2: --&gt; (Usecase2)
+@enduml
+</pre></td>
+		<td><img border="2" src="imgp/usecase_011.png"></td>
+		<td><img border="2" src="imgp/usecase_011_001.png"></td>
+	</tr>
+</table>
+
+<a name="//apple_ref/cpp/Guide/Left to right direction" class="dashAnchor"></a><h2 id="Rankdir">Left to right direction</h2>
+The general default behavior when building diagram is <b>top to bottom</b>.
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+&apos;default
+top to bottom direction
+user1 --&gt; (Usecase 1)
+user2 --&gt; (Usecase 2)
+
+@enduml
+</pre></td>
+		<td><img border="2" src="imgp/usecase_012.png"></td>
+	</tr>
+</table>
+You may change to <b>left to right</b> using the <code>left to right direction</code> command.
+The result is often better with this direction.
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+left to right direction
+user1 --&gt; (Usecase 1)
+user2 --&gt; (Usecase 2)
+
+@enduml
+</pre></td>
+		<td><img border="2" src="imgp/usecase_013.png"></td>
+	</tr>
+</table>
+
+
+
+<a name="//apple_ref/cpp/Guide/Skinparam" class="dashAnchor"></a><h2 id="Skinparam">Skinparam</h2>
+
+You can use the <code><a href="skinparam.html">skinparam</a></code>
+command to change colors and fonts for the drawing.
+<p>
+You can use this command :
+<ul>
+	<li>In the diagram definition, like any other commands,</li>
+	<li>In an <a href="preprocessing.html">included file</a>,</li>
+	<li>In a configuration file, provided in the <a href="command_line.html">command line</a> or the <a href="ant_task.html">ANT task</a>.</li>
+</ul>
+
+You can define specific color and fonts for stereotyped actors and usecases.
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+
+skinparam usecase {
+	BackgroundColor DarkSeaGreen
+	BorderColor DarkSlateGray
+
+	BackgroundColor&lt;&lt; Main &gt;&gt; YellowGreen
+	BorderColor&lt;&lt; Main &gt;&gt; YellowGreen
+	
+	ArrowColor Olive
+	ActorBorderColor black
+	ActorFontName Courier
+
+	ActorBackgroundColor&lt;&lt; Human &gt;&gt; Gold
+}
+
+User &lt;&lt; Human &gt;&gt;
+:Main Database: as MySql &lt;&lt; Application &gt;&gt;
+(Start) &lt;&lt; One Shot &gt;&gt;
+(Use the application) as (Use) &lt;&lt; Main &gt;&gt;
+
+User -&gt; (Start)
+User --&gt; (Use)
+
+MySql --&gt; (Use)
+
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/usecase_014.png"></td>
+	</tr>
+</table>
+
+</p><a name="//apple_ref/cpp/Guide/Complete example" class="dashAnchor"></a><h2 id="Complete">Complete example</h2>
+
+<table cellspacing="10" cellpadding="10">
+	<tr valign="top">
+		<td class="scriptplantu"><pre>
+@startuml
+left to right direction
+skinparam packageStyle rect
+actor customer
+actor clerk
+rectangle checkout {
+  customer -- (checkout)
+  (checkout) .&gt; (payment) : include
+  (help) .&gt; (checkout) : extends
+  (checkout) -- clerk
+}
+@enduml
+		</pre></td>
+		<td><img border="2" src="imgp/usecase_015.png"></td>
+	</tr>
+</table>
+<p>
+
+
+
+
+
+</p>

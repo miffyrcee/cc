@@ -1,0 +1,9 @@
+{
+    "extra": {
+        "isJavaScriptEnabled": true
+    },
+    "name": "Rust",
+    "revision": "0",
+    "title": "Rust",
+    "version": "1.65.0"
+}

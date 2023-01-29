@@ -1,0 +1,103 @@
+
+
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>pytest-2.3.1: fix regression with factory functions &#8212; pytest documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments_pytest.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="pytest-2.3: improved fixtures / better unittest integration" href="release-2.3.0.html" />
+    <link rel="prev" title="pytest-2.3.2: some fixes and more traceback-printing speed" href="release-2.3.2.html" />
+  <script>DOCUMENTATION_OPTIONS.URL_ROOT = '../';</script>
+   
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="release-2.3.0.html" title="pytest-2.3: improved fixtures / better unittest integration"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="release-2.3.2.html" title="pytest-2.3.2: some fixes and more traceback-printing speed"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../contents.html">pytest-6.2</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Release announcements</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">pytest-2.3.1: fix regression with factory functions</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="pytest-2-3-1-fix-regression-with-factory-functions">
+<h1>pytest-2.3.1: fix regression with factory functions<a class="headerlink" href="#pytest-2-3-1-fix-regression-with-factory-functions" title="Permalink to this headline">¶</a></h1>
+<p>pytest-2.3.1 is a quick follow-up release:</p>
+<ul class="simple">
+<li><p>fix issue202 - regression with fixture functions/funcarg factories:
+using “self” is now safe again and works as in 2.2.4.  Thanks
+to Eduard Schettino for the quick bug report.</p></li>
+<li><p>disable pexpect pytest self tests on Freebsd - thanks Koob for the
+quick reporting</p></li>
+<li><p>fix/improve interactive docs with –markers</p></li>
+</ul>
+<p>See</p>
+<blockquote>
+<div><p><a class="reference external" href="http://pytest.org/">http://pytest.org/</a></p>
+</div></blockquote>
+<p>for general information.  To install or upgrade pytest:</p>
+<blockquote>
+<div><p>pip install -U pytest # or
+easy_install -U pytest</p>
+</div></blockquote>
+<p>best,
+holger krekel</p>
+<div class="section" id="changes-between-2-3-0-and-2-3-1">
+<h2>Changes between 2.3.0 and 2.3.1<a class="headerlink" href="#changes-between-2-3-0-and-2-3-1" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>fix issue202 - fix regression: using “self” from fixture functions now
+works as expected (it’s the same “self” instance that a test method
+which uses the fixture sees)</p></li>
+<li><p>skip pexpect using tests (test_pdb.py mostly) on freebsd* systems
+due to pexpect not supporting it properly (hanging)</p></li>
+<li><p>link to web pages from –markers output which provides help for
+pytest.mark.* usage.</p></li>
+</ul>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+      </div>
+  <span id="sidebar-top"></span>
+      <div class="clearer"></div>
+    </div>
+  
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2015–2020, holger krekel and pytest-dev team.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
+    </div>
+  <script src="../_static/version_warning_offset.js"></script>
+
+  </body>
+</html>

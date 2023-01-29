@@ -1,0 +1,13 @@
+{
+    "feed_url": "https://zealusercontributions.vercel.app/api/docsets/pytest.xml",
+    "name": "pytest",
+    "title": "pytest",
+    "urls": [
+        "https://kapeli.com/feeds/zzz/user_contributed/build/pytest/pytest.tgz",
+        "https://sanfrancisco.kapeli.com/feeds/zzz/user_contributed/build/pytest/pytest.tgz",
+        "https://newyork.kapeli.com/feeds/zzz/user_contributed/build/pytest/pytest.tgz",
+        "https://london.kapeli.com/feeds/zzz/user_contributed/build/pytest/pytest.tgz",
+        "https://frankfurt.kapeli.com/feeds/zzz/user_contributed/build/pytest/pytest.tgz"
+    ],
+    "version": "6.2.5"
+}

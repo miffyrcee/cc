@@ -1,0 +1,175 @@
+
+
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>pytest import mechanisms and sys.path/PYTHONPATH &#8212; pytest documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments_pytest.css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Configuration" href="customize.html" />
+    <link rel="prev" title="Flaky tests" href="flaky.html" />
+  <script>DOCUMENTATION_OPTIONS.URL_ROOT = './';</script>
+   
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="customize.html" title="Configuration"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="flaky.html" title="Flaky tests"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="contents.html">pytest-6.2</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">pytest import mechanisms and <code class="docutils literal notranslate"><span class="pre">sys.path</span></code>/<code class="docutils literal notranslate"><span class="pre">PYTHONPATH</span></code></a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="pytest-import-mechanisms-and-sys-path-pythonpath">
+<span id="pythonpath"></span><h1>pytest import mechanisms and <code class="docutils literal notranslate"><span class="pre">sys.path</span></code>/<code class="docutils literal notranslate"><span class="pre">PYTHONPATH</span></code><a class="headerlink" href="#pytest-import-mechanisms-and-sys-path-pythonpath" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="import-modes">
+<span id="id1"></span><h2>Import modes<a class="headerlink" href="#import-modes" title="Permalink to this headline">¶</a></h2>
+<p>pytest as a testing framework needs to import test modules and <code class="docutils literal notranslate"><span class="pre">conftest.py</span></code> files for execution.</p>
+<p>Importing files in Python (at least until recently) is a non-trivial processes, often requiring
+changing <a class="reference external" href="https://docs.python.org/3/library/sys.html#sys.path">sys.path</a>. Some aspects of the
+import process can be controlled through the <code class="docutils literal notranslate"><span class="pre">--import-mode</span></code> command-line flag, which can assume
+these values:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">prepend</span></code> (default): the directory path containing each module will be inserted into the <em>beginning</em>
+of <code class="docutils literal notranslate"><span class="pre">sys.path</span></code> if not already there, and then imported with the <a class="reference external" href="https://docs.python.org/3/library/functions.html#__import__">__import__</a> builtin.</p>
+<p>This requires test module names to be unique when the test directory tree is not arranged in
+packages, because the modules will put in <code class="docutils literal notranslate"><span class="pre">sys.modules</span></code> after importing.</p>
+<p>This is the classic mechanism, dating back from the time Python 2 was still supported.</p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">append</span></code>: the directory containing each module is appended to the end of <code class="docutils literal notranslate"><span class="pre">sys.path</span></code> if not already
+there, and imported with <code class="docutils literal notranslate"><span class="pre">__import__</span></code>.</p>
+<p>This better allows to run test modules against installed versions of a package even if the
+package under test has the same import root. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">testing</span><span class="o">/</span><span class="fm">__init__</span><span class="o">.</span><span class="n">py</span>
+<span class="n">testing</span><span class="o">/</span><span class="n">test_pkg_under_test</span><span class="o">.</span><span class="n">py</span>
+<span class="n">pkg_under_test</span><span class="o">/</span>
+</pre></div>
+</div>
+<p>the tests will run against the installed version
+of <code class="docutils literal notranslate"><span class="pre">pkg_under_test</span></code> when <code class="docutils literal notranslate"><span class="pre">--import-mode=append</span></code> is used whereas
+with <code class="docutils literal notranslate"><span class="pre">prepend</span></code> they would pick up the local version. This kind of confusion is why
+we advocate for using <a class="reference internal" href="goodpractices.html#src-layout"><span class="std std-ref">src</span></a> layouts.</p>
+<p>Same as <code class="docutils literal notranslate"><span class="pre">prepend</span></code>, requires test module names to be unique when the test directory tree is
+not arranged in packages, because the modules will put in <code class="docutils literal notranslate"><span class="pre">sys.modules</span></code> after importing.</p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">importlib</span></code>: new in pytest-6.0, this mode uses <a class="reference external" href="https://docs.python.org/3/library/importlib.html">importlib</a> to import test modules. This gives full control over the import process, and doesn’t require
+changing <code class="docutils literal notranslate"><span class="pre">sys.path</span></code> or <code class="docutils literal notranslate"><span class="pre">sys.modules</span></code> at all.</p>
+<p>For this reason this doesn’t require test module names to be unique at all, but also makes test
+modules non-importable by each other. This was made possible in previous modes, for tests not residing
+in Python packages, because of the side-effects of changing <code class="docutils literal notranslate"><span class="pre">sys.path</span></code> and <code class="docutils literal notranslate"><span class="pre">sys.modules</span></code>
+mentioned above. Users which require this should turn their tests into proper packages instead.</p>
+<p>We intend to make <code class="docutils literal notranslate"><span class="pre">importlib</span></code> the default in future releases.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="prepend-and-append-import-modes-scenarios">
+<h2><code class="docutils literal notranslate"><span class="pre">prepend</span></code> and <code class="docutils literal notranslate"><span class="pre">append</span></code> import modes scenarios<a class="headerlink" href="#prepend-and-append-import-modes-scenarios" title="Permalink to this headline">¶</a></h2>
+<p>Here’s a list of scenarios when using <code class="docutils literal notranslate"><span class="pre">prepend</span></code> or <code class="docutils literal notranslate"><span class="pre">append</span></code> import modes where pytest needs to
+change <code class="docutils literal notranslate"><span class="pre">sys.path</span></code> in order to import test modules or <code class="docutils literal notranslate"><span class="pre">conftest.py</span></code> files, and the issues users
+might encounter because of that.</p>
+<div class="section" id="test-modules-conftest-py-files-inside-packages">
+<h3>Test modules / <code class="docutils literal notranslate"><span class="pre">conftest.py</span></code> files inside packages<a class="headerlink" href="#test-modules-conftest-py-files-inside-packages" title="Permalink to this headline">¶</a></h3>
+<p>Consider this file and directory layout:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">root</span><span class="o">/</span>
+<span class="o">|-</span> <span class="n">foo</span><span class="o">/</span>
+   <span class="o">|-</span> <span class="fm">__init__</span><span class="o">.</span><span class="n">py</span>
+   <span class="o">|-</span> <span class="n">conftest</span><span class="o">.</span><span class="n">py</span>
+   <span class="o">|-</span> <span class="n">bar</span><span class="o">/</span>
+      <span class="o">|-</span> <span class="fm">__init__</span><span class="o">.</span><span class="n">py</span>
+      <span class="o">|-</span> <span class="n">tests</span><span class="o">/</span>
+         <span class="o">|-</span> <span class="fm">__init__</span><span class="o">.</span><span class="n">py</span>
+         <span class="o">|-</span> <span class="n">test_foo</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>When executing:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest root/
+</pre></div>
+</div>
+<p>pytest will find <code class="docutils literal notranslate"><span class="pre">foo/bar/tests/test_foo.py</span></code> and realize it is part of a package given that
+there’s an <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> file in the same folder. It will then search upwards until it can find the
+last folder which still contains an <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> file in order to find the package <em>root</em> (in
+this case <code class="docutils literal notranslate"><span class="pre">foo/</span></code>). To load the module, it will insert <code class="docutils literal notranslate"><span class="pre">root/</span></code>  to the front of
+<code class="docutils literal notranslate"><span class="pre">sys.path</span></code> (if not there already) in order to load
+<code class="docutils literal notranslate"><span class="pre">test_foo.py</span></code> as the <em>module</em> <code class="docutils literal notranslate"><span class="pre">foo.bar.tests.test_foo</span></code>.</p>
+<p>The same logic applies to the <code class="docutils literal notranslate"><span class="pre">conftest.py</span></code> file: it will be imported as <code class="docutils literal notranslate"><span class="pre">foo.conftest</span></code> module.</p>
+<p>Preserving the full package name is important when tests live in a package to avoid problems
+and allow test modules to have duplicated names. This is also discussed in details in
+<a class="reference internal" href="goodpractices.html#test-discovery"><span class="std std-ref">Conventions for Python test discovery</span></a>.</p>
+</div>
+<div class="section" id="standalone-test-modules-conftest-py-files">
+<h3>Standalone test modules / <code class="docutils literal notranslate"><span class="pre">conftest.py</span></code> files<a class="headerlink" href="#standalone-test-modules-conftest-py-files" title="Permalink to this headline">¶</a></h3>
+<p>Consider this file and directory layout:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">root</span><span class="o">/</span>
+<span class="o">|-</span> <span class="n">foo</span><span class="o">/</span>
+   <span class="o">|-</span> <span class="n">conftest</span><span class="o">.</span><span class="n">py</span>
+   <span class="o">|-</span> <span class="n">bar</span><span class="o">/</span>
+      <span class="o">|-</span> <span class="n">tests</span><span class="o">/</span>
+         <span class="o">|-</span> <span class="n">test_foo</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>When executing:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest root/
+</pre></div>
+</div>
+<p>pytest will find <code class="docutils literal notranslate"><span class="pre">foo/bar/tests/test_foo.py</span></code> and realize it is NOT part of a package given that
+there’s no <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> file in the same folder. It will then add <code class="docutils literal notranslate"><span class="pre">root/foo/bar/tests</span></code> to
+<code class="docutils literal notranslate"><span class="pre">sys.path</span></code> in order to import <code class="docutils literal notranslate"><span class="pre">test_foo.py</span></code> as the <em>module</em> <code class="docutils literal notranslate"><span class="pre">test_foo</span></code>. The same is done
+with the <code class="docutils literal notranslate"><span class="pre">conftest.py</span></code> file by adding <code class="docutils literal notranslate"><span class="pre">root/foo</span></code> to <code class="docutils literal notranslate"><span class="pre">sys.path</span></code> to import it as <code class="docutils literal notranslate"><span class="pre">conftest</span></code>.</p>
+<p>For this reason this layout cannot have test modules with the same name, as they all will be
+imported in the global import namespace.</p>
+<p>This is also discussed in details in <a class="reference internal" href="goodpractices.html#test-discovery"><span class="std std-ref">Conventions for Python test discovery</span></a>.</p>
+</div>
+</div>
+<div class="section" id="invoking-pytest-versus-python-m-pytest">
+<span id="pytest-vs-python-m-pytest"></span><h2>Invoking <code class="docutils literal notranslate"><span class="pre">pytest</span></code> versus <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">pytest</span></code><a class="headerlink" href="#invoking-pytest-versus-python-m-pytest" title="Permalink to this headline">¶</a></h2>
+<p>Running pytest with <code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">[...]</span></code> instead of <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">pytest</span> <span class="pre">[...]</span></code> yields nearly
+equivalent behaviour, except that the latter will add the current directory to <code class="docutils literal notranslate"><span class="pre">sys.path</span></code>, which
+is standard <code class="docutils literal notranslate"><span class="pre">python</span></code> behavior.</p>
+<p>See also <a class="reference internal" href="usage.html#cmdline"><span class="std std-ref">Calling pytest through python -m pytest</span></a>.</p>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+      </div>
+  <span id="sidebar-top"></span>
+      <div class="clearer"></div>
+    </div>
+  
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2015–2020, holger krekel and pytest-dev team.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
+    </div>
+  <script src="_static/version_warning_offset.js"></script>
+
+  </body>
+</html>

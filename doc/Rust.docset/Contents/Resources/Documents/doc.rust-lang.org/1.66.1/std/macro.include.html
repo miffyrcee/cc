@@ -1,0 +1,36 @@
+<html><!-- Mirrored from doc.rust-lang.org/1.66.1/std/macro.include.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 11 Jan 2023 03:02:23 GMT --><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Parses a file as an expression or an item according to the context."><meta name="keywords" content="rust, rustlang, rust-lang, include"><title>include in std</title><link rel="preload" as="font" type="font/woff2" crossorigin="" href="../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin="" href="../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin="" href="../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin="" href="../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin="" href="../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin="" href="../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../normalize1.66.1.css"><link rel="stylesheet" href="../rustdoc1.66.1.css" id="mainThemeStyle"><link rel="stylesheet" href="../ayu1.66.1.css" disabled=""><link rel="stylesheet" href="../dark1.66.1.css" disabled=""><link rel="stylesheet" href="../light1.66.1.css" id="themeStyle"><script id="default-settings"></script><script src="../storage1.66.1.js"></script><script defer="" src="sidebar-items1.66.1.js"></script><script defer="" src="../main1.66.1.js"></script><noscript>&lt;link rel="stylesheet" href="../noscript1.66.1.css"&gt;</noscript><link rel="alternate icon" type="image/png" href="../favicon-16x161.66.1.png"><link rel="alternate icon" type="image/png" href="../favicon-32x321.66.1.png"><link rel="icon" type="image/svg+xml" href="../favicon1.66.1.svg"></head><body class="rustdoc macro"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">☰</button><a class="sidebar-logo" href="index.html"><div class="logo-container"><img class="rust-logo" src="../rust-logo1.66.1.svg" alt="logo"></div></a><h2></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="index.html"><div class="logo-container"><img class="rust-logo" src="../rust-logo1.66.1.svg" alt="logo"></div></a><div class="sidebar-elems"><h2><a href="index.html">In std</a></h2></div></nav><main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../wheel1.66.1.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1 class="fqn">Macro <a href="index.html">std</a>::<wbr><a class="macro" href="#">include</a><button id="copy-path" onclick="copy_path(this)" title="Copy item path to clipboard"><img src="../clipboard1.66.1.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><span class="since" title="Stable since Rust version 1.0.0">1.0.0</span> · <a class="srclink" href="../src/core/macros/mod.rs.html#1371">source</a> · <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">−</span>]</a></span></div><div class="item-decl"><div class="example-wrap"><pre class="rust macro"><code><span class="macro">macro_rules! </span>include {
+    (<span class="macro-nonterminal">$file</span>:expr $(,)<span class="question-mark">?</span>) =&gt; { ... };
+}</code></pre></div>
+</div><details class="rustdoc-toggle top-doc" open="true"><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Parses a file as an expression or an item according to the context.</p>
+<p>The file is located relative to the current file (similarly to how
+modules are found). The provided path is interpreted in a platform-specific
+way at compile time. So, for instance, an invocation with a Windows path
+containing backslashes <code>\</code> would not compile correctly on Unix.</p>
+<p>Using this macro is often a bad idea, because if the file is
+parsed as an expression, it is going to be placed in the
+surrounding code unhygienically. This could result in variables
+or functions being different from what the file expected if
+there are variables or functions that have the same name in
+the current file.</p>
+<h2 id="examples"><a href="#examples">Examples</a></h2>
+<p>Assume there are two files in the same directory with the following
+contents:</p>
+<p>File ‘monkeys.in’:</p>
+
+<div class="example-wrap ignore"><div class="tooltip">ⓘ</div><pre class="rust rust-example-rendered"><code>[<span class="string">'🙈'</span>, <span class="string">'🙊'</span>, <span class="string">'🙉'</span>]
+    .iter()
+    .cycle()
+    .take(<span class="number">6</span>)
+    .collect::&lt;String&gt;()</code></pre><a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=%23!%5Ballow(unused)%5D%0Afn%20main()%20%7B%0A%5B'%F0%9F%99%88'%2C%20'%F0%9F%99%8A'%2C%20'%F0%9F%99%89'%5D%0A%20%20%20%20.iter()%0A%20%20%20%20.cycle()%0A%20%20%20%20.take(6)%0A%20%20%20%20.collect%3A%3A%3CString%3E()%0A%7D&amp;edition=2021">Run</a></div>
+<p>File ‘main.rs’:</p>
+
+<div class="example-wrap ignore"><div class="tooltip">ⓘ</div><pre class="rust rust-example-rendered"><code><span class="kw">fn </span>main() {
+    <span class="kw">let </span>my_string = <span class="macro">include!</span>(<span class="string">"monkeys.in"</span>);
+    <span class="macro">assert_eq!</span>(<span class="string">"🙈🙊🙉🙈🙊🙉"</span>, my_string);
+    <span class="macro">println!</span>(<span class="string">"{my_string}"</span>);
+}</code></pre><a class="test-arrow" target="_blank" href="https://play.rust-lang.org/?code=%23!%5Ballow(unused)%5D%0Afn%20main()%20%7B%0A%20%20%20%20let%20my_string%20%3D%20include!(%22monkeys.in%22)%3B%0A%20%20%20%20assert_eq!(%22%F0%9F%99%88%F0%9F%99%8A%F0%9F%99%89%F0%9F%99%88%F0%9F%99%8A%F0%9F%99%89%22%2C%20my_string)%3B%0A%20%20%20%20println!(%22%7Bmy_string%7D%22)%3B%0A%7D&amp;edition=2021">Run</a></div>
+<p>Compiling ‘main.rs’ and running the resulting binary will print
+“🙈🙊🙉🙈🙊🙉”.</p>
+</div></details></section></div></main><div id="rustdoc-vars" data-root-path="../" data-current-crate="std" data-themes="ayu,dark,light" data-resource-suffix="1.66.1" data-rustdoc-version="1.66.1 (90743e729 2023-01-10)"></div>
+<!-- Mirrored from doc.rust-lang.org/1.66.1/std/macro.include.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 11 Jan 2023 03:02:23 GMT -->
+</body></html>

@@ -1,0 +1,49 @@
+body.light .does_not_compile,
+body.light .panics,
+body.light .not_desired_behavior,
+body.rust .does_not_compile,
+body.rust .panics,
+body.rust .not_desired_behavior {
+  background: #fff1f1;
+}
+
+body.coal .does_not_compile,
+body.coal .panics,
+body.coal .not_desired_behavior,
+body.navy .does_not_compile,
+body.navy .panics,
+body.navy .not_desired_behavior,
+body.ayu .does_not_compile,
+body.ayu .panics,
+body.ayu .not_desired_behavior {
+  background: #501f21;
+}
+
+.ferris-container {
+  position: absolute;
+  z-index: 99;
+  right: 5px;
+  top: 30px;
+}
+
+.ferris {
+  vertical-align: top;
+  margin-left: 0.2em;
+  height: auto;
+}
+
+.ferris-large {
+  width: 4.5em;
+}
+
+.ferris-small {
+  width: 2.3em;
+}
+
+.ferris-explain {
+  width: 100px;
+}
+
+h1.section-link:hover a:after, h2.section-link:hover a:after, h3.section-link:hover a:after, h4.section-link:hover a:after, h5.section-link:hover a:after, h6.section-link:hover a:after {content:normal !important} .content main {max-width:none !important} .sidebar-visible .page-wrapper {margin-left:0 !important} #versioninfo {display:none !important} body.rustdoc {max-width:none !important} .nav-wide-wrapper { display:none !important} .nav-wrapper {display:block !important} h1.title {padding-top:0px !important; margin-top:10px !important} .sidebar {display:none !important} .sub {display:none !important} .section-header:hover a:after {content:normal !important} #toc, #nav {display:none !important} #page-wrapper {position:static !important; padding:0px !important} #page {max-width:none !important} .impl-methods .stability, .methods .stability {margin-right:0px !important; margin-left:20px !important} .tooltip {display:none !important} #collapse-all, #expand-all, .toggle-wrapper, .collapse-toggle {display:none !important} #menu-bar {display:none !important} .page {position:static !important;} body.rustdoc, body.rustdoc #main { padding-top:0px !important; } .play-button, .theme-picker {display:none !important} h1,h2,h3 {margin-top:0.67em !important} .content {margin:0px !important; max-width: none !important;} .anchor {display:none !important} h1, h2, h3, h4, h5, h6 {padding-left:0px !important} .section-header:hover a:before {content: '' !important} body {background: white !important} .hidden-by-impl-hider, .hidden-by-usual-hider {display:block !important} .docblock > .section-header:first-child {margin-left:0} h4 > .important-traits {left:-24px !important} h1 a.header:target::before, h2 a.header:target::before, h3 a.header:target::before, h4 a.header:target::before {content: none !important} .collapse-toggle {display:none !important} .impl-items .hidden {display:block !important} #sidebar-toggle { display:none !important} .content pre.line-numbers {margin-top:0 !important} .important-traits {display: none !important} #main>h2+div, #main>h2+h3, #main>h3+div {display:block !important} #sidebar-toggle { display:none !important} .content pre.line-numbers {margin-top:0 !important} .attributes {margin-left:0 !important} #main>h2+div, #main>h2+h3, #main>h3+div {display:block !important} .impl-items .hidden {display:flex !important} details.rustdoc-toggle>summary:not(.hideme)::before {display:none} div.docblock {width:auto !important} #toggle-all-docs {display:none !important} #main div.toggle-wrapper {display:none !important} .summary::before {display:none !important} :target {padding-right:0; background:transparent; border-right:none} .width-limiter {max-width:none !important;} main {padding:10px 30px 40px 30px !important} .mobile-topbar {display:none !important}
+
+h1, h2, h3 {margin-top:1em !important}

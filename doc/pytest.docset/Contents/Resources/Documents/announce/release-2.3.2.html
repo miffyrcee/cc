@@ -1,0 +1,118 @@
+
+
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>pytest-2.3.2: some fixes and more traceback-printing speed &#8212; pytest documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments_pytest.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="pytest-2.3.1: fix regression with factory functions" href="release-2.3.1.html" />
+    <link rel="prev" title="pytest-2.3.3: integration fixes, py24 support, */** shown in traceback" href="release-2.3.3.html" />
+  <script>DOCUMENTATION_OPTIONS.URL_ROOT = '../';</script>
+   
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="release-2.3.1.html" title="pytest-2.3.1: fix regression with factory functions"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="release-2.3.3.html" title="pytest-2.3.3: integration fixes, py24 support, */** shown in traceback"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../contents.html">pytest-6.2</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Release announcements</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">pytest-2.3.2: some fixes and more traceback-printing speed</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="pytest-2-3-2-some-fixes-and-more-traceback-printing-speed">
+<h1>pytest-2.3.2: some fixes and more traceback-printing speed<a class="headerlink" href="#pytest-2-3-2-some-fixes-and-more-traceback-printing-speed" title="Permalink to this headline">¶</a></h1>
+<p>pytest-2.3.2 is another stabilization release:</p>
+<ul class="simple">
+<li><p>issue 205: fixes a regression with conftest detection</p></li>
+<li><p>issue 208/29: fixes traceback-printing speed in some bad cases</p></li>
+<li><p>fix teardown-ordering for parametrized setups</p></li>
+<li><p>fix unittest and trial compat behaviour with respect  to runTest() methods</p></li>
+<li><p>issue 206 and others: some improvements to packaging</p></li>
+<li><p>fix issue127 and others: improve some docs</p></li>
+</ul>
+<p>See</p>
+<blockquote>
+<div><p><a class="reference external" href="http://pytest.org/">http://pytest.org/</a></p>
+</div></blockquote>
+<p>for general information.  To install or upgrade pytest:</p>
+<blockquote>
+<div><p>pip install -U pytest # or
+easy_install -U pytest</p>
+</div></blockquote>
+<p>best,
+holger krekel</p>
+<div class="section" id="changes-between-2-3-1-and-2-3-2">
+<h2>Changes between 2.3.1 and 2.3.2<a class="headerlink" href="#changes-between-2-3-1-and-2-3-2" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>fix issue208 and fix issue29 use new py version to avoid long pauses
+when printing tracebacks in long modules</p></li>
+<li><p>fix issue205 - conftests in subdirs customizing
+pytest_pycollect_makemodule and pytest_pycollect_makeitem
+now work properly</p></li>
+<li><p>fix teardown-ordering for parametrized setups</p></li>
+<li><p>fix issue127 - better documentation for pytest_addoption
+and related objects.</p></li>
+<li><p>fix unittest behaviour: TestCase.runtest only called if there are
+test methods defined</p></li>
+<li><p>improve trial support: don’t collect its empty
+unittest.TestCase.runTest() method</p></li>
+<li><p>“python setup.py test” now works with pytest itself</p></li>
+<li><p>fix/improve internal/packaging related bits:</p>
+<ul>
+<li><p>exception message check of test_nose.py now passes on python33 as well</p></li>
+<li><p>issue206 - fix test_assertrewrite.py to work when a global
+PYTHONDONTWRITEBYTECODE=1 is present</p></li>
+<li><p>add tox.ini to pytest distribution so that ignore-dirs and others config
+bits are properly distributed for maintainers who run pytest-own tests</p></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+      </div>
+  <span id="sidebar-top"></span>
+      <div class="clearer"></div>
+    </div>
+  
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2015–2020, holger krekel and pytest-dev team.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
+    </div>
+  <script src="../_static/version_warning_offset.js"></script>
+
+  </body>
+</html>

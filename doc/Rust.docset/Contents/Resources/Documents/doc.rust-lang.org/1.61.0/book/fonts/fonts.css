@@ -1,0 +1,104 @@
+/* Open Sans is licensed under the Apache License, Version 2.0. See http://www.apache.org/licenses/LICENSE-2.0 */
+/* Source Code Pro is under the Open Font License. See https://scripts.sil.org/cms/scripts/page.php?site_id=nrsi&id=OFL */
+
+/* open-sans-300 - latin_vietnamese_latin-ext_greek-ext_greek_cyrillic-ext_cyrillic */
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 300;
+  src: local('Open Sans Light'), local('OpenSans-Light'),
+       url('open-sans-v17-all-charsets-300.woff2') format('woff2');
+}
+
+/* open-sans-300italic - latin_vietnamese_latin-ext_greek-ext_greek_cyrillic-ext_cyrillic */
+@font-face {
+  font-family: 'Open Sans';
+  font-style: italic;
+  font-weight: 300;
+  src: local('Open Sans Light Italic'), local('OpenSans-LightItalic'),
+       url('open-sans-v17-all-charsets-300italic.woff2') format('woff2');
+}
+
+/* open-sans-regular - latin_vietnamese_latin-ext_greek-ext_greek_cyrillic-ext_cyrillic */
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Open Sans Regular'), local('OpenSans-Regular'),
+       url('open-sans-v17-all-charsets-regular.woff2') format('woff2');
+}
+
+/* open-sans-italic - latin_vietnamese_latin-ext_greek-ext_greek_cyrillic-ext_cyrillic */
+@font-face {
+  font-family: 'Open Sans';
+  font-style: italic;
+  font-weight: 400;
+  src: local('Open Sans Italic'), local('OpenSans-Italic'),
+       url('open-sans-v17-all-charsets-italic.woff2') format('woff2');
+}
+
+/* open-sans-600 - latin_vietnamese_latin-ext_greek-ext_greek_cyrillic-ext_cyrillic */
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 600;
+  src: local('Open Sans SemiBold'), local('OpenSans-SemiBold'),
+       url('open-sans-v17-all-charsets-600.woff2') format('woff2');
+}
+
+/* open-sans-600italic - latin_vietnamese_latin-ext_greek-ext_greek_cyrillic-ext_cyrillic */
+@font-face {
+  font-family: 'Open Sans';
+  font-style: italic;
+  font-weight: 600;
+  src: local('Open Sans SemiBold Italic'), local('OpenSans-SemiBoldItalic'),
+       url('open-sans-v17-all-charsets-600italic.woff2') format('woff2');
+}
+
+/* open-sans-700 - latin_vietnamese_latin-ext_greek-ext_greek_cyrillic-ext_cyrillic */
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Open Sans Bold'), local('OpenSans-Bold'),
+       url('open-sans-v17-all-charsets-700.woff2') format('woff2');
+}
+
+/* open-sans-700italic - latin_vietnamese_latin-ext_greek-ext_greek_cyrillic-ext_cyrillic */
+@font-face {
+  font-family: 'Open Sans';
+  font-style: italic;
+  font-weight: 700;
+  src: local('Open Sans Bold Italic'), local('OpenSans-BoldItalic'),
+       url('open-sans-v17-all-charsets-700italic.woff2') format('woff2');
+}
+
+/* open-sans-800 - latin_vietnamese_latin-ext_greek-ext_greek_cyrillic-ext_cyrillic */
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 800;
+  src: local('Open Sans ExtraBold'), local('OpenSans-ExtraBold'),
+       url('open-sans-v17-all-charsets-800.woff2') format('woff2');
+}
+
+/* open-sans-800italic - latin_vietnamese_latin-ext_greek-ext_greek_cyrillic-ext_cyrillic */
+@font-face {
+  font-family: 'Open Sans';
+  font-style: italic;
+  font-weight: 800;
+  src: local('Open Sans ExtraBold Italic'), local('OpenSans-ExtraBoldItalic'),
+       url('open-sans-v17-all-charsets-800italic.woff2') format('woff2');
+}
+
+/* source-code-pro-500 - latin_vietnamese_latin-ext_greek_cyrillic-ext_cyrillic */
+@font-face {
+  font-family: 'Source Code Pro';
+  font-style: normal;
+  font-weight: 500;
+  src: url('source-code-pro-v11-all-charsets-500.woff2') format('woff2');
+}
+
+h1.section-link:hover a:after, h2.section-link:hover a:after, h3.section-link:hover a:after, h4.section-link:hover a:after, h5.section-link:hover a:after, h6.section-link:hover a:after {content:normal !important} .content main {max-width:none !important} .sidebar-visible .page-wrapper {margin-left:0 !important} #versioninfo {display:none !important} body.rustdoc {max-width:none !important} .nav-wide-wrapper { display:none !important} .nav-wrapper {display:block !important} h1.title {padding-top:0px !important; margin-top:10px !important} .sidebar {display:none !important} .sub {display:none !important} .section-header:hover a:after {content:normal !important} #toc, #nav {display:none !important} #page-wrapper {position:static !important; padding:0px !important} #page {max-width:none !important} .impl-methods .stability, .methods .stability {margin-right:0px !important; margin-left:20px !important} .tooltip {display:none !important} #collapse-all, #expand-all, .toggle-wrapper, .collapse-toggle {display:none !important} #menu-bar {display:none !important} .page {position:static !important;} body.rustdoc, body.rustdoc #main { padding-top:0px !important; } .play-button, .theme-picker {display:none !important} h1,h2,h3 {margin-top:0.67em !important} .content {margin:0px !important; max-width: none !important;} .anchor {display:none !important} h1, h2, h3, h4, h5, h6 {padding-left:0px !important} .section-header:hover a:before {content: '' !important} body {background: white !important} .hidden-by-impl-hider, .hidden-by-usual-hider {display:block !important} .docblock > .section-header:first-child {margin-left:0} h4 > .important-traits {left:-24px !important} h1 a.header:target::before, h2 a.header:target::before, h3 a.header:target::before, h4 a.header:target::before {content: none !important} .collapse-toggle {display:none !important} .impl-items .hidden {display:block !important} #sidebar-toggle { display:none !important} .content pre.line-numbers {margin-top:0 !important} .important-traits {display: none !important} #main>h2+div, #main>h2+h3, #main>h3+div {display:block !important} #sidebar-toggle { display:none !important} .content pre.line-numbers {margin-top:0 !important} .attributes {margin-left:0 !important} #main>h2+div, #main>h2+h3, #main>h3+div {display:block !important} .impl-items .hidden {display:flex !important} details.rustdoc-toggle>summary:not(.hideme)::before {display:none} div.docblock {width:auto !important} #toggle-all-docs {display:none !important} #main div.toggle-wrapper {display:none !important} .summary::before {display:none !important} :target {padding-right:0; background:transparent; border-right:none} .width-limiter {max-width:none !important;} main {padding:10px 30px 40px 30px !important} .mobile-topbar {display:none !important}
+
+h1, h2, h3 {margin-top:1em !important}

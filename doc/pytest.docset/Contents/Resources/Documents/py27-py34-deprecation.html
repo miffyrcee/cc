@@ -1,0 +1,142 @@
+
+
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Python 2.7 and 3.4 support &#8212; pytest documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments_pytest.css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Contribution getting started" href="contributing.html" />
+    <link rel="prev" title="Deprecations and Removals" href="deprecations.html" />
+  <script>DOCUMENTATION_OPTIONS.URL_ROOT = './';</script>
+   
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="contributing.html" title="Contribution getting started"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="deprecations.html" title="Deprecations and Removals"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="contents.html">pytest-6.2</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Python 2.7 and 3.4 support</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="python-2-7-and-3-4-support">
+<h1>Python 2.7 and 3.4 support<a class="headerlink" href="#python-2-7-and-3-4-support" title="Permalink to this headline">¶</a></h1>
+<p>It is demanding on the maintainers of an open source project to support many Python versions, as
+there’s extra cost of keeping code compatible between all versions, while holding back on
+features only made possible on newer Python versions.</p>
+<p>In case of Python 2 and 3, the difference between the languages makes it even more prominent,
+because many new Python 3 features cannot be used in a Python 2/3 compatible code base.</p>
+<p>Python 2.7 EOL has been reached <a class="reference external" href="https://legacy.python.org/dev/peps/pep-0373/#id4">in 2020</a>, with
+the last release made in April, 2020.</p>
+<p>Python 3.4 EOL has been reached <a class="reference external" href="https://www.python.org/dev/peps/pep-0429/#release-schedule">in 2019</a>, with the last release made in March, 2019.</p>
+<p>For those reasons, in Jun 2019 it was decided that <strong>pytest 4.6</strong> series will be the last to support Python 2.7 and 3.4.</p>
+<div class="section" id="what-this-means-for-general-users">
+<h2>What this means for general users<a class="headerlink" href="#what-this-means-for-general-users" title="Permalink to this headline">¶</a></h2>
+<p>Thanks to the <a class="reference external" href="https://packaging.python.org/guides/distributing-packages-using-setuptools/#python-requires">python_requires</a> setuptools option,
+Python 2.7 and Python 3.4 users using a modern pip version
+will install the last pytest 4.6.X version automatically even if 5.0 or later versions
+are available on PyPI.</p>
+<p>Users should ensure they are using the latest pip and setuptools versions for this to work.</p>
+</div>
+<div class="section" id="maintenance-of-4-6-x-versions">
+<h2>Maintenance of 4.6.X versions<a class="headerlink" href="#maintenance-of-4-6-x-versions" title="Permalink to this headline">¶</a></h2>
+<p>Until January 2020, the pytest core team ported many bug-fixes from the main release into the
+<code class="docutils literal notranslate"><span class="pre">4.6.x</span></code> branch, with several 4.6.X releases being made along the year.</p>
+<p>From now on, the core team will <strong>no longer actively backport patches</strong>, but the <code class="docutils literal notranslate"><span class="pre">4.6.x</span></code>
+branch will continue to exist so the community itself can contribute patches.</p>
+<p>The core team will be happy to accept those patches, and make new 4.6.X releases <strong>until mid-2020</strong>
+(but consider that date as a ballpark, after that date the team might still decide to make new releases
+for critical bugs).</p>
+<div class="section" id="technical-aspects">
+<h3>Technical aspects<a class="headerlink" href="#technical-aspects" title="Permalink to this headline">¶</a></h3>
+<p>(This section is a transcript from <a class="reference external" href="https://github.com/pytest-dev/pytest/issues/5275">#5275</a>).</p>
+<p>In this section we describe the technical aspects of the Python 2.7 and 3.4 support plan.</p>
+<div class="section" id="what-goes-into-4-6-x-releases">
+<h4>What goes into 4.6.X releases<a class="headerlink" href="#what-goes-into-4-6-x-releases" title="Permalink to this headline">¶</a></h4>
+<p>New 4.6.X releases will contain bug fixes only.</p>
+</div>
+<div class="section" id="when-will-4-6-x-releases-happen">
+<h4>When will 4.6.X releases happen<a class="headerlink" href="#when-will-4-6-x-releases-happen" title="Permalink to this headline">¶</a></h4>
+<p>New 4.6.X releases will happen after we have a few bugs in place to release, or if a few weeks have
+passed (say a single bug has been fixed a month after the latest 4.6.X release).</p>
+<p>No hard rules here, just ballpark.</p>
+</div>
+<div class="section" id="who-will-handle-applying-bug-fixes">
+<h4>Who will handle applying bug fixes<a class="headerlink" href="#who-will-handle-applying-bug-fixes" title="Permalink to this headline">¶</a></h4>
+<p>We core maintainers expect that people still using Python 2.7/3.4 and being affected by
+bugs to step up and provide patches and/or port bug fixes from the active branches.</p>
+<p>We will be happy to guide users interested in doing so, so please don’t hesitate to ask.</p>
+<p><strong>Backporting changes into 4.6</strong></p>
+<p>Please follow these instructions:</p>
+<ol class="arabic">
+<li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">fetch</span> <span class="pre">--all</span> <span class="pre">--prune</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">checkout</span> <span class="pre">origin/4.6.x</span> <span class="pre">-b</span> <span class="pre">backport-XXXX</span></code> # use the PR number here</p></li>
+<li><p>Locate the merge commit on the PR, in the <em>merged</em> message, for example:</p>
+<blockquote>
+<div><p>nicoddemus merged commit 0f8b462 into pytest-dev:features</p>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">cherry-pick</span> <span class="pre">-m1</span> <span class="pre">REVISION</span></code> # use the revision you found above (<code class="docutils literal notranslate"><span class="pre">0f8b462</span></code>).</p></li>
+<li><p>Open a PR targeting <code class="docutils literal notranslate"><span class="pre">4.6.x</span></code>:</p>
+<ul class="simple">
+<li><p>Prefix the message with <code class="docutils literal notranslate"><span class="pre">[4.6]</span></code> so it is an obvious backport</p></li>
+<li><p>Delete the PR body, it usually contains a duplicate commit message.</p></li>
+</ul>
+</li>
+</ol>
+<p><strong>Providing new PRs to 4.6</strong></p>
+<p>Fresh pull requests to <code class="docutils literal notranslate"><span class="pre">4.6.x</span></code> will be accepted provided that
+the equivalent code in the active branches does not contain that bug (for example, a bug is specific
+to Python 2 only).</p>
+<p>Bug fixes that also happen in the mainstream version should be first fixed
+there, and then backported as per instructions above.</p>
+</div>
+</div>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+      </div>
+  <span id="sidebar-top"></span>
+      <div class="clearer"></div>
+    </div>
+  
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2015–2020, holger krekel and pytest-dev team.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
+    </div>
+  <script src="_static/version_warning_offset.js"></script>
+
+  </body>
+</html>

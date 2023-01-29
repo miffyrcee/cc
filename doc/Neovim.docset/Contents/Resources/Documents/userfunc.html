@@ -1,0 +1,471 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-type" content="text/html; charset=ISO-8859-1">
+<TITLE>Nvim documentation: userfunc</TITLE>
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<H1>Nvim documentation: userfunc</H1>
+<A NAME="top"></A>
+<A HREF="index.html">main help file</A>
+
+<HR>
+<PRE>
+
+*<A NAME="userfunc.txt"></A><B>userfunc.txt</B>*	Nvim
+
+
+		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+
+
+Defining and using <A HREF="eval.html#functions">functions</A>.
+
+This is introduced in section |<A HREF="usr_41.html#41.7">41.7</A>| of the user manual.
+
+				      Type |<A HREF="various.html#gO">gO</A>| to see the table of contents.
+
+==============================================================================
+
+<B><FONT COLOR="PURPLE">1. Defining a function </FONT></B>
+
+						*<A NAME="define-function"></A><B>define-function</B>*
+New <A HREF="eval.html#functions">functions</A> can be defined.  These can be called just like builtin
+<A HREF="eval.html#functions">functions</A>.  The function executes a sequence of <A HREF="intro.html#Ex">Ex</A> commands.  <A HREF="intro.html#Normal">Normal</A> mode
+commands can be executed with the |<A HREF="various.html#:normal">:normal</A>| command.
+
+The function name must start with an <A HREF="change.html#uppercase">uppercase</A> <A HREF="print.html#letter">letter</A>, to avoid confusion with
+builtin <A HREF="eval.html#functions">functions</A>.  To prevent from using the same name in different scripts
+make them <A HREF="map.html#script-local">script-local</A>.  If you <A HREF="diff.html#do">do</A> use a global function then avoid obvious,
+short names.  A good habit is to start the function name with the name of the
+<A HREF="usr_41.html#script">script</A>, e.g., &quot;HTMLcolor()&quot;.
+
+It is also possible to use curly braces, see |<A HREF="eval.html#curly-braces-names">curly-braces-names</A>|.
+
+The |<A HREF="#autoload">autoload</A>| facility is useful to define a function only when it's called.
+
+
+							*<A NAME="local-function"></A><B>local-function</B>*
+A function local to a <A HREF="usr_41.html#script">script</A> must start with &quot;s:&quot;.  A local <A HREF="usr_41.html#script">script</A> function
+can only be called from within the <A HREF="usr_41.html#script">script</A> and from <A HREF="eval.html#functions">functions</A>, user commands
+and autocommands defined in the <A HREF="usr_41.html#script">script</A>.  It is also possible to call the
+function from a <A HREF="map.html#mapping">mapping</A> defined in the <A HREF="usr_41.html#script">script</A>, but then |<A HREF="map.html#&lt;SID&gt;">&lt;SID&gt;</A>| must be used
+instead of &quot;s:&quot; when the <A HREF="map.html#mapping">mapping</A> is expanded outside of the <A HREF="usr_41.html#script">script</A>.
+There are only <A HREF="map.html#script-local">script-local</A> <A HREF="eval.html#functions">functions</A>, no buffer-local or window-local
+<A HREF="eval.html#functions">functions</A>.
+
+
+					*<A NAME=":fu"></A><B>:fu</B>* *<A NAME=":function"></A><B>:function</B>* *<A NAME="E128"></A><B>E128</B>* *<A NAME="E129"></A><B>E129</B>* *<A NAME="E123"></A><B>E123</B>*
+:fu[nction]		<A HREF="eval.html#List">List</A> all <A HREF="eval.html#functions">functions</A> and their arguments.
+
+:fu[nction][!] {name}	<A HREF="eval.html#List">List</A> function {name}, annotated with line numbers
+			unless &quot;<A HREF="change.html#!">!</A>&quot; is given.
+			{name} may be a |<A HREF="eval.html#Dictionary">Dictionary</A>| |<A HREF="eval.html#Funcref">Funcref</A>| entry:
+<B>				:function dict.init</B>
+
+:fu[nction] /{pattern}	<A HREF="eval.html#List">List</A> <A HREF="eval.html#functions">functions</A> with a name matching {pattern}.
+			Example that lists all <A HREF="eval.html#functions">functions</A> ending with &quot;File&quot;:
+<B>				:function /File$</B>
+ 
+
+							*<A NAME=":function-verbose"></A><B>:function-verbose</B>*
+When <A HREF="options.html#'verbose'">'verbose'</A> is non-zero, listing a function will also display where <A HREF="motion.html#it">it</A> was
+last defined. Example:
+
+<B>    :verbose function SetFileTypeSH</B>
+<B>	function SetFileTypeSH(name)</B>
+<B>	    Last set from /usr/share/vim/vim-7.0/filetype.vim</B>
+ 
+See |<A HREF="various.html#:verbose-cmd">:verbose-cmd</A>| for more information.
+
+
+						*<A NAME="E124"></A><B>E124</B>* *<A NAME="E125"></A><B>E125</B>* *<A NAME="E853"></A><B>E853</B>* *<A NAME="E884"></A><B>E884</B>*
+:fu[nction][!] {name}([arguments]) <A HREF="cmdline.html#[range]">[range]</A> [abort] [dict] [closure]
+			Define a new function by the name {name}.  The body of
+			the function follows in the next lines, until the
+			matching |<A HREF="#:endfunction">:endfunction</A>|.
+
+			The name must be made of alphanumeric characters and
+			'<A HREF="motion.html#_">_</A>', and must start with a capital or &quot;s:&quot; (see
+			above).  Note that using &quot;<A HREF="eval.html#b:">b:</A>&quot; or &quot;<A HREF="eval.html#g:">g:</A>&quot; is not allowed.
+			(since patch 7.4.260 <A HREF="#E884">E884</A> is given if the function
+			name has a colon in the name, e.g. for &quot;foo:bar()&quot;.
+			Before that patch no error was given).
+
+			{name} can also be a |<A HREF="eval.html#Dictionary">Dictionary</A>| entry that is a
+			YXXYFuncref|:
+<B>				:function dict.init(arg)</B>
+ 			&quot;<A HREF="eval.html#dict">dict</A>&quot; must be an existing dictionary.  The entry
+			&quot;init&quot; is added if <A HREF="motion.html#it">it</A> didn't exist yet.  Otherwise [!]
+			is required to overwrite an existing function.  The
+			result is a |<A HREF="eval.html#Funcref">Funcref</A>| to a numbered function.  The
+			function can only be used with a |<A HREF="eval.html#Funcref">Funcref</A>| and will be
+			deleted if there are no more references to <A HREF="motion.html#it">it</A>.
+
+								*<A NAME="E127"></A><B>E127</B>* *<A NAME="E122"></A><B>E122</B>*
+			When a function by this name already exists and [!] is
+			not used an error message is given.  There is one
+			exception: When sourcing a <A HREF="usr_41.html#script">script</A> again, a function
+			that was previously defined in that <A HREF="usr_41.html#script">script</A> will be
+			silently replaced.
+			When [!] is used, an existing function is silently
+			replaced.  Unless <A HREF="motion.html#it">it</A> is currently being executed, that
+			is an error.
+			NOTE: Use ! wisely.  If used without care <A HREF="motion.html#it">it</A> can cause
+			an existing function to be replaced unexpectedly,
+			which is hard to debug.
+
+			For the {arguments} see |<A HREF="#function-argument">function-argument</A>|.
+
+
+					*<A NAME=":func-range"></A><B>:func-range</B>* *<A NAME="a:firstline"></A><B>a:firstline</B>* *<A NAME="a:lastline"></A><B>a:lastline</B>*
+			When the <A HREF="cmdline.html#[range]">[range]</A> argument is added, the function is
+			expected to take care of a range itself.  The range is
+			passed <A HREF="motion.html#as">as</A> &quot;<A HREF="#a:firstline">a:firstline</A>&quot; and &quot;<A HREF="#a:lastline">a:lastline</A>&quot;.  If <A HREF="cmdline.html#[range]">[range]</A>
+			is excluded, &quot;:{range}call&quot; will call the function for
+			each line in the range, with the cursor on the start
+			of each line.  See |<A HREF="#function-range-example">function-range-example</A>|.
+			The cursor is still moved to the first line of the
+			range, <A HREF="motion.html#as">as</A> is the <A HREF="change.html#case">case</A> with all <A HREF="intro.html#Ex">Ex</A> commands.
+
+								*<A NAME=":func-abort"></A><B>:func-abort</B>*
+			When the [abort] argument is added, the function will
+			abort <A HREF="motion.html#as">as</A> soon <A HREF="motion.html#as">as</A> an error is detected.
+
+								*<A NAME=":func-dict"></A><B>:func-dict</B>*
+			When the [dict] argument is added, the function must
+			be invoked through an entry in a |<A HREF="eval.html#Dictionary">Dictionary</A>|.  The
+			local variable &quot;<A HREF="eval.html#self">self</A>&quot; will then be set to the
+			dictionary.  See |<A HREF="eval.html#Dictionary-function">Dictionary-function</A>|.
+
+						*<A NAME=":func-closure"></A><B>:func-closure</B>* *<A NAME="E932"></A><B>E932</B>*
+			When the [closure] argument is added, the function
+			can access <A HREF="eval.html#variables">variables</A> and arguments from the outer
+			scope.  This is usually called a <A HREF="eval.html#closure">closure</A>.  In this
+			example Bar() uses &quot;<A HREF="change.html#x">x</A>&quot; from the scope of Foo().  It
+			remains referenced even after Foo() returns:
+<B>				:function! Foo()</B>
+<B>				:  let x = 0</B>
+<B>				:  function! Bar() closure</B>
+<B>				:    let x += 1</B>
+<B>				:    return x</B>
+<B>				:  endfunction</B>
+<B>				:  return funcref('Bar')</B>
+<B>				:endfunction</B>
+
+<B>				:let F = Foo()</B>
+<B>				:echo F()</B>
+ 				1
+<B>				:echo F()</B>
+ 				2
+<B>				:echo F()</B>
+ 				3
+
+
+						*<A NAME="function-search-undo"></A><B>function-search-undo</B>*
+			The last used search <A HREF="pattern.html#pattern">pattern</A> and the <A HREF="undo.html#redo">redo</A> command &quot;<A HREF="repeat.html#.">.</A>&quot;
+			will not be changed by the function.  This also
+			implies that the effect of |<A HREF="pattern.html#:nohlsearch">:nohlsearch</A>| is undone
+			when the function returns.
+
+
+				*<A NAME=":endf"></A><B>:endf</B>* *<A NAME=":endfunction"></A><B>:endfunction</B>* *<A NAME="E126"></A><B>E126</B>* *<A NAME="E193"></A><B>E193</B>* *<A NAME="W22"></A><B>W22</B>*
+:endf[unction] [argument]
+			The end of a function definition.  Best is to put <A HREF="motion.html#it">it</A>
+			on a line by its own, without [argument].
+
+			[argument] can be:
+				&#124; command	command to execute next
+				\n command	command to execute next
+				&quot; comment	always ignored
+				anything else	ignored, warning given when
+						<A HREF="options.html#'verbose'">'verbose'</A> is non-zero
+			The support for a following command was added in Vim
+			8.0.0654, before that any argument was silently
+			ignored.
+
+			To be able to define a function inside an `:execute`
+			command, use line breaks instead of YXXY:bar|:
+<B>				:exe "func Foo()\necho 'foo'\nendfunc"</B>
+ 
+
+				*<A NAME=":delf"></A><B>:delf</B>* *<A NAME=":delfunction"></A><B>:delfunction</B>* *<A NAME="E131"></A><B>E131</B>* *<A NAME="E933"></A><B>E933</B>*
+:delf[unction][!] {name}
+			Delete function {name}.
+			{name} can also be a |<A HREF="eval.html#Dictionary">Dictionary</A>| entry that is a
+			YXXYFuncref|:
+<B>				:delfunc dict.init</B>
+ 			This will remove the &quot;init&quot; entry from &quot;<A HREF="eval.html#dict">dict</A>&quot;.  The
+			function is deleted if there are no more references to
+			<A HREF="motion.html#it">it</A>.
+			With the ! there is no error if the function does not
+			exist.
+
+							*<A NAME=":retu"></A><B>:retu</B>* *<A NAME=":return"></A><B>:return</B>* *<A NAME="E133"></A><B>E133</B>*
+:retu[rn] [expr]	Return from a function.  When &quot;[expr]&quot; is given, <A HREF="motion.html#it">it</A> is
+			evaluated and returned <A HREF="motion.html#as">as</A> the result of the function.
+			If &quot;[expr]&quot; is not given, the number 0 is returned.
+			When a function ends without an explicit &quot;<A HREF="#:return">:return</A>&quot;,
+			the number 0 is returned.
+			Note that there is no check for unreachable lines,
+			thus there is no warning if commands follow &quot;<A HREF="#:return">:return</A>&quot;.
+
+			If the &quot;<A HREF="#:return">:return</A>&quot; is used after a |<A HREF="eval.html#:try">:try</A>| but before the
+			matching |<A HREF="eval.html#:finally">:finally</A>| (if present), the commands
+			following the &quot;<A HREF="eval.html#:finally">:finally</A>&quot; up to the matching |<A HREF="eval.html#:endtry">:endtry</A>|
+			are executed first.  This process applies to all
+			nested &quot;<A HREF="eval.html#:try">:try</A>&quot;s inside the function.  The function
+			returns at the outermost &quot;<A HREF="eval.html#:endtry">:endtry</A>&quot;.
+
+
+						*<A NAME="function-argument"></A><B>function-argument</B>* *<A NAME="a:var"></A><B>a:var</B>*
+An argument can be defined by giving its name.  In the function this can then
+be used <A HREF="motion.html#as">as</A> &quot;a:name&quot; (&quot;a:&quot; for argument).
+
+					*<A NAME="a:0"></A><B>a:0</B>* *<A NAME="a:1"></A><B>a:1</B>* *<A NAME="a:000"></A><B>a:000</B>* *<A NAME="E740"></A><B>E740</B>* *<A NAME="..."></A><B>...</B>*
+Up to 20 arguments can be given, separated by commas.  After the named
+arguments an argument &quot;<A HREF="#...">...</A>&quot; can be specified, which means that more arguments
+may optionally be following.  In the function the extra arguments can be used
+<A HREF="motion.html#as">as</A> &quot;<A HREF="#a:1">a:1</A>&quot;, &quot;a:2&quot;, etc.  &quot;<A HREF="#a:0">a:0</A>&quot; is set to the number of extra arguments (which
+can be 0).  &quot;<A HREF="#a:000">a:000</A>&quot; is set to a |<A HREF="eval.html#List">List</A>| that contains these arguments.  Note
+that &quot;<A HREF="#a:1">a:1</A>&quot; is the same <A HREF="motion.html#as">as</A> &quot;a:000[0]&quot;.
+
+								*<A NAME="E742"></A><B>E742</B>*
+The a: scope and the <A HREF="eval.html#variables">variables</A> in <A HREF="motion.html#it">it</A> cannot be changed, they are fixed.
+However, if a composite type is used, such <A HREF="motion.html#as">as</A> |<A HREF="eval.html#List">List</A>| or |<A HREF="eval.html#Dictionary">Dictionary</A>| , you can
+change their contents.  Thus you can pass a |<A HREF="eval.html#List">List</A>| to a function and have the
+function add an item to <A HREF="motion.html#it">it</A>.  If you want to make sure the function cannot
+change a |<A HREF="eval.html#List">List</A>| or |<A HREF="eval.html#Dictionary">Dictionary</A>| use |<A HREF="eval.html#:lockvar">:lockvar</A>|.
+
+It is also possible to define a function without any arguments.  You must
+still supply the () then.
+
+It is allowed to define another function inside a function body.
+
+
+						*<A NAME="optional-function-argument"></A><B>optional-function-argument</B>*
+You can provide default values for positional named arguments.  This makes
+them optional for function calls.  When a positional argument is not
+specified at a call, the default <A HREF="eval.html#expression">expression</A> is used to initialize <A HREF="motion.html#it">it</A>.
+This only works for <A HREF="eval.html#functions">functions</A> declared with `:function`, not for
+lambda expressions |<A HREF="eval.html#expr-lambda">expr-lambda</A>|.
+
+Example:
+<B>  function Something(key, value = 10)</B>
+<B>     echo a:key .. ": " .. a:value</B>
+<B>  endfunction</B>
+<B>  call Something('empty')	"empty: 10"</B>
+<B>  call Something('key', 20)	"key: 20"</B>
+
+The argument default expressions are evaluated at the time of the function
+call, not definition.  Thus <A HREF="motion.html#it">it</A> is possible to use an <A HREF="eval.html#expression">expression</A> which is
+invalid the moment the function is defined.  The expressions are also only
+evaluated when arguments are not specified during a call.
+
+
+								*<A NAME="E989"></A><B>E989</B>*
+Optional arguments with default expressions must occur after any mandatory
+arguments.  You can use &quot;<A HREF="#...">...</A>&quot; after all optional named arguments.
+
+It is possible for later argument defaults to refer to prior arguments,
+but not the other way around.  They must be prefixed with &quot;a:&quot;, <A HREF="motion.html#as">as</A> with all
+arguments.
+
+Example that works:
+<B>  :function Okay(mandatory, optional = a:mandatory)</B>
+<B>  :endfunction</B>
+Example that does NOT work:
+<B>  :function NoGood(first = a:second, second = 10)</B>
+<B>  :endfunction</B>
+ 
+When not using &quot;<A HREF="#...">...</A>&quot;, the number of arguments in a function call must be at
+least equal to the number of mandatory named arguments.  When using &quot;<A HREF="#...">...</A>&quot;, the
+number of arguments may be larger than the total of mandatory and optional
+arguments.
+
+
+							*<A NAME="local-variables"></A><B>local-variables</B>*
+Inside a function local <A HREF="eval.html#variables">variables</A> can be used.  These will disappear when the
+function returns. Global <A HREF="eval.html#variables">variables</A> need to be accessed with &quot;<A HREF="eval.html#g:">g:</A>&quot;. Inside
+<A HREF="eval.html#functions">functions</A> local <A HREF="eval.html#variables">variables</A> are accessed without prepending anything. But you
+can also prepend &quot;<A HREF="eval.html#l:">l:</A>&quot; if you like.  This is required for some reserved names,
+such <A HREF="motion.html#as">as</A> &quot;version&quot;.
+
+Example:
+<B>  :function Table(title, ...)</B>
+<B>  :  echohl Title</B>
+<B>  :  echo a:title</B>
+<B>  :  echohl None</B>
+<B>  :  echo a:0 .. " items:"</B>
+<B>  :  for s in a:000</B>
+<B>  :    echon ' ' .. s</B>
+<B>  :  endfor</B>
+<B>  :endfunction</B>
+
+This function can then be called with:
+<B>  call Table("Table", "line1", "line2")</B>
+<B>  call Table("Empty Table")</B>
+
+To return more than one value, return a YXXYList|:
+<B>  :function Compute(n1, n2)</B>
+<B>  :  if a:n2 == 0</B>
+<B>  :    return ["fail", 0]</B>
+<B>  :  endif</B>
+<B>  :  return ["ok", a:n1 / a:n2]</B>
+<B>  :endfunction</B>
+
+This function can then be called with:
+<B>  :let [success, div] = Compute(102, 6)</B>
+<B>  :if success == "ok"</B>
+<B>  :  echo div</B>
+<B>  :endif</B>
+ 
+==============================================================================
+
+<B><FONT COLOR="PURPLE">2. Calling a function </FONT></B>
+
+						*<A NAME=":cal"></A><B>:cal</B>* *<A NAME=":call"></A><B>:call</B>* *<A NAME="E107"></A><B>E107</B>* *<A NAME="E117"></A><B>E117</B>*
+:[range]cal[l] {name}([arguments])
+		Call a function.  The name of the function and its arguments
+		are <A HREF="motion.html#as">as</A> specified with `:function`.  Up to 20 arguments can be
+		used.  The returned value is discarded.
+		Without a range and for <A HREF="eval.html#functions">functions</A> that accept a range, the
+		function is called once.  When a range is given the cursor is
+		positioned at the start of the first line before executing the
+		function.
+		When a range is given and the function doesn't handle <A HREF="motion.html#it">it</A>
+		itself, the function is executed for each line in the range,
+		with the cursor in the first column of that line.  The cursor
+		is left at the last line (possibly moved by the last function
+		call).  The arguments are re-evaluated for each line.  Thus
+		this works:
+
+						*<A NAME="function-range-example"></A><B>function-range-example</B>* 
+<B>	:function Mynumber(arg)</B>
+<B>	:  echo line(".") .. " " .. a:arg</B>
+<B>	:endfunction</B>
+<B>	:1,5call Mynumber(getline("."))</B>
+ 
+		The &quot;<A HREF="#a:firstline">a:firstline</A>&quot; and &quot;<A HREF="#a:lastline">a:lastline</A>&quot; are defined anyway, they
+		can be used to <A HREF="diff.html#do">do</A> something different at the start or end of
+		the range.
+
+		Example of a function that handles the range itself:
+
+<B>	:function Cont() range</B>
+<B>	:  execute (a:firstline + 1) .. "," .. a:lastline .. 's/^/\t\\ '</B>
+<B>	:endfunction</B>
+<B>	:4,8call Cont()</B>
+ 
+		This function inserts the continuation character &quot;\&quot; in front
+		of all the lines in the range, except the first one.
+
+		When the function returns a composite value <A HREF="motion.html#it">it</A> can be further
+		dereferenced, but the range will not be used then.  Example:
+<B>	:4,8call GetDict().method()</B>
+ 		Here GetDict() gets the range but method() does not.
+
+
+								*<A NAME="E132"></A><B>E132</B>*
+The recursiveness of user <A HREF="eval.html#functions">functions</A> is restricted with the |<A HREF="options.html#'maxfuncdepth'">'maxfuncdepth'</A>|
+option.
+
+It is also possible to use `:eval`.  It does not support a range, but does
+allow for <A HREF="eval.html#method">method</A> chaining, e.g.:
+<B>	eval GetList()-&gt;Filter()-&gt;append('$')</B>
+
+A function can also be called <A HREF="motion.html#as">as</A> part of evaluating an <A HREF="eval.html#expression">expression</A> or when <A HREF="motion.html#it">it</A>
+is used <A HREF="motion.html#as">as</A> a <A HREF="eval.html#method">method</A>:
+<B>	let x = GetList()</B>
+<B>	let y = GetList()-&gt;Filter()</B>
+
+
+==============================================================================
+
+<B><FONT COLOR="PURPLE">3. Automatically loading functions </FONT></B>
+
+							*<A NAME="autoload-functions"></A><B>autoload-functions</B>*
+When using many or large <A HREF="eval.html#functions">functions</A>, it's possible to automatically define them
+only when they are used.  There are two methods: with an <A HREF="autocmd.html#autocommand">autocommand</A> and with
+the &quot;<A HREF="#autoload">autoload</A>&quot; directory in <A HREF="options.html#'runtimepath'">'runtimepath'</A>.
+
+
+<B><FONT COLOR="PURPLE">Using an autocommand </FONT></B>
+
+This is introduced in the user manual, section |<A HREF="usr_41.html#41.14">41.14</A>|.
+
+The <A HREF="autocmd.html#autocommand">autocommand</A> is useful if you have a <A HREF="usr_05.html#plugin">plugin</A> that is a long Vim <A HREF="usr_41.html#script">script</A> file.
+You can define the <A HREF="autocmd.html#autocommand">autocommand</A> and quickly quit the <A HREF="usr_41.html#script">script</A> with `:finish`.
+That makes Vim <A HREF="starting.html#startup">startup</A> faster.  The <A HREF="autocmd.html#autocommand">autocommand</A> should then load the same file
+again, setting a variable to skip the `:finish` command.
+
+Use the <A HREF="autocmd.html#FuncUndefined">FuncUndefined</A> <A HREF="autocmd.html#autocommand">autocommand</A> event with a <A HREF="pattern.html#pattern">pattern</A> that matches the
+function(s) to be defined.  Example:
+
+<B>	:au FuncUndefined BufNet* source ~/vim/bufnetfuncs.vim</B>
+
+The file &quot;~/vim/bufnetfuncs.vim&quot; should then define <A HREF="eval.html#functions">functions</A> that start with
+&quot;BufNet&quot;.  Also see |<A HREF="autocmd.html#FuncUndefined">FuncUndefined</A>|.
+
+
+<B><FONT COLOR="PURPLE">Using an autoload script </FONT></B>
+
+							*<A NAME="autoload"></A><B>autoload</B>* *<A NAME="E746"></A><B>E746</B>*
+This is introduced in the user manual, section |<A HREF="usr_41.html#41.15">41.15</A>|.
+
+Using a <A HREF="usr_41.html#script">script</A> in the &quot;<A HREF="#autoload">autoload</A>&quot; directory is simpler, but requires using
+exactly the right file name.  A function that can be autoloaded has a name
+like this:
+
+<B>	:call filename#funcname()</B>
+
+When such a function is called, and <A HREF="motion.html#it">it</A> is not defined yet, Vim will search the
+&quot;<A HREF="#autoload">autoload</A>&quot; directories in <A HREF="options.html#'runtimepath'">'runtimepath'</A> for a <A HREF="usr_41.html#script">script</A> file called
+&quot;filename.vim&quot;.  For example &quot;~/.config/nvim/autoload/filename.vim&quot;.  That
+file should then define the function like this:
+
+<B>	function filename#funcname()</B>
+<B>	   echo "Done!"</B>
+<B>	endfunction</B>
+
+The file name and the name used before the # in the function must match
+exactly, and the defined function must have the name exactly <A HREF="motion.html#as">as</A> <A HREF="motion.html#it">it</A> will be
+called.
+
+It is possible to use subdirectories.  Every # in the function name works like
+a path separator.  Thus when calling a function:
+
+<B>	:call foo#bar#func()</B>
+
+Vim will look for the file &quot;autoload/foo/bar.vim&quot; in <A HREF="options.html#'runtimepath'">'runtimepath'</A>.
+
+This also works when reading a variable that has not been set yet:
+
+<B>	:let l = foo#bar#lvar</B>
+
+However, when the <A HREF="#autoload">autoload</A> <A HREF="usr_41.html#script">script</A> was already loaded <A HREF="motion.html#it">it</A> won't be loaded again
+for an unknown variable.
+
+When assigning a value to such a variable nothing special happens.  This can
+be used to pass settings to the <A HREF="#autoload">autoload</A> <A HREF="usr_41.html#script">script</A> before it's loaded:
+
+<B>	:let foo#bar#toggle = 1</B>
+<B>	:call foo#bar#func()</B>
+
+Note that when you make a mistake and call a function that is supposed to be
+defined in an <A HREF="#autoload">autoload</A> <A HREF="usr_41.html#script">script</A>, but the <A HREF="usr_41.html#script">script</A> doesn't actually define the
+function, you will get an error message for the missing function.  If you fix
+the <A HREF="#autoload">autoload</A> <A HREF="usr_41.html#script">script</A> <A HREF="motion.html#it">it</A> won't be automatically loaded again.  Either restart
+Vim or manually source the <A HREF="usr_41.html#script">script</A>.
+
+Also note that if you have two <A HREF="usr_41.html#script">script</A> files, and one calls a function in the
+other and vice versa, before the used function is defined, <A HREF="motion.html#it">it</A> won't work.
+Avoid using the <A HREF="#autoload">autoload</A> functionality at the toplevel.
+
+Hint: If you distribute a bunch of scripts read |<A HREF="usr_41.html#distribute-script">distribute-script</A>|.
+
+
+<A HREF="#top">top</A> - <A HREF="index.html">main help file</A>
+</PRE>
+</BODY>
+
+
+</HTML>

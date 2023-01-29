@@ -1,0 +1,122 @@
+
+
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Backwards Compatibility Policy &#8212; pytest documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments_pytest.css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Deprecations and Removals" href="deprecations.html" />
+    <link rel="prev" title="Setting up bash completion" href="bash-completion.html" />
+  <script>DOCUMENTATION_OPTIONS.URL_ROOT = './';</script>
+   
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="deprecations.html" title="Deprecations and Removals"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="bash-completion.html" title="Setting up bash completion"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="contents.html">pytest-6.2</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Backwards Compatibility Policy</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="backwards-compatibility-policy">
+<span id="backwards-compatibility"></span><h1>Backwards Compatibility Policy<a class="headerlink" href="#backwards-compatibility-policy" title="Permalink to this headline">¶</a></h1>
+<p>pytest is actively evolving and is a project that has been decades in the making,
+we keep learning about new and better structures to express different details about testing.</p>
+<p>While we implement those modifications we try to ensure an easy transition and don’t want to impose unnecessary churn on our users and community/plugin authors.</p>
+<p>As of now, pytest considers multiple types of backward compatibility transitions:</p>
+<ol class="loweralpha">
+<li><p>trivial: APIs which trivially translate to the new mechanism,
+and do not cause problematic changes.</p>
+<p>We try to support those indefinitely while encouraging users to switch to newer/better mechanisms through documentation.</p>
+</li>
+<li><p>transitional: the old and new API don’t conflict
+and we can help users transition by using warnings, while supporting both for a prolonged time.</p>
+<p>We will only start the removal of deprecated functionality in major releases (e.g. if we deprecate something in 3.0 we will start to remove it in 4.0), and keep it around for at least two minor releases (e.g. if we deprecate something in 3.9 and 4.0 is the next release, we start to remove it in 5.0, not in 4.0).</p>
+<p>When the deprecation expires (e.g. 4.0 is released), we won’t remove the deprecated functionality immediately, but will use the standard warning filters to turn them into <strong>errors</strong> by default. This approach makes it explicit that removal is imminent, and still gives you time to turn the deprecated feature into a warning instead of an error so it can be dealt with in your own time. In the next minor release (e.g. 4.1), the feature will be effectively removed.</p>
+</li>
+<li><p>true breakage: should only be considered when normal transition is unreasonably unsustainable and would offset important development/features by years.
+In addition, they should be limited to APIs where the number of actual users is very small (for example only impacting some plugins), and can be coordinated with the community in advance.</p>
+<p>Examples for such upcoming changes:</p>
+<ul class="simple">
+<li><p>removal of <code class="docutils literal notranslate"><span class="pre">pytest_runtest_protocol/nextitem</span></code> - <a class="reference external" href="https://github.com/pytest-dev/pytest/issues/895">#895</a></p></li>
+<li><p>rearranging of the node tree to include <code class="docutils literal notranslate"><span class="pre">FunctionDefinition</span></code></p></li>
+<li><p>rearranging of <code class="docutils literal notranslate"><span class="pre">SetupState</span></code> <a class="reference external" href="https://github.com/pytest-dev/pytest/issues/895">#895</a></p></li>
+</ul>
+<p>True breakages must be announced first in an issue containing:</p>
+<ul class="simple">
+<li><p>Detailed description of the change</p></li>
+<li><p>Rationale</p></li>
+<li><p>Expected impact on users and plugin authors (example in <a class="reference external" href="https://github.com/pytest-dev/pytest/issues/895">#895</a>)</p></li>
+</ul>
+<p>After there’s no hard <em>-1</em> on the issue it should be followed up by an initial proof-of-concept Pull Request.</p>
+<p>This POC serves as both a coordination point to assess impact and potential inspiration to come up with a transitional solution after all.</p>
+<p>After a reasonable amount of time the PR can be merged to base a new major release.</p>
+<p>For the PR to mature from POC to acceptance, it must contain:
+* Setup of deprecation errors/warnings that help users fix and port their code. If it is possible to introduce a deprecation period under the current series, before the true breakage, it should be introduced in a separate PR and be part of the current release stream.
+* Detailed description of the rationale and examples on how to port code in <code class="docutils literal notranslate"><span class="pre">doc/en/deprecations.rst</span></code>.</p>
+</li>
+</ol>
+</div>
+<div class="section" id="history">
+<h1>History<a class="headerlink" href="#history" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="focus-primary-on-smooth-transition-stance-pre-6-0">
+<h2>Focus primary on smooth transition - stance (pre 6.0)<a class="headerlink" href="#focus-primary-on-smooth-transition-stance-pre-6-0" title="Permalink to this headline">¶</a></h2>
+<p>Keeping backwards compatibility has a very high priority in the pytest project. Although we have deprecated functionality over the years, most of it is still supported. All deprecations in pytest were done because simpler or more efficient ways of accomplishing the same tasks have emerged, making the old way of doing things unnecessary.</p>
+<p>With the pytest 3.0 release we introduced a clear communication scheme for when we will actually remove the old busted joint and politely ask you to use the new hotness instead, while giving you enough time to adjust your tests or raise concerns if there are valid reasons to keep deprecated functionality around.</p>
+<p>To communicate changes we issue deprecation warnings using a custom warning hierarchy (see <a class="reference internal" href="warnings.html#internal-warnings"><span class="std std-ref">Internal pytest warnings</span></a>). These warnings may be suppressed using the standard means: <code class="docutils literal notranslate"><span class="pre">-W</span></code> command-line flag or <code class="docutils literal notranslate"><span class="pre">filterwarnings</span></code> ini options (see <a class="reference internal" href="warnings.html#warnings"><span class="std std-ref">Warnings Capture</span></a>), but we suggest to use these sparingly and temporarily, and heed the warnings when possible.</p>
+<p>We will only start the removal of deprecated functionality in major releases (e.g. if we deprecate something in 3.0 we will start to remove it in 4.0), and keep it around for at least two minor releases (e.g. if we deprecate something in 3.9 and 4.0 is the next release, we start to remove it in 5.0, not in 4.0).</p>
+<p>When the deprecation expires (e.g. 4.0 is released), we won’t remove the deprecated functionality immediately, but will use the standard warning filters to turn them into <strong>errors</strong> by default. This approach makes it explicit that removal is imminent, and still gives you time to turn the deprecated feature into a warning instead of an error so it can be dealt with in your own time. In the next minor release (e.g. 4.1), the feature will be effectively removed.</p>
+<div class="section" id="deprecation-roadmap">
+<h3>Deprecation Roadmap<a class="headerlink" href="#deprecation-roadmap" title="Permalink to this headline">¶</a></h3>
+<p>Features currently deprecated and removed in previous releases can be found in <a class="reference internal" href="deprecations.html#deprecations"><span class="std std-ref">Deprecations and Removals</span></a>.</p>
+<p>We track future deprecation and removal of features using milestones and the <a class="reference external" href="https://github.com/pytest-dev/pytest/issues?q=label%3A%22type%3A+deprecation%22">deprecation</a> and <a class="reference external" href="https://github.com/pytest-dev/pytest/labels/type%3A%20removal">removal</a> labels on GitHub.</p>
+</div>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+      </div>
+  <span id="sidebar-top"></span>
+      <div class="clearer"></div>
+    </div>
+  
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2015–2020, holger krekel and pytest-dev team.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
+    </div>
+  <script src="_static/version_warning_offset.js"></script>
+
+  </body>
+</html>

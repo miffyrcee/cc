@@ -1,0 +1,882 @@
+
+
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>_pytest.logging &#8212; pytest documentation</title>
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments_pytest.css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.png"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <script>DOCUMENTATION_OPTIONS.URL_ROOT = '../../';</script>
+   
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../contents.html">pytest-6.2</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">_pytest.logging</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for _pytest.logging</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Access and control log capturing.&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">contextmanager</span>
+<span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">StringIO</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">AbstractSet</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Generator</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Mapping</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TypeVar</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+
+<span class="kn">from</span> <span class="nn">_pytest</span> <span class="kn">import</span> <span class="n">nodes</span>
+<span class="kn">from</span> <span class="nn">_pytest._io</span> <span class="kn">import</span> <span class="n">TerminalWriter</span>
+<span class="kn">from</span> <span class="nn">_pytest.capture</span> <span class="kn">import</span> <span class="n">CaptureManager</span>
+<span class="kn">from</span> <span class="nn">_pytest.compat</span> <span class="kn">import</span> <span class="n">final</span>
+<span class="kn">from</span> <span class="nn">_pytest.compat</span> <span class="kn">import</span> <span class="n">nullcontext</span>
+<span class="kn">from</span> <span class="nn">_pytest.config</span> <span class="kn">import</span> <span class="n">_strtobool</span>
+<span class="kn">from</span> <span class="nn">_pytest.config</span> <span class="kn">import</span> <span class="n">Config</span>
+<span class="kn">from</span> <span class="nn">_pytest.config</span> <span class="kn">import</span> <span class="n">create_terminal_writer</span>
+<span class="kn">from</span> <span class="nn">_pytest.config</span> <span class="kn">import</span> <span class="n">hookimpl</span>
+<span class="kn">from</span> <span class="nn">_pytest.config</span> <span class="kn">import</span> <span class="n">UsageError</span>
+<span class="kn">from</span> <span class="nn">_pytest.config.argparsing</span> <span class="kn">import</span> <span class="n">Parser</span>
+<span class="kn">from</span> <span class="nn">_pytest.deprecated</span> <span class="kn">import</span> <span class="n">check_ispytest</span>
+<span class="kn">from</span> <span class="nn">_pytest.fixtures</span> <span class="kn">import</span> <span class="n">fixture</span>
+<span class="kn">from</span> <span class="nn">_pytest.fixtures</span> <span class="kn">import</span> <span class="n">FixtureRequest</span>
+<span class="kn">from</span> <span class="nn">_pytest.main</span> <span class="kn">import</span> <span class="n">Session</span>
+<span class="kn">from</span> <span class="nn">_pytest.store</span> <span class="kn">import</span> <span class="n">StoreKey</span>
+<span class="kn">from</span> <span class="nn">_pytest.terminal</span> <span class="kn">import</span> <span class="n">TerminalReporter</span>
+
+
+<span class="n">DEFAULT_LOG_FORMAT</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%(levelname)-8s</span><span class="s2"> </span><span class="si">%(name)s</span><span class="s2">:</span><span class="si">%(filename)s</span><span class="s2">:</span><span class="si">%(lineno)d</span><span class="s2"> </span><span class="si">%(message)s</span><span class="s2">&quot;</span>
+<span class="n">DEFAULT_LOG_DATE_FORMAT</span> <span class="o">=</span> <span class="s2">&quot;%H:%M:%S&quot;</span>
+<span class="n">_ANSI_ESCAPE_SEQ</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\x1b\[[\d;]+m&quot;</span><span class="p">)</span>
+<span class="n">caplog_handler_key</span> <span class="o">=</span> <span class="n">StoreKey</span><span class="p">[</span><span class="s2">&quot;LogCaptureHandler&quot;</span><span class="p">]()</span>
+<span class="n">caplog_records_key</span> <span class="o">=</span> <span class="n">StoreKey</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">logging</span><span class="o">.</span><span class="n">LogRecord</span><span class="p">]]]()</span>
+
+
+<span class="k">def</span> <span class="nf">_remove_ansi_escape_sequences</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">_ANSI_ESCAPE_SEQ</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">ColoredLevelFormatter</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A logging formatter which colorizes the %(levelname)..s part of the</span>
+<span class="sd">    log format passed to __init__.&quot;&quot;&quot;</span>
+
+    <span class="n">LOGLEVEL_COLOROPTS</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">AbstractSet</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">CRITICAL</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;red&quot;</span><span class="p">},</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="s2">&quot;bold&quot;</span><span class="p">},</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;yellow&quot;</span><span class="p">},</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">WARN</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;yellow&quot;</span><span class="p">},</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;green&quot;</span><span class="p">},</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;purple&quot;</span><span class="p">},</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">NOTSET</span><span class="p">:</span> <span class="nb">set</span><span class="p">(),</span>
+    <span class="p">}</span>
+    <span class="n">LEVELNAME_FMT_REGEX</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;%\(levelname\)([+-.]?\d*s)&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">terminalwriter</span><span class="p">:</span> <span class="n">TerminalWriter</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_original_fmt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_style</span><span class="o">.</span><span class="n">_fmt</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_level_to_fmt_mapping</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fmt</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="n">levelname_fmt_match</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">LEVELNAME_FMT_REGEX</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fmt</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">levelname_fmt_match</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">levelname_fmt</span> <span class="o">=</span> <span class="n">levelname_fmt_match</span><span class="o">.</span><span class="n">group</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">level</span><span class="p">,</span> <span class="n">color_opts</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">LOGLEVEL_COLOROPTS</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">formatted_levelname</span> <span class="o">=</span> <span class="n">levelname_fmt</span> <span class="o">%</span> <span class="p">{</span>
+                <span class="s2">&quot;levelname&quot;</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLevelName</span><span class="p">(</span><span class="n">level</span><span class="p">)</span>
+            <span class="p">}</span>
+
+            <span class="c1"># add ANSI escape sequences around the formatted levelname</span>
+            <span class="n">color_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="kc">True</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">color_opts</span><span class="p">}</span>
+            <span class="n">colorized_formatted_levelname</span> <span class="o">=</span> <span class="n">terminalwriter</span><span class="o">.</span><span class="n">markup</span><span class="p">(</span>
+                <span class="n">formatted_levelname</span><span class="p">,</span> <span class="o">**</span><span class="n">color_kwargs</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_level_to_fmt_mapping</span><span class="p">[</span><span class="n">level</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">LEVELNAME_FMT_REGEX</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span>
+                <span class="n">colorized_formatted_levelname</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fmt</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">LogRecord</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">fmt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_level_to_fmt_mapping</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">levelno</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_original_fmt</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_style</span><span class="o">.</span><span class="n">_fmt</span> <span class="o">=</span> <span class="n">fmt</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">PercentStyleMultiline</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">PercentStyle</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A logging style with special support for multiline messages.</span>
+
+<span class="sd">    If the message of a record consists of multiple lines, this style</span>
+<span class="sd">    formats the message as if each line were logged separately.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fmt</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">auto_indent</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="kc">None</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">fmt</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_auto_indent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_auto_indent</span><span class="p">(</span><span class="n">auto_indent</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_update_message</span><span class="p">(</span>
+        <span class="n">record_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">],</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]:</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="n">record_dict</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">tmp</span><span class="p">[</span><span class="s2">&quot;message&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">message</span>
+        <span class="k">return</span> <span class="n">tmp</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_get_auto_indent</span><span class="p">(</span><span class="n">auto_indent_option</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="kc">None</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Determine the current auto indentation setting.</span>
+
+<span class="sd">        Specify auto indent behavior (on/off/fixed) by passing in</span>
+<span class="sd">        extra={&quot;auto_indent&quot;: [value]} to the call to logging.log() or</span>
+<span class="sd">        using a --log-auto-indent [value] command line or the</span>
+<span class="sd">        log_auto_indent [value] config option.</span>
+
+<span class="sd">        Default behavior is auto-indent off.</span>
+
+<span class="sd">        Using the string &quot;True&quot; or &quot;on&quot; or the boolean True as the value</span>
+<span class="sd">        turns auto indent on, using the string &quot;False&quot; or &quot;off&quot; or the</span>
+<span class="sd">        boolean False or the int 0 turns it off, and specifying a</span>
+<span class="sd">        positive integer fixes the indentation position to the value</span>
+<span class="sd">        specified.</span>
+
+<span class="sd">        Any other values for the option are invalid, and will silently be</span>
+<span class="sd">        converted to the default.</span>
+
+<span class="sd">        :param None|bool|int|str auto_indent_option:</span>
+<span class="sd">            User specified option for indentation from command line, config</span>
+<span class="sd">            or extra kwarg. Accepts int, bool or str. str option accepts the</span>
+<span class="sd">            same range of values as boolean config options, as well as</span>
+<span class="sd">            positive integers represented in str form.</span>
+
+<span class="sd">        :returns:</span>
+<span class="sd">            Indentation value, which can be</span>
+<span class="sd">            -1 (automatically determine indentation) or</span>
+<span class="sd">            0 (auto-indent turned off) or</span>
+<span class="sd">            &gt;0 (explicitly set indentation position).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">auto_indent_option</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">auto_indent_option</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">auto_indent_option</span><span class="p">:</span>
+                <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="mi">0</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">auto_indent_option</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">auto_indent_option</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">auto_indent_option</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">auto_indent_option</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">_strtobool</span><span class="p">(</span><span class="n">auto_indent_option</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="k">return</span> <span class="mi">0</span>
+
+        <span class="k">return</span> <span class="mi">0</span>
+
+    <span class="k">def</span> <span class="nf">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">LogRecord</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="ow">in</span> <span class="n">record</span><span class="o">.</span><span class="n">message</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="s2">&quot;auto_indent&quot;</span><span class="p">):</span>
+                <span class="c1"># Passed in from the &quot;extra={}&quot; kwarg on the call to logging.log().</span>
+                <span class="n">auto_indent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_auto_indent</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">auto_indent</span><span class="p">)</span>  <span class="c1"># type: ignore[attr-defined]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">auto_indent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_auto_indent</span>
+
+            <span class="k">if</span> <span class="n">auto_indent</span><span class="p">:</span>
+                <span class="n">lines</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+                <span class="n">formatted</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fmt</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update_message</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">,</span> <span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+                <span class="k">if</span> <span class="n">auto_indent</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">indentation</span> <span class="o">=</span> <span class="n">_remove_ansi_escape_sequences</span><span class="p">(</span><span class="n">formatted</span><span class="p">)</span><span class="o">.</span><span class="n">find</span><span class="p">(</span>
+                        <span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Optimizes logging by allowing a fixed indentation.</span>
+                    <span class="n">indentation</span> <span class="o">=</span> <span class="n">auto_indent</span>
+                <span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">formatted</span>
+                <span class="k">return</span> <span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="n">indentation</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fmt</span> <span class="o">%</span> <span class="n">record</span><span class="o">.</span><span class="vm">__dict__</span>
+
+
+<span class="k">def</span> <span class="nf">get_option_ini</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">,</span> <span class="o">*</span><span class="n">names</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">getoption</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>  <span class="c1"># &#39;default&#39; arg won&#39;t work as expected</span>
+        <span class="k">if</span> <span class="n">ret</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">getini</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ret</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ret</span>
+
+
+<span class="k">def</span> <span class="nf">pytest_addoption</span><span class="p">(</span><span class="n">parser</span><span class="p">:</span> <span class="n">Parser</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Add options to control log capturing.&quot;&quot;&quot;</span>
+    <span class="n">group</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getgroup</span><span class="p">(</span><span class="s2">&quot;logging&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">add_option_ini</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">addini</span><span class="p">(</span>
+            <span class="n">dest</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">default</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">type</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;default value for &quot;</span> <span class="o">+</span> <span class="n">option</span>
+        <span class="p">)</span>
+        <span class="n">group</span><span class="o">.</span><span class="n">addoption</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="n">dest</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="n">add_option_ini</span><span class="p">(</span>
+        <span class="s2">&quot;--log-level&quot;</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;log_level&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;LEVEL&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;level of messages to catch/display.</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;Not set by default, so it depends on the root/parent log handler&#39;s&quot;</span>
+            <span class="s1">&#39; effective level, where it is &quot;WARNING&quot; by default.&#39;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">add_option_ini</span><span class="p">(</span>
+        <span class="s2">&quot;--log-format&quot;</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;log_format&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">DEFAULT_LOG_FORMAT</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;log format as used by the logging module.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">add_option_ini</span><span class="p">(</span>
+        <span class="s2">&quot;--log-date-format&quot;</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;log_date_format&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">DEFAULT_LOG_DATE_FORMAT</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;log date format as used by the logging module.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">addini</span><span class="p">(</span>
+        <span class="s2">&quot;log_cli&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;bool&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;enable log display during test run (also known as &quot;live logging&quot;).&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">add_option_ini</span><span class="p">(</span>
+        <span class="s2">&quot;--log-cli-level&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;log_cli_level&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;cli logging level.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">add_option_ini</span><span class="p">(</span>
+        <span class="s2">&quot;--log-cli-format&quot;</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;log_cli_format&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;log format as used by the logging module.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">add_option_ini</span><span class="p">(</span>
+        <span class="s2">&quot;--log-cli-date-format&quot;</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;log_cli_date_format&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;log date format as used by the logging module.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">add_option_ini</span><span class="p">(</span>
+        <span class="s2">&quot;--log-file&quot;</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;log_file&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;path to a file when logging will be written to.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">add_option_ini</span><span class="p">(</span>
+        <span class="s2">&quot;--log-file-level&quot;</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;log_file_level&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;log file logging level.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">add_option_ini</span><span class="p">(</span>
+        <span class="s2">&quot;--log-file-format&quot;</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;log_file_format&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">DEFAULT_LOG_FORMAT</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;log format as used by the logging module.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">add_option_ini</span><span class="p">(</span>
+        <span class="s2">&quot;--log-file-date-format&quot;</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;log_file_date_format&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">DEFAULT_LOG_DATE_FORMAT</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;log date format as used by the logging module.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">add_option_ini</span><span class="p">(</span>
+        <span class="s2">&quot;--log-auto-indent&quot;</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;log_auto_indent&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Auto-indent multiline messages passed to the logging module. Accepts true|on, false|off or an integer.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<span class="n">_HandlerType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;_HandlerType&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">Handler</span><span class="p">)</span>
+
+
+<span class="c1"># Not using @contextmanager for performance reasons.</span>
+<span class="k">class</span> <span class="nc">catching_logs</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Context manager that prepares the whole logging machinery properly.&quot;&quot;&quot;</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;handler&quot;</span><span class="p">,</span> <span class="s2">&quot;level&quot;</span><span class="p">,</span> <span class="s2">&quot;orig_level&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handler</span><span class="p">:</span> <span class="n">_HandlerType</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span> <span class="o">=</span> <span class="n">handler</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">level</span> <span class="o">=</span> <span class="n">level</span>
+
+    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">root_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">level</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">level</span><span class="p">)</span>
+        <span class="n">root_logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">level</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">orig_level</span> <span class="o">=</span> <span class="n">root_logger</span><span class="o">.</span><span class="n">level</span>
+            <span class="n">root_logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">orig_level</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">level</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">handler</span>
+
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">traceback</span><span class="p">):</span>
+        <span class="n">root_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">level</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">root_logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">orig_level</span><span class="p">)</span>
+        <span class="n">root_logger</span><span class="o">.</span><span class="n">removeHandler</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">LogCaptureHandler</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A logging handler that stores log records and the log text.&quot;&quot;&quot;</span>
+
+    <span class="n">stream</span><span class="p">:</span> <span class="n">StringIO</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Create a new log handler.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">StringIO</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">logging</span><span class="o">.</span><span class="n">LogRecord</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">emit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">LogRecord</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Keep the log records in a list in addition to the log text.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">records</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stream</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">handleError</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">LogRecord</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">logging</span><span class="o">.</span><span class="n">raiseExceptions</span><span class="p">:</span>
+            <span class="c1"># Fail the test if the log message is bad (emit failed).</span>
+            <span class="c1"># The default behavior of logging is to print &quot;Logging error&quot;</span>
+            <span class="c1"># to stderr with the call stack and some extra details.</span>
+            <span class="c1"># pytest wants to make such mistakes visible during testing.</span>
+            <span class="k">raise</span>
+
+
+<div class="viewcode-block" id="LogCaptureFixture"><a class="viewcode-back" href="../../reference.html#_pytest.logging.LogCaptureFixture">[docs]</a><span class="nd">@final</span>
+<span class="k">class</span> <span class="nc">LogCaptureFixture</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Provides access and control of log capturing.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">nodes</span><span class="o">.</span><span class="n">Node</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">_ispytest</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">check_ispytest</span><span class="p">(</span><span class="n">_ispytest</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_item</span> <span class="o">=</span> <span class="n">item</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initial_handler_level</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># Dict of log name -&gt; log level.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initial_logger_levels</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span> <span class="nf">_finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Finalize the fixture.</span>
+
+<span class="sd">        This restores the log levels changed by :meth:`set_level`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Restore log levels.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initial_handler_level</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_initial_handler_level</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">logger_name</span><span class="p">,</span> <span class="n">level</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initial_logger_levels</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">logger_name</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">level</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LogCaptureHandler</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Get the logging handler used by the fixture.</span>
+
+<span class="sd">        :rtype: LogCaptureHandler</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_item</span><span class="o">.</span><span class="n">_store</span><span class="p">[</span><span class="n">caplog_handler_key</span><span class="p">]</span>
+
+<div class="viewcode-block" id="LogCaptureFixture.get_records"><a class="viewcode-back" href="../../reference.html#_pytest.logging.LogCaptureFixture.get_records">[docs]</a>    <span class="k">def</span> <span class="nf">get_records</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">when</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">logging</span><span class="o">.</span><span class="n">LogRecord</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Get the logging records for one of the possible test phases.</span>
+
+<span class="sd">        :param str when:</span>
+<span class="sd">            Which test phase to obtain the records from. Valid values are: &quot;setup&quot;, &quot;call&quot; and &quot;teardown&quot;.</span>
+
+<span class="sd">        :returns: The list of captured records at the given stage.</span>
+<span class="sd">        :rtype: List[logging.LogRecord]</span>
+
+<span class="sd">        .. versionadded:: 3.4</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_item</span><span class="o">.</span><span class="n">_store</span><span class="p">[</span><span class="n">caplog_records_key</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">when</span><span class="p">,</span> <span class="p">[])</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">text</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;The formatted log text.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">_remove_ansi_escape_sequences</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">stream</span><span class="o">.</span><span class="n">getvalue</span><span class="p">())</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">records</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">logging</span><span class="o">.</span><span class="n">LogRecord</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;The list of log records.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">records</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">record_tuples</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
+        <span class="sd">&quot;&quot;&quot;A list of a stripped down version of log records intended</span>
+<span class="sd">        for use in assertion comparison.</span>
+
+<span class="sd">        The format of the tuple is:</span>
+
+<span class="sd">            (logger_name, log_level, message)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[(</span><span class="n">r</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">levelno</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">getMessage</span><span class="p">())</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">messages</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;A list of format-interpolated log messages.</span>
+
+<span class="sd">        Unlike &#39;records&#39;, which contains the format string and parameters for</span>
+<span class="sd">        interpolation, log messages in this list are all interpolated.</span>
+
+<span class="sd">        Unlike &#39;text&#39;, which contains the output from the handler, log</span>
+<span class="sd">        messages in this list are unadorned with levels, timestamps, etc,</span>
+<span class="sd">        making exact comparisons more reliable.</span>
+
+<span class="sd">        Note that traceback or stack info (from :func:`logging.exception` or</span>
+<span class="sd">        the `exc_info` or `stack_info` arguments to the logging functions) is</span>
+<span class="sd">        not included, as this is added by the formatter in the handler.</span>
+
+<span class="sd">        .. versionadded:: 3.7</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">getMessage</span><span class="p">()</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="p">]</span>
+
+<div class="viewcode-block" id="LogCaptureFixture.clear"><a class="viewcode-back" href="../../reference.html#_pytest.logging.LogCaptureFixture.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Reset the list of log records and the captured log text.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="LogCaptureFixture.set_level"><a class="viewcode-back" href="../../reference.html#_pytest.logging.LogCaptureFixture.set_level">[docs]</a>    <span class="k">def</span> <span class="nf">set_level</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">logger</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set the level of a logger for the duration of a test.</span>
+
+<span class="sd">        .. versionchanged:: 3.4</span>
+<span class="sd">            The levels of the loggers changed by this function will be</span>
+<span class="sd">            restored to their initial values at the end of the test.</span>
+
+<span class="sd">        :param int level: The level.</span>
+<span class="sd">        :param str logger: The logger to update. If not given, the root logger.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger_obj</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
+        <span class="c1"># Save the original log-level to restore it during teardown.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initial_logger_levels</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">logger</span><span class="p">,</span> <span class="n">logger_obj</span><span class="o">.</span><span class="n">level</span><span class="p">)</span>
+        <span class="n">logger_obj</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">level</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initial_handler_level</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_initial_handler_level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">level</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">level</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="LogCaptureFixture.at_level"><a class="viewcode-back" href="../../reference.html#_pytest.logging.LogCaptureFixture.at_level">[docs]</a>    <span class="nd">@contextmanager</span>
+    <span class="k">def</span> <span class="nf">at_level</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">logger</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Context manager that sets the level for capturing of logs. After</span>
+<span class="sd">        the end of the &#39;with&#39; statement the level is restored to its original</span>
+<span class="sd">        value.</span>
+
+<span class="sd">        :param int level: The level.</span>
+<span class="sd">        :param str logger: The logger to update. If not given, the root logger.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger_obj</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
+        <span class="n">orig_level</span> <span class="o">=</span> <span class="n">logger_obj</span><span class="o">.</span><span class="n">level</span>
+        <span class="n">logger_obj</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">level</span><span class="p">)</span>
+        <span class="n">handler_orig_level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">level</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">level</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">yield</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">logger_obj</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">orig_level</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">handler_orig_level</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="caplog"><a class="viewcode-back" href="../../reference.html#_pytest.logging.caplog">[docs]</a><span class="nd">@fixture</span>
+<span class="k">def</span> <span class="nf">caplog</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">FixtureRequest</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">LogCaptureFixture</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Access and control log capturing.</span>
+
+<span class="sd">    Captured logs are available through the following properties/methods::</span>
+
+<span class="sd">    * caplog.messages        -&gt; list of format-interpolated log messages</span>
+<span class="sd">    * caplog.text            -&gt; string containing formatted log output</span>
+<span class="sd">    * caplog.records         -&gt; list of logging.LogRecord instances</span>
+<span class="sd">    * caplog.record_tuples   -&gt; list of (logger_name, level, message) tuples</span>
+<span class="sd">    * caplog.clear()         -&gt; clear captured records and formatted log output string</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">LogCaptureFixture</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">node</span><span class="p">,</span> <span class="n">_ispytest</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">yield</span> <span class="n">result</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">_finalize</span><span class="p">()</span></div>
+
+
+<span class="k">def</span> <span class="nf">get_log_level_for_setting</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">,</span> <span class="o">*</span><span class="n">setting_names</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+    <span class="k">for</span> <span class="n">setting_name</span> <span class="ow">in</span> <span class="n">setting_names</span><span class="p">:</span>
+        <span class="n">log_level</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">getoption</span><span class="p">(</span><span class="n">setting_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">log_level</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">log_level</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">getini</span><span class="p">(</span><span class="n">setting_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">log_level</span><span class="p">:</span>
+            <span class="k">break</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">log_level</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">log_level</span> <span class="o">=</span> <span class="n">log_level</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">logging</span><span class="p">,</span> <span class="n">log_level</span><span class="p">,</span> <span class="n">log_level</span><span class="p">))</span>
+    <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="c1"># Python logging does not recognise this as a logging level</span>
+        <span class="k">raise</span> <span class="n">UsageError</span><span class="p">(</span>
+            <span class="s2">&quot;&#39;</span><span class="si">{}</span><span class="s2">&#39; is not recognized as a logging level name for &quot;</span>
+            <span class="s2">&quot;&#39;</span><span class="si">{}</span><span class="s2">&#39;. Please consider passing the &quot;</span>
+            <span class="s2">&quot;logging level num instead.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">log_level</span><span class="p">,</span> <span class="n">setting_name</span><span class="p">)</span>
+        <span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+
+
+<span class="c1"># run after terminalreporter/capturemanager are configured</span>
+<span class="nd">@hookimpl</span><span class="p">(</span><span class="n">trylast</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">pytest_configure</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">pluginmanager</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">LoggingPlugin</span><span class="p">(</span><span class="n">config</span><span class="p">),</span> <span class="s2">&quot;logging-plugin&quot;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">LoggingPlugin</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Attaches to the logging module and captures log messages for each test.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Create a new plugin to capture log messages.</span>
+
+<span class="sd">        The formatter can be safely shared across all handlers so</span>
+<span class="sd">        create a single one for the entire test session here.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_config</span> <span class="o">=</span> <span class="n">config</span>
+
+        <span class="c1"># Report logging.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">formatter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_formatter</span><span class="p">(</span>
+            <span class="n">get_option_ini</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="s2">&quot;log_format&quot;</span><span class="p">),</span>
+            <span class="n">get_option_ini</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="s2">&quot;log_date_format&quot;</span><span class="p">),</span>
+            <span class="n">get_option_ini</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="s2">&quot;log_auto_indent&quot;</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_level</span> <span class="o">=</span> <span class="n">get_log_level_for_setting</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="s2">&quot;log_level&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caplog_handler</span> <span class="o">=</span> <span class="n">LogCaptureHandler</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caplog_handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">formatter</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">report_handler</span> <span class="o">=</span> <span class="n">LogCaptureHandler</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">report_handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">formatter</span><span class="p">)</span>
+
+        <span class="c1"># File logging.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_file_level</span> <span class="o">=</span> <span class="n">get_log_level_for_setting</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="s2">&quot;log_file_level&quot;</span><span class="p">)</span>
+        <span class="n">log_file</span> <span class="o">=</span> <span class="n">get_option_ini</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="s2">&quot;log_file&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">devnull</span>
+        <span class="k">if</span> <span class="n">log_file</span> <span class="o">!=</span> <span class="n">os</span><span class="o">.</span><span class="n">devnull</span><span class="p">:</span>
+            <span class="n">directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">log_file</span><span class="p">))</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_file_handler</span> <span class="o">=</span> <span class="n">_FileHandler</span><span class="p">(</span><span class="n">log_file</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;UTF-8&quot;</span><span class="p">)</span>
+        <span class="n">log_file_format</span> <span class="o">=</span> <span class="n">get_option_ini</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="s2">&quot;log_file_format&quot;</span><span class="p">,</span> <span class="s2">&quot;log_format&quot;</span><span class="p">)</span>
+        <span class="n">log_file_date_format</span> <span class="o">=</span> <span class="n">get_option_ini</span><span class="p">(</span>
+            <span class="n">config</span><span class="p">,</span> <span class="s2">&quot;log_file_date_format&quot;</span><span class="p">,</span> <span class="s2">&quot;log_date_format&quot;</span>
+        <span class="p">)</span>
+
+        <span class="n">log_file_formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span>
+            <span class="n">log_file_format</span><span class="p">,</span> <span class="n">datefmt</span><span class="o">=</span><span class="n">log_file_date_format</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_file_handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">log_file_formatter</span><span class="p">)</span>
+
+        <span class="c1"># CLI/live logging.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_cli_level</span> <span class="o">=</span> <span class="n">get_log_level_for_setting</span><span class="p">(</span>
+            <span class="n">config</span><span class="p">,</span> <span class="s2">&quot;log_cli_level&quot;</span><span class="p">,</span> <span class="s2">&quot;log_level&quot;</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_cli_enabled</span><span class="p">():</span>
+            <span class="n">terminal_reporter</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">pluginmanager</span><span class="o">.</span><span class="n">get_plugin</span><span class="p">(</span><span class="s2">&quot;terminalreporter&quot;</span><span class="p">)</span>
+            <span class="n">capture_manager</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">pluginmanager</span><span class="o">.</span><span class="n">get_plugin</span><span class="p">(</span><span class="s2">&quot;capturemanager&quot;</span><span class="p">)</span>
+            <span class="c1"># if capturemanager plugin is disabled, live logging still works.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_cli_handler</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span>
+                <span class="n">_LiveLoggingStreamHandler</span><span class="p">,</span> <span class="n">_LiveLoggingNullHandler</span>
+            <span class="p">]</span> <span class="o">=</span> <span class="n">_LiveLoggingStreamHandler</span><span class="p">(</span><span class="n">terminal_reporter</span><span class="p">,</span> <span class="n">capture_manager</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_cli_handler</span> <span class="o">=</span> <span class="n">_LiveLoggingNullHandler</span><span class="p">()</span>
+        <span class="n">log_cli_formatter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_formatter</span><span class="p">(</span>
+            <span class="n">get_option_ini</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="s2">&quot;log_cli_format&quot;</span><span class="p">,</span> <span class="s2">&quot;log_format&quot;</span><span class="p">),</span>
+            <span class="n">get_option_ini</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="s2">&quot;log_cli_date_format&quot;</span><span class="p">,</span> <span class="s2">&quot;log_date_format&quot;</span><span class="p">),</span>
+            <span class="n">get_option_ini</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="s2">&quot;log_auto_indent&quot;</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_cli_handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">log_cli_formatter</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_create_formatter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_format</span><span class="p">,</span> <span class="n">log_date_format</span><span class="p">,</span> <span class="n">auto_indent</span><span class="p">):</span>
+        <span class="c1"># Color option doesn&#39;t exist if terminal plugin is disabled.</span>
+        <span class="n">color</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">option</span><span class="p">,</span> <span class="s2">&quot;color&quot;</span><span class="p">,</span> <span class="s2">&quot;no&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">color</span> <span class="o">!=</span> <span class="s2">&quot;no&quot;</span> <span class="ow">and</span> <span class="n">ColoredLevelFormatter</span><span class="o">.</span><span class="n">LEVELNAME_FMT_REGEX</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
+            <span class="n">log_format</span>
+        <span class="p">):</span>
+            <span class="n">formatter</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span> <span class="o">=</span> <span class="n">ColoredLevelFormatter</span><span class="p">(</span>
+                <span class="n">create_terminal_writer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="p">),</span> <span class="n">log_format</span><span class="p">,</span> <span class="n">log_date_format</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="n">log_format</span><span class="p">,</span> <span class="n">log_date_format</span><span class="p">)</span>
+
+        <span class="n">formatter</span><span class="o">.</span><span class="n">_style</span> <span class="o">=</span> <span class="n">PercentStyleMultiline</span><span class="p">(</span>
+            <span class="n">formatter</span><span class="o">.</span><span class="n">_style</span><span class="o">.</span><span class="n">_fmt</span><span class="p">,</span> <span class="n">auto_indent</span><span class="o">=</span><span class="n">auto_indent</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">formatter</span>
+
+    <span class="k">def</span> <span class="nf">set_log_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fname</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set the filename parameter for Logging.FileHandler().</span>
+
+<span class="sd">        Creates parent directory if it does not exist.</span>
+
+<span class="sd">        .. warning::</span>
+<span class="sd">            This is an experimental API.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fpath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">fpath</span><span class="o">.</span><span class="n">is_absolute</span><span class="p">():</span>
+            <span class="n">fpath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">rootpath</span> <span class="o">/</span> <span class="n">fpath</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">fpath</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="n">fpath</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">stream</span> <span class="o">=</span> <span class="n">fpath</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;UTF-8&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">7</span><span class="p">):</span>
+            <span class="n">old_stream</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_file_handler</span><span class="o">.</span><span class="n">setStream</span><span class="p">(</span><span class="n">stream</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">old_stream</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_file_handler</span><span class="o">.</span><span class="n">stream</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_file_handler</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log_file_handler</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log_file_handler</span><span class="o">.</span><span class="n">stream</span> <span class="o">=</span> <span class="n">stream</span>
+            <span class="k">finally</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log_file_handler</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">old_stream</span><span class="p">:</span>
+            <span class="n">old_stream</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_log_cli_enabled</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return whether live logging is enabled.&quot;&quot;&quot;</span>
+        <span class="n">enabled</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">getoption</span><span class="p">(</span>
+            <span class="s2">&quot;--log-cli-level&quot;</span>
+        <span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">getini</span><span class="p">(</span><span class="s2">&quot;log_cli&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">enabled</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">terminal_reporter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">pluginmanager</span><span class="o">.</span><span class="n">get_plugin</span><span class="p">(</span><span class="s2">&quot;terminalreporter&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">terminal_reporter</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># terminal reporter is disabled e.g. by pytest-xdist.</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="nd">@hookimpl</span><span class="p">(</span><span class="n">hookwrapper</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">tryfirst</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">pytest_sessionstart</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_cli_handler</span><span class="o">.</span><span class="n">set_when</span><span class="p">(</span><span class="s2">&quot;sessionstart&quot;</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">catching_logs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_cli_handler</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">log_cli_level</span><span class="p">):</span>
+            <span class="k">with</span> <span class="n">catching_logs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_file_handler</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">log_file_level</span><span class="p">):</span>
+                <span class="k">yield</span>
+
+    <span class="nd">@hookimpl</span><span class="p">(</span><span class="n">hookwrapper</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">tryfirst</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">pytest_collection</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_cli_handler</span><span class="o">.</span><span class="n">set_when</span><span class="p">(</span><span class="s2">&quot;collection&quot;</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">catching_logs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_cli_handler</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">log_cli_level</span><span class="p">):</span>
+            <span class="k">with</span> <span class="n">catching_logs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_file_handler</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">log_file_level</span><span class="p">):</span>
+                <span class="k">yield</span>
+
+    <span class="nd">@hookimpl</span><span class="p">(</span><span class="n">hookwrapper</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">pytest_runtestloop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="n">Session</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">session</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">option</span><span class="o">.</span><span class="n">collectonly</span><span class="p">:</span>
+            <span class="k">yield</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_cli_enabled</span><span class="p">()</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">getoption</span><span class="p">(</span><span class="s2">&quot;verbose&quot;</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># The verbose flag is needed to avoid messy test progress output.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">option</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="k">with</span> <span class="n">catching_logs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_cli_handler</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">log_cli_level</span><span class="p">):</span>
+            <span class="k">with</span> <span class="n">catching_logs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_file_handler</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">log_file_level</span><span class="p">):</span>
+                <span class="k">yield</span>  <span class="c1"># Run all the tests.</span>
+
+    <span class="nd">@hookimpl</span>
+    <span class="k">def</span> <span class="nf">pytest_runtest_logstart</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_cli_handler</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_cli_handler</span><span class="o">.</span><span class="n">set_when</span><span class="p">(</span><span class="s2">&quot;start&quot;</span><span class="p">)</span>
+
+    <span class="nd">@hookimpl</span>
+    <span class="k">def</span> <span class="nf">pytest_runtest_logreport</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_cli_handler</span><span class="o">.</span><span class="n">set_when</span><span class="p">(</span><span class="s2">&quot;logreport&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_runtest_for</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">nodes</span><span class="o">.</span><span class="n">Item</span><span class="p">,</span> <span class="n">when</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Implement the internals of the pytest_runtest_xxx() hooks.&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="n">catching_logs</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">caplog_handler</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">log_level</span><span class="p">,</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">caplog_handler</span><span class="p">,</span> <span class="n">catching_logs</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">report_handler</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">log_level</span><span class="p">,</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">report_handler</span><span class="p">:</span>
+            <span class="n">caplog_handler</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+            <span class="n">report_handler</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+            <span class="n">item</span><span class="o">.</span><span class="n">_store</span><span class="p">[</span><span class="n">caplog_records_key</span><span class="p">][</span><span class="n">when</span><span class="p">]</span> <span class="o">=</span> <span class="n">caplog_handler</span><span class="o">.</span><span class="n">records</span>
+            <span class="n">item</span><span class="o">.</span><span class="n">_store</span><span class="p">[</span><span class="n">caplog_handler_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">caplog_handler</span>
+
+            <span class="k">yield</span>
+
+            <span class="n">log</span> <span class="o">=</span> <span class="n">report_handler</span><span class="o">.</span><span class="n">stream</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">item</span><span class="o">.</span><span class="n">add_report_section</span><span class="p">(</span><span class="n">when</span><span class="p">,</span> <span class="s2">&quot;log&quot;</span><span class="p">,</span> <span class="n">log</span><span class="p">)</span>
+
+    <span class="nd">@hookimpl</span><span class="p">(</span><span class="n">hookwrapper</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">pytest_runtest_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">nodes</span><span class="o">.</span><span class="n">Item</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_cli_handler</span><span class="o">.</span><span class="n">set_when</span><span class="p">(</span><span class="s2">&quot;setup&quot;</span><span class="p">)</span>
+
+        <span class="n">empty</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">logging</span><span class="o">.</span><span class="n">LogRecord</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">item</span><span class="o">.</span><span class="n">_store</span><span class="p">[</span><span class="n">caplog_records_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">empty</span>
+        <span class="k">yield from</span> <span class="bp">self</span><span class="o">.</span><span class="n">_runtest_for</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="s2">&quot;setup&quot;</span><span class="p">)</span>
+
+    <span class="nd">@hookimpl</span><span class="p">(</span><span class="n">hookwrapper</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">pytest_runtest_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">nodes</span><span class="o">.</span><span class="n">Item</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_cli_handler</span><span class="o">.</span><span class="n">set_when</span><span class="p">(</span><span class="s2">&quot;call&quot;</span><span class="p">)</span>
+
+        <span class="k">yield from</span> <span class="bp">self</span><span class="o">.</span><span class="n">_runtest_for</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="s2">&quot;call&quot;</span><span class="p">)</span>
+
+    <span class="nd">@hookimpl</span><span class="p">(</span><span class="n">hookwrapper</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">pytest_runtest_teardown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">nodes</span><span class="o">.</span><span class="n">Item</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_cli_handler</span><span class="o">.</span><span class="n">set_when</span><span class="p">(</span><span class="s2">&quot;teardown&quot;</span><span class="p">)</span>
+
+        <span class="k">yield from</span> <span class="bp">self</span><span class="o">.</span><span class="n">_runtest_for</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="s2">&quot;teardown&quot;</span><span class="p">)</span>
+        <span class="k">del</span> <span class="n">item</span><span class="o">.</span><span class="n">_store</span><span class="p">[</span><span class="n">caplog_records_key</span><span class="p">]</span>
+        <span class="k">del</span> <span class="n">item</span><span class="o">.</span><span class="n">_store</span><span class="p">[</span><span class="n">caplog_handler_key</span><span class="p">]</span>
+
+    <span class="nd">@hookimpl</span>
+    <span class="k">def</span> <span class="nf">pytest_runtest_logfinish</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_cli_handler</span><span class="o">.</span><span class="n">set_when</span><span class="p">(</span><span class="s2">&quot;finish&quot;</span><span class="p">)</span>
+
+    <span class="nd">@hookimpl</span><span class="p">(</span><span class="n">hookwrapper</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">tryfirst</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">pytest_sessionfinish</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_cli_handler</span><span class="o">.</span><span class="n">set_when</span><span class="p">(</span><span class="s2">&quot;sessionfinish&quot;</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">catching_logs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_cli_handler</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">log_cli_level</span><span class="p">):</span>
+            <span class="k">with</span> <span class="n">catching_logs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_file_handler</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">log_file_level</span><span class="p">):</span>
+                <span class="k">yield</span>
+
+    <span class="nd">@hookimpl</span>
+    <span class="k">def</span> <span class="nf">pytest_unconfigure</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Close the FileHandler explicitly.</span>
+        <span class="c1"># (logging.shutdown might have lost the weakref?!)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_file_handler</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+
+<span class="k">class</span> <span class="nc">_FileHandler</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A logging FileHandler with pytest tweaks.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">handleError</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">LogRecord</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Handled by LogCaptureHandler.</span>
+        <span class="k">pass</span>
+
+
+<span class="k">class</span> <span class="nc">_LiveLoggingStreamHandler</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A logging StreamHandler used by the live logging feature: it will</span>
+<span class="sd">    write a newline before the first log message in each test.</span>
+
+<span class="sd">    During live logging we must also explicitly disable stdout/stderr</span>
+<span class="sd">    capturing otherwise it will get captured and won&#39;t appear in the</span>
+<span class="sd">    terminal.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Officially stream needs to be a IO[str], but TerminalReporter</span>
+    <span class="c1"># isn&#39;t. So force it.</span>
+    <span class="n">stream</span><span class="p">:</span> <span class="n">TerminalReporter</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># type: ignore</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">terminal_reporter</span><span class="p">:</span> <span class="n">TerminalReporter</span><span class="p">,</span>
+        <span class="n">capture_manager</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">CaptureManager</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="n">terminal_reporter</span><span class="p">)</span>  <span class="c1"># type: ignore[arg-type]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">capture_manager</span> <span class="o">=</span> <span class="n">capture_manager</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_when</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_test_outcome_written</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Reset the handler; should be called before the start of each test.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_first_record_emitted</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">set_when</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">when</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Prepare for the given test phase (setup/call/teardown).&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_when</span> <span class="o">=</span> <span class="n">when</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_section_name_shown</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">when</span> <span class="o">==</span> <span class="s2">&quot;start&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_test_outcome_written</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">emit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">LogRecord</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ctx_manager</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">capture_manager</span><span class="o">.</span><span class="n">global_and_fixture_disabled</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">capture_manager</span>
+            <span class="k">else</span> <span class="n">nullcontext</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="k">with</span> <span class="n">ctx_manager</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_first_record_emitted</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_first_record_emitted</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_when</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;teardown&quot;</span><span class="p">,</span> <span class="s2">&quot;finish&quot;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_outcome_written</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_test_outcome_written</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_section_name_shown</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_when</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">stream</span><span class="o">.</span><span class="n">section</span><span class="p">(</span><span class="s2">&quot;live log &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_when</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">bold</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_section_name_shown</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">handleError</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">LogRecord</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Handled by LogCaptureHandler.</span>
+        <span class="k">pass</span>
+
+
+<span class="k">class</span> <span class="nc">_LiveLoggingNullHandler</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">NullHandler</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A logging handler used when live logging is disabled.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">set_when</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">when</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">handleError</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">LogRecord</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Handled by LogCaptureHandler.</span>
+        <span class="k">pass</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+      </div>
+  <span id="sidebar-top"></span>
+      <div class="clearer"></div>
+    </div>
+  
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2015–2020, holger krekel and pytest-dev team.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
+    </div>
+  <script src="../../_static/version_warning_offset.js"></script>
+
+  </body>
+</html>

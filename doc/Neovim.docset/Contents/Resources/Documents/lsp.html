@@ -1,0 +1,2198 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-type" content="text/html; charset=ISO-8859-1">
+<TITLE>Nvim documentation: lsp</TITLE>
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<H1>Nvim documentation: lsp</H1>
+<A NAME="top"></A>
+<A HREF="index.html">main help file</A>
+
+<HR>
+<PRE>
+
+*<A NAME="lsp.txt"></A><B>lsp.txt</B>*   <A HREF="#LSP">LSP</A>
+
+
+                            NVIM REFERENCE MANUAL
+
+
+
+<A HREF="#LSP">LSP</A> client/framework                                     *<A NAME="lsp"></A><B>lsp</B>* *<A NAME="LSP"></A><B>LSP</B>*
+
+Nvim supports the Language Server Protocol (LSP), which means <A HREF="motion.html#it">it</A> acts <A HREF="motion.html#as">as</A>
+a client to <A HREF="#LSP">LSP</A> servers and includes a <A HREF="lua.html#Lua">Lua</A> framework `vim.lsp` for building
+enhanced <A HREF="#LSP">LSP</A> tools.
+
+    https://microsoft.github.io/language-server-protocol/
+
+<A HREF="#LSP">LSP</A> facilitates features like go-to-definition, find-references, hover,
+completion, rename, format, refactor, etc., using semantic whole-project
+analysis (unlike |<A HREF="tagsrch.html#ctags">ctags</A>|).
+
+                                      Type |<A HREF="various.html#gO">gO</A>| to see the table of contents.
+
+==============================================================================
+
+QUICKSTART                                              *<A NAME="lsp-quickstart"></A><B>lsp-quickstart</B>*
+
+Nvim provides an <A HREF="#LSP">LSP</A> client, but the servers are provided by third parties.
+Follow these steps to get <A HREF="#LSP">LSP</A> features:
+
+  1. Install language servers using your package manager or by
+     following the upstream installation instruction.
+
+     A <A HREF="eval.html#list">list</A> of language servers is available at:
+
+     https://microsoft.github.io/language-server-protocol/implementors/servers/
+
+  2. Configure the <A HREF="#LSP">LSP</A> client per language server.
+     A minimal example:
+
+<B>    vim.lsp.start({</B>
+<B>      name = 'my-server-name',</B>
+<B>      cmd = {'name-of-language-server-executable'},</B>
+<B>      root_dir = vim.fs.dirname(vim.fs.find({'setup.py', 'pyproject.toml'}, { upward = true })[1]),</B>
+<B>    })</B>
+ 
+     See |<A HREF="vim.html">vim.lsp.start()</A>| for details.
+
+  3. Configure keymaps and autocmds to utilize <A HREF="#LSP">LSP</A> features.
+     See |<A HREF="#lsp-config">lsp-config</A>|.
+<A HREF="change.html#&lt;">&lt;</A>
+
+                                                        *<A NAME="lsp-config"></A><B>lsp-config</B>*
+
+Starting a <A HREF="#LSP">LSP</A> client will automatically report diagnostics via
+|<A HREF="vim.html">vim.diagnostic</A>|. Read |<A HREF="vim.html">vim.diagnostic.config()</A>| to learn how to customize the
+display.
+
+It also sets some buffer <A HREF="options.html#options">options</A> if the <A HREF="options.html#options">options</A> are otherwise empty and if the
+language server supports the functionality.
+
+- <A HREF="options.html#'omnifunc'">'omnifunc'</A> is set to |<A HREF="vim.html">vim.lsp.omnifunc()</A>|. This allows to trigger completion
+  using |<A HREF="insert.html#i_CTRL-X_CTRL-O">i_CTRL-X_CTRL-O</A>|
+- <A HREF="options.html#'tagfunc'">'tagfunc'</A> is set to |<A HREF="vim.html">vim.lsp.tagfunc()</A>|. This enables features like
+  go-to-definition, |<A HREF="tagsrch.html#:tjump">:tjump</A>|, and keymaps like |<A HREF="tagsrch.html#CTRL-]">CTRL-]</A>|, |<A HREF="windows.html#CTRL-W_]">CTRL-W_]</A>|,
+  |<A HREF="windows.html#CTRL-W_}">CTRL-W_}</A>| to utilize the language server.
+- <A HREF="options.html#'formatexpr'">'formatexpr'</A> is set to |<A HREF="vim.html">vim.lsp.formatexpr()</A>| if both <A HREF="options.html#'formatprg'">'formatprg'</A> and
+  <A HREF="options.html#'formatexpr'">'formatexpr'</A> are empty. This allows to format lines via |<A HREF="change.html#gq">gq</A>| if the language
+  server supports <A HREF="motion.html#it">it</A>.
+
+To use other <A HREF="#LSP">LSP</A> features like hover, rename, etc. you can setup some
+additional keymaps. It's recommended to setup them in a |<A HREF="#LspAttach">LspAttach</A>| <A HREF="autocmd.html#autocmd">autocmd</A> to
+ensure they're only active if there is a <A HREF="#LSP">LSP</A> client running. An example:
+
+<B>    vim.api.nvim_create_autocmd('LspAttach', {</B>
+<B>      callback = function(args)</B>
+<B>        vim.keymap.set('n', 'K', vim.lsp.buf.hover, { buffer = args.buf })</B>
+<B>      end,</B>
+<B>    })</B>
+
+ 
+The most used <A HREF="eval.html#functions">functions</A> are:
+
+- |<A HREF="vim.html">vim.lsp.buf.hover()</A>|
+- |<A HREF="vim.html">vim.lsp.buf.format()</A>|
+- |<A HREF="vim.html">vim.lsp.buf.references()</A>|
+- |<A HREF="vim.html">vim.lsp.buf.implementation()</A>|
+- |<A HREF="vim.html">vim.lsp.buf.code_action()</A>|
+
+
+Not all language servers provide the same capabilities. To ensure you only set
+keymaps if the language server supports a feature, you can guard the keymap
+calls behind capability checks:
+
+<B>    vim.api.nvim_create_autocmd('LspAttach', {</B>
+<B>      callback = function(args)</B>
+<B>        local client = vim.lsp.get_client_by_id(args.data.client_id)</B>
+<B>        if client.server_capabilities.hoverProvider then</B>
+<B>          vim.keymap.set('n', 'K', vim.lsp.buf.hover, { buffer = args.buf })</B>
+<B>        end</B>
+<B>      end,</B>
+<B>    })</B>
+ 
+
+To learn what capabilities are available you can run the following command in
+a buffer with a started <A HREF="#LSP">LSP</A> client:
+
+
+<B>    :lua =vim.lsp.get_active_clients()[1].server_capabilities</B>
+ 
+
+Full <A HREF="eval.html#list">list</A> of features provided by default can be found in |<A HREF="#lsp-buf">lsp-buf</A>|.
+
+================================================================================
+
+FAQ                                                     *<A NAME="lsp-faq"></A><B>lsp-faq</B>*
+
+- <A HREF="repeat.html#Q">Q</A>: How to force-reload <A HREF="#LSP">LSP</A>?
+  A: Stop all clients, then <A HREF="editing.html#reload">reload</A> the buffer.
+
+<B>     :lua vim.lsp.stop_client(vim.lsp.get_active_clients())</B>
+<B>     :edit</B>
+
+- <A HREF="repeat.html#Q">Q</A>: Why isn't completion working?
+  A: In the buffer where you want to use <A HREF="#LSP">LSP</A>, check that <A HREF="options.html#'omnifunc'">'omnifunc'</A> is set to
+     &quot;v:lua.vim.lsp.omnifunc&quot;:
+
+<B>     :verbose set omnifunc?</B>
+
+      Some other <A HREF="usr_05.html#plugin">plugin</A> may be overriding the option. To avoid that, you could
+     set the option in an |<A HREF="options.html#after-directory">after-directory</A>| <A HREF="usr_41.html#ftplugin">ftplugin</A>, e.g.
+     &quot;after/ftplugin/python.vim&quot;.
+
+- <A HREF="repeat.html#Q">Q</A>: How <A HREF="diff.html#do">do</A> I run a request synchronously (e.g. for <A HREF="change.html#formatting">formatting</A> on file save)?
+  A: Check if the function has an `async` parameter and set the value to
+  false.
+
+     E.g. code <A HREF="change.html#formatting">formatting</A>:
+
+<B>     " Auto-format *.rs (rust) files prior to saving them</B>
+<B>     " (async = false is the default for format)</B>
+<B>     autocmd BufWritePre *.rs lua vim.lsp.buf.format({ async = false })</B>
+
+ 
+
+                                                           *<A NAME="lsp-vs-treesitter"></A><B>lsp-vs-treesitter</B>*
+- <A HREF="repeat.html#Q">Q</A>: How <A HREF="diff.html#do">do</A> <A HREF="#LSP">LSP</A> and Treesitter compare?
+  A: <A HREF="#LSP">LSP</A> requires a client and language server. The language server uses
+     semantic analysis to understand code at a project level. This provides
+     language servers with the ability to rename across files, find
+     <A HREF="intro.html#definitions">definitions</A> in external libraries and more.
+
+     Treesitter is a language parsing library that provides excellent tools
+     for incrementally parsing text and handling <A HREF="message.html#errors">errors</A>. This makes <A HREF="motion.html#it">it</A> a great
+     fit for editors to understand the contents of the current file for things
+     like <A HREF="syntax.html#syntax">syntax</A> highlighting, simple goto-definitions, scope analysis and
+     more.
+
+     <A HREF="#LSP">LSP</A> and Treesitter are both great tools for editing and inspecting code.
+
+================================================================================
+
+<A HREF="#LSP">LSP</A> <A HREF="api.html#API">API</A>                                                 *<A NAME="lsp-api"></A><B>lsp-api</B>*
+
+<A HREF="#LSP">LSP</A> core <A HREF="api.html#API">API</A> is described at |<A HREF="#lsp-core">lsp-core</A>|.  Those are the core <A HREF="eval.html#functions">functions</A> for
+creating and managing clients.
+
+The `vim.lsp.buf_…` <A HREF="eval.html#functions">functions</A> perform operations for all <A HREF="#LSP">LSP</A> clients attached
+to the given buffer. |<A HREF="#lsp-buf">lsp-buf</A>|
+
+<A HREF="#LSP">LSP</A> request/response handlers are implemented <A HREF="motion.html#as">as</A> <A HREF="lua.html#Lua">Lua</A> <A HREF="eval.html#functions">functions</A> (see
+|<A HREF="#lsp-handler">lsp-handler</A>|). The |<A HREF="vim.html">vim.lsp.handlers</A>| table defines default handlers used
+when creating a new client. Keys are <A HREF="#LSP">LSP</A> <A HREF="eval.html#method">method</A> names:
+
+<B>    :lua print(vim.inspect(vim.tbl_keys(vim.lsp.handlers)))</B>
+ 
+
+                                                                  *<A NAME="lsp-method"></A><B>lsp-method</B>*
+
+Methods are the names of requests and notifications <A HREF="motion.html#as">as</A> defined by the <A HREF="#LSP">LSP</A>
+specification. These <A HREF="#LSP">LSP</A> requests/notifications are defined by default:
+
+    callHierarchy/incomingCalls
+    callHierarchy/outgoingCalls
+    textDocument/codeAction
+    textDocument/completion
+    textDocument/declaration*
+    textDocument/definition
+    textDocument/documentHighlight
+    textDocument/documentSymbol
+    textDocument/formatting
+    textDocument/hover
+    textDocument/implementation*
+    textDocument/publishDiagnostics
+    textDocument/rangeFormatting
+    textDocument/references
+    textDocument/rename
+    textDocument/signatureHelp
+    textDocument/typeDefinition*
+    window/logMessage
+    window/showMessage
+    window/showMessageRequest
+    workspace/applyEdit
+    workspace/symbol
+
+* NOTE: These are sometimes not implemented by servers.
+
+
+                                                                 *<A NAME="lsp-handler"></A><B>lsp-handler</B>*
+
+<A HREF="#lsp-handlers">lsp-handlers</A> are <A HREF="eval.html#functions">functions</A> with special signatures that are designed to handle
+responses and notifications from <A HREF="#LSP">LSP</A> servers.
+
+For |<A HREF="intro.html#lsp-request">lsp-request</A>|, each |<A HREF="#lsp-handler">lsp-handler</A>| has this signature:
+
+<B>  function(err, result, ctx, config)</B>
+ 
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {err}       (table|nil)
+                        When the language server is unable to complete a
+                        request, a table with information about the error is
+                        sent. Otherwise, <A HREF="motion.html#it">it</A> is `nil`. See |<A HREF="#lsp-response">lsp-response</A>|.
+        {result}    (Result &#124; Params &#124; nil)
+                        When the language server is able to successfully
+                        complete a request, this contains the `result` key of
+                        the response. See |<A HREF="#lsp-response">lsp-response</A>|.
+        {ctx}       (table)
+                        <A HREF="repeat.html#Context">Context</A> describes additional calling state associated
+                        with the handler. It consists of the following key,
+                        value pairs:
+
+                        {method}    (string)
+                                    The |<A HREF="#lsp-method">lsp-method</A>| name.
+                        {client_id} (number)
+                                    The ID of the |<A HREF="vim.html">vim.lsp.client</A>|.
+                        {bufnr}     (Buffer)
+                                    Buffer handle, or 0 for current.
+                        {params}    (table|nil)
+                                    The parameters used in the original
+                                    request which resulted in this handler
+                                    call.
+        {config}    (table)
+                        Configuration for the handler.
+
+                        Each handler can define its own configuration table
+                        that allows users to customize the behavior of a
+                        particular handler.
+
+                        To configure a particular |<A HREF="#lsp-handler">lsp-handler</A>|, see:
+                            |<A HREF="#lsp-handler-configuration">lsp-handler-configuration</A>|
+
+
+<B><FONT COLOR="PURPLE">    Returns: </FONT></B>
+        The |<A HREF="#lsp-handler">lsp-handler</A>| can respond by returning two values: `result, err`
+        Where `err` must be shaped like an <A HREF="api.html#RPC">RPC</A> error:
+            <A HREF="motion.html#`{">`{</A> code, message, data? }`
+
+        You can use |<A HREF="vim.html">vim.lsp.rpc.rpc_response_error()</A>| to create this object.
+
+For |<A HREF="#lsp-notification">lsp-notification</A>|, each |<A HREF="#lsp-handler">lsp-handler</A>| has this signature:
+
+<B>  function(err, result, ctx, config)</B>
+ 
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {err}       (nil)
+                        This is always `nil`.
+                        See |<A HREF="#lsp-notification">lsp-notification</A>|
+        {result}    (Result)
+                        This contains the `params` key of the notification.
+                        See |<A HREF="#lsp-notification">lsp-notification</A>|
+        {ctx}       (table)
+                        <A HREF="repeat.html#Context">Context</A> describes additional calling state associated
+                        with the handler. It consists of the following key,
+                        value pairs:
+
+                        {method}    (string)
+                                        The |<A HREF="#lsp-method">lsp-method</A>| name.
+                        {client_id} (number)
+                                        The ID of the |<A HREF="vim.html">vim.lsp.client</A>|.
+        {config}    (table)
+                        Configuration for the handler.
+
+                        Each handler can define its own configuration table
+                        that allows users to customize the behavior of a
+                        particular handler.
+
+                        For an example, see:
+                            |<A HREF="vim.html">vim.lsp.diagnostic.on_publish_diagnostics()</A>|
+
+                        To configure a particular |<A HREF="#lsp-handler">lsp-handler</A>|, see:
+                            |<A HREF="#lsp-handler-configuration">lsp-handler-configuration</A>|
+
+<B><FONT COLOR="PURPLE">    Returns: </FONT></B>
+        The |lsp-handler|'s return value will be ignored.
+
+
+                                                   *<A NAME="lsp-handler-configuration"></A><B>lsp-handler-configuration</B>*
+
+To configure the behavior of a builtin |<A HREF="#lsp-handler">lsp-handler</A>|, the convenient <A HREF="eval.html#method">method</A>
+|<A HREF="vim.html">vim.lsp.with()</A>| is provided for users.
+
+  To configure the behavior of |<A HREF="vim.html">vim.lsp.diagnostic.on_publish_diagnostics()</A>|,
+  consider the following example, where a new |<A HREF="#lsp-handler">lsp-handler</A>| is created using
+  |<A HREF="vim.html">vim.lsp.with()</A>| that no longer generates <A HREF="sign.html#signs">signs</A> for the diagnostics:
+
+<B>    vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(</B>
+<B>      vim.lsp.diagnostic.on_publish_diagnostics, {</B>
+<B>        -- Disable signs</B>
+<B>        signs = false,</B>
+<B>      }</B>
+<B>    )</B>
+ 
+  To enable <A HREF="sign.html#signs">signs</A>, use |<A HREF="vim.html">vim.lsp.with()</A>| again to create and assign a new
+  |<A HREF="#lsp-handler">lsp-handler</A>| to |<A HREF="vim.html">vim.lsp.handlers</A>| for the associated <A HREF="eval.html#method">method</A>:
+
+<B>    vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(</B>
+<B>      vim.lsp.diagnostic.on_publish_diagnostics, {</B>
+<B>        -- Enable signs</B>
+<B>        signs = true,</B>
+<B>      }</B>
+<B>    )</B>
+ 
+  To configure a handler on a per-server basis, you can use the {handlers} key
+  for |<A HREF="vim.html">vim.lsp.start_client()</A>|
+
+<B>    vim.lsp.start_client {</B>
+<B>      ..., -- Other configuration omitted.</B>
+<B>      handlers = {</B>
+<B>        ["textDocument/publishDiagnostics"] = vim.lsp.with(</B>
+<B>          vim.lsp.diagnostic.on_publish_diagnostics, {</B>
+<B>            -- Disable virtual_text</B>
+<B>            virtual_text = false,</B>
+<B>          }</B>
+<B>        ),</B>
+<B>      },</B>
+<B>    }</B>
+ 
+  or if using 'nvim-lspconfig', you can use the {handlers} key of `setup()`:
+
+<B>    require('lspconfig').rust_analyzer.setup {</B>
+<B>      handlers = {</B>
+<B>        ["textDocument/publishDiagnostics"] = vim.lsp.with(</B>
+<B>          vim.lsp.diagnostic.on_publish_diagnostics, {</B>
+<B>            -- Disable virtual_text</B>
+<B>            virtual_text = false</B>
+<B>          }</B>
+<B>        ),</B>
+<B>      }</B>
+<B>    }</B>
+ 
+  Some handlers <A HREF="diff.html#do">do</A> not have an explicitly named handler function (such <A HREF="motion.html#as">as</A>
+  &#124;&#124;vim.lsp.diagnostic.on_publish_diagnostics()|). To override these, first
+  create a reference to the existing handler:
+
+<B>    local on_references = vim.lsp.handlers["textDocument/references"]</B>
+<B>    vim.lsp.handlers["textDocument/references"] = vim.lsp.with(</B>
+<B>      on_references, {</B>
+<B>        -- Use location list instead of quickfix list</B>
+<B>        loclist = true,</B>
+<B>      }</B>
+<B>    )</B>
+ 
+
+                                                      *<A NAME="lsp-handler-resolution"></A><B>lsp-handler-resolution</B>*
+Handlers can be set by:
+
+
+- Setting a field in <A HREF="#vim.lsp.handlers">vim.lsp.handlers</A>.                      *<A NAME="vim.lsp.handlers"></A><B>vim.lsp.handlers</B>*
+    <A HREF="#vim.lsp.handlers">vim.lsp.handlers</A> is a global table that contains the default <A HREF="map.html#mapping">mapping</A> of
+    |<A HREF="#lsp-method">lsp-method</A>| names to |<A HREF="#lsp-handlers">lsp-handlers</A>|.
+
+    To override the handler for the `&quot;textDocument/definition&quot;` <A HREF="eval.html#method">method</A>:
+
+<B>    vim.lsp.handlers["textDocument/definition"] = my_custom_default_definition</B>
+ 
+- The {handlers} parameter for |<A HREF="vim.html">vim.lsp.start_client()</A>|.
+    This will set the |<A HREF="#lsp-handler">lsp-handler</A>| <A HREF="motion.html#as">as</A> the default handler for this server.
+
+    For example:
+
+<B>    vim.lsp.start_client {</B>
+<B>      ..., -- Other configuration omitted.</B>
+<B>      handlers = {</B>
+<B>        ["textDocument/definition"] = my_custom_server_definition</B>
+<B>      },</B>
+<B>    }</B>
+
+- The {handler} parameter for |<A HREF="vim.html">vim.lsp.buf_request()</A>|.
+    This will set the |<A HREF="#lsp-handler">lsp-handler</A>| ONLY for the current request.
+
+    For example:
+
+<B>    vim.lsp.buf_request(</B>
+<B>      0,</B>
+<B>      "textDocument/definition",</B>
+<B>      definition_params,</B>
+<B>      my_request_custom_definition</B>
+<B>    )</B>
+ 
+In summary, the |<A HREF="#lsp-handler">lsp-handler</A>| will be chosen based on the current |<A HREF="#lsp-method">lsp-method</A>|
+in the following order:
+
+1. Handler passed to |<A HREF="vim.html">vim.lsp.buf_request()</A>|, if any.
+2. Handler defined in |<A HREF="vim.html">vim.lsp.start_client()</A>|, if any.
+3. Handler defined in |<A HREF="vim.html">vim.lsp.handlers</A>|, if any.
+
+
+                                                            *<A NAME="vim.lsp.log_levels"></A><B>vim.lsp.log_levels</B>*
+Log levels are defined in |<A HREF="vim.html">vim.log.levels</A>|
+
+
+
+VIM.LSP.PROTOCOL                                              *<A NAME="vim.lsp.protocol"></A><B>vim.lsp.protocol</B>*
+
+Module `vim.lsp.protocol` defines constants dictated by the <A HREF="#LSP">LSP</A> specification,
+and helper <A HREF="eval.html#functions">functions</A> for creating protocol-related <A HREF="vimindex.html#objects">objects</A>.
+https://github.com/microsoft/language-server-protocol/raw/gh-pages/_specifications/specification-3-14.md
+
+For example `vim.lsp.protocol.ErrorCodes` allows reverse lookup by number or
+name:
+
+<B>    vim.lsp.protocol.TextDocumentSyncKind.Full == 1</B>
+<B>    vim.lsp.protocol.TextDocumentSyncKind[1] == "Full"</B>
+ 
+
+
+                                                                *<A NAME="lsp-response"></A><B>lsp-response</B>*
+For the format of the response message, see:
+    https://microsoft.github.io/language-server-protocol/specifications/specification-current/#responseMessage
+
+
+                                                                *<A NAME="lsp-notification"></A><B>lsp-notification</B>*
+For the format of the notification message, see:
+    https://microsoft.github.io/language-server-protocol/specifications/specification-current/#notificationMessage
+
+
+                                                                *<A NAME="lsp-on-list-handler"></A><B>lsp-on-list-handler</B>*
+
+`on_list` receives a table with:
+
+ - `items` table[], structured like |<A HREF="builtin.html#setqflist-what">setqflist-what</A>|
+ - `title` <A HREF="eval.html#string">string</A>, title for the <A HREF="eval.html#list">list</A>.
+ - `context` table|nil. `ctx` from |<A HREF="#lsp-handler">lsp-handler</A>|
+
+This table can be used with vim.fn.setqflist or vim.fn.setloclist. E.g.:
+
+<B>    local function on_list(options)</B>
+<B>      vim.fn.setqflist({}, ' ', options)</B>
+<B>      vim.api.nvim_command('cfirst')</B>
+<B>    end</B>
+
+<B>    vim.lsp.buf.definition{on_list=on_list}</B>
+<B>    vim.lsp.buf.references(nil, {on_list=on_list})</B>
+ 
+If you prefer loclist <A HREF="diff.html#do">do</A> something like this:
+
+<B>    local function on_list(options)</B>
+<B>      vim.fn.setloclist(0, {}, ' ', options)</B>
+<B>      vim.api.nvim_command('lopen')</B>
+<B>    end</B>
+ 
+================================================================================
+
+<A HREF="#LSP">LSP</A> HIGHLIGHT                                                    *<A NAME="lsp-highlight"></A><B>lsp-highlight</B>*
+
+Reference Highlights:
+
+Highlight groups that are meant to be used by |<A HREF="vim.html">vim.lsp.buf.document_highlight()</A>|.
+
+You can see more about the differences in types here:
+https://microsoft.github.io/language-server-protocol/specification#textDocument_documentHighlight
+
+
+                                                           *<A NAME="hl-LspReferenceText"></A><B>hl-LspReferenceText</B>*
+LspReferenceText          used for highlighting &quot;text&quot; references
+
+                                                           *<A NAME="hl-LspReferenceRead"></A><B>hl-LspReferenceRead</B>*
+LspReferenceRead          used for highlighting &quot;read&quot; references
+
+                                                          *<A NAME="hl-LspReferenceWrite"></A><B>hl-LspReferenceWrite</B>*
+LspReferenceWrite         used for highlighting &quot;write&quot; references
+
+
+
+                                                      *<A NAME="lsp-highlight-codelens"></A><B>lsp-highlight-codelens</B>*
+
+Highlight groups related to |<A HREF="#lsp-codelens">lsp-codelens</A>| functionality.
+
+
+                                                              *<A NAME="hl-LspCodeLens"></A><B>hl-LspCodeLens</B>*
+LspCodeLens
+    Used to color the virtual text of the codelens. See
+    |<A HREF="api.html#nvim_buf_set_extmark()">nvim_buf_set_extmark()</A>|.
+
+
+LspCodeLensSeparator                                 *<A NAME="hl-LspCodeLensSeparator"></A><B>hl-LspCodeLensSeparator</B>*
+    Used to color the separator between two or more code lenses.
+
+
+                                                     *<A NAME="lsp-highlight-signature"></A><B>lsp-highlight-signature</B>*
+
+Highlight groups related to |<A HREF="vim.html">vim.lsp.handlers.signature_help()</A>|.
+
+
+                                              *<A NAME="hl-LspSignatureActiveParameter"></A><B>hl-LspSignatureActiveParameter</B>*
+LspSignatureActiveParameter
+    Used to highlight the active parameter in the signature help. See
+    |<A HREF="vim.html">vim.lsp.handlers.signature_help()</A>|.
+
+==============================================================================
+
+EVENTS                                                            *<A NAME="lsp-events"></A><B>lsp-events</B>*
+
+
+                                                                   *<A NAME="LspAttach"></A><B>LspAttach</B>*
+After an <A HREF="#LSP">LSP</A> client attaches to a buffer. The |<A HREF="autocmd.html#autocmd-pattern">autocmd-pattern</A>| is the
+name of the buffer. When used from <A HREF="lua.html#Lua">Lua</A>, the client ID is passed to the
+callback in the &quot;data&quot; table. Example:
+
+<B>    vim.api.nvim_create_autocmd("LspAttach", {</B>
+<B>      callback = function(args)</B>
+<B>        local bufnr = args.buf</B>
+<B>        local client = vim.lsp.get_client_by_id(args.data.client_id)</B>
+<B>        if client.server_capabilities.completionProvider then</B>
+<B>          vim.bo[bufnr].omnifunc = "v:lua.vim.lsp.omnifunc"</B>
+<B>        end</B>
+<B>        if client.server_capabilities.definitionProvider then</B>
+<B>          vim.bo[bufnr].tagfunc = "v:lua.vim.lsp.tagfunc"</B>
+<B>        end</B>
+<B>      end,</B>
+<B>    })</B>
+ 
+
+                                                                   *<A NAME="LspDetach"></A><B>LspDetach</B>*
+Just before an <A HREF="#LSP">LSP</A> client detaches from a buffer. The |<A HREF="autocmd.html#autocmd-pattern">autocmd-pattern</A>| is the
+name of the buffer. When used from <A HREF="lua.html#Lua">Lua</A>, the client ID is passed to the
+callback in the &quot;data&quot; table. Example:
+
+<B>    vim.api.nvim_create_autocmd("LspDetach", {</B>
+<B>      callback = function(args)</B>
+<B>        local client = vim.lsp.get_client_by_id(args.data.client_id)</B>
+<B>        -- Do something with the client</B>
+<B>        vim.cmd("setlocal tagfunc&lt; omnifunc&lt;")</B>
+<B>      end,</B>
+<B>    })</B>
+ 
+Also the following |<A HREF="autocmd.html#User">User</A>| |<A HREF="autocmd.html#autocommand">autocommand</A>|s are provided:
+
+
+<A HREF="#LspProgressUpdate">LspProgressUpdate</A>                                          *<A NAME="LspProgressUpdate"></A><B>LspProgressUpdate</B>*
+    Upon receipt of a progress notification from the server. See
+    |<A HREF="vim.html">vim.lsp.util.get_progress_messages()</A>|.
+
+
+<A HREF="#LspRequest">LspRequest</A>                                                        *<A NAME="LspRequest"></A><B>LspRequest</B>*
+    After a change to the active set of pending <A HREF="#LSP">LSP</A> requests. See {requests}
+    in |<A HREF="vim.html">vim.lsp.client</A>|.
+
+Example:
+<B>    autocmd User LspProgressUpdate redrawstatus</B>
+<B>    autocmd User LspRequest redrawstatus</B>
+ 
+
+==============================================================================
+
+<A HREF="lua.html#Lua">Lua</A> module: vim.lsp                                                 *<A NAME="lsp-core"></A><B>lsp-core</B>*
+
+
+buf_attach_client({bufnr}, {client_id})          *<A NAME="vim.lsp.buf_attach_client()"></A><B>vim.lsp.buf_attach_client()</B>*
+    Implements the `textDocument/did…` notifications required to track a
+    buffer for any language server.
+
+    Without calling this, the server won't be notified of changes to a buffer.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {bufnr}      (number) Buffer handle, or 0 for current
+        {client_id}  (number) Client id
+
+
+buf_detach_client({bufnr}, {client_id})          *<A NAME="vim.lsp.buf_detach_client()"></A><B>vim.lsp.buf_detach_client()</B>*
+    Detaches client from the specified buffer. Note: While the server is
+    notified that the text document (buffer) was closed, <A HREF="motion.html#it">it</A> is still able to
+    send notifications should <A HREF="motion.html#it">it</A> ignore this notification.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {bufnr}      (number) Buffer handle, or 0 for current
+        {client_id}  (number) Client id
+
+
+buf_is_attached({bufnr}, {client_id})              *<A NAME="vim.lsp.buf_is_attached()"></A><B>vim.lsp.buf_is_attached()</B>*
+    Checks if a buffer is attached for a particular client.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {bufnr}      (number) Buffer handle, or 0 for current
+        {client_id}  (number) the client id
+
+
+buf_notify({bufnr}, {method}, {params})                 *<A NAME="vim.lsp.buf_notify()"></A><B>vim.lsp.buf_notify()</B>*
+    Send a notification to a server
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {bufnr}   [number] (optional): The number of the buffer
+        {method}  [string]: Name of the request <A HREF="eval.html#method">method</A>
+        {params}  [string]: Arguments to send to the server
+
+<B><FONT COLOR="PURPLE">    Return: </FONT></B>
+        true if any client returns true; false otherwise
+
+
+                                                   *<A NAME="vim.lsp.buf_request_all()"></A><B>vim.lsp.buf_request_all()</B>*
+buf_request_all({bufnr}, {method}, {params}, {callback})
+    Sends an async request for all active clients attached to the buffer.
+    Executes the callback on the combined result. Parameters are the same <A HREF="motion.html#as">as</A>
+    |<A HREF="vim.html">vim.lsp.buf_request()</A>| but the return result and callback are different.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {bufnr}     (number) Buffer handle, or 0 for current.
+        {method}    (string) <A HREF="#LSP">LSP</A> <A HREF="eval.html#method">method</A> name
+        {params}    (optional, table) Parameters to send to the server
+        {callback}  (function) The callback to call when all requests are
+                    finished.
+
+<B><FONT COLOR="PURPLE">    Return: </FONT></B>
+        (function) A function that will cancel all requests which is the same
+        <A HREF="motion.html#as">as</A> the one returned from `buf_request`.
+
+
+                                                  *<A NAME="vim.lsp.buf_request_sync()"></A><B>vim.lsp.buf_request_sync()</B>*
+buf_request_sync({bufnr}, {method}, {params}, {timeout_ms})
+    Sends a request to all server and waits for the response of all of them.
+
+    Calls |<A HREF="vim.html">vim.lsp.buf_request_all()</A>| but blocks Nvim while awaiting the
+    result. Parameters are the same <A HREF="motion.html#as">as</A> |<A HREF="vim.html">vim.lsp.buf_request()</A>| but the return
+    result is different. Wait maximum of {timeout_ms} (default 1000) ms.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {bufnr}       (number) Buffer handle, or 0 for current.
+        {method}      (string) <A HREF="#LSP">LSP</A> <A HREF="eval.html#method">method</A> name
+        {params}      (optional, table) Parameters to send to the server
+        {timeout_ms}  (optional, number, default=1000) Maximum time in
+                      milliseconds to wait for a result.
+
+<B><FONT COLOR="PURPLE">    Return: </FONT></B>
+        Map of client_id:request_result. On timeout, cancel or error, returns
+        `(nil, err)` where `err` is a <A HREF="eval.html#string">string</A> describing the failure reason.
+
+
+client()                                                      *<A NAME="vim.lsp.client"></A><B>vim.lsp.client</B>*
+    <A HREF="#LSP">LSP</A> client object. You can get an active client object via
+    |<A HREF="vim.html">vim.lsp.get_client_by_id()</A>| or |<A HREF="vim.html">vim.lsp.get_active_clients()</A>|.
+
+    • Methods:
+      • request(method, params, [handler], bufnr) Sends a request to the
+        server. This is a thin wrapper around {client.rpc.request} with some
+        additional checking. If {handler} is not specified, If one is not
+        found there, then an error will occur. Returns: {status},
+        {[client_id]}. {status} is a <A HREF="options.html#boolean">boolean</A> indicating if the notification
+        was successful. If <A HREF="motion.html#it">it</A> is `false`, then <A HREF="motion.html#it">it</A> will always be `false` (the
+        client has shutdown). If {status} is `true`, the function returns
+        {request_id} <A HREF="motion.html#as">as</A> the second result. You can use this with
+        `client.cancel_request(request_id)` to cancel the request.
+      • request_sync(method, params, timeout_ms, bufnr) Sends a request to the
+        server and synchronously waits for the response. This is a wrapper
+        around {client.request} Returns: { err=err, result=result }, a
+        dictionary, where `err` and `result` come from the |<A HREF="#lsp-handler">lsp-handler</A>|. On
+        timeout, cancel or error, returns `(nil, err)` where `err` is a <A HREF="eval.html#string">string</A>
+        describing the failure reason. If the request was unsuccessful returns
+        `nil`.
+      • notify(method, params) Sends a notification to an <A HREF="#LSP">LSP</A> server. Returns:
+        a <A HREF="options.html#boolean">boolean</A> to indicate if the notification was successful. If <A HREF="motion.html#it">it</A> is
+        false, then <A HREF="motion.html#it">it</A> will always be false (the client has shutdown).
+      • cancel_request(id) Cancels a request with a given request id. Returns:
+        same <A HREF="motion.html#as">as</A> `notify()`.
+      • stop([force]) Stops a client, optionally with force. By default, <A HREF="motion.html#it">it</A>
+        will just ask the server to shutdown without force. If you request to
+        stop a client which has previously been requested to shutdown, <A HREF="motion.html#it">it</A> will
+        automatically escalate and force shutdown.
+      • is_stopped() Checks whether a client is stopped. Returns: true if the
+        client is fully stopped.
+      • on_attach(client, bufnr) Runs the on_attach function from the client's
+        <A HREF="starting.html#config">config</A> if <A HREF="motion.html#it">it</A> was defined. Useful for buffer-local setup.
+
+    • Members
+      • {id} (number): The id allocated to the client.
+      • {name} (string): If a name is specified on creation, that will be
+        used. Otherwise <A HREF="motion.html#it">it</A> is just the client id. This is used for logs and
+        <A HREF="message.html#messages">messages</A>.
+      • {rpc} (table): <A HREF="api.html#RPC">RPC</A> client object, for low level interaction with the
+        client. See |<A HREF="vim.html">vim.lsp.rpc.start()</A>|.
+      • {offset_encoding} (string): The encoding used for communicating with
+        the server. You can modify this in the `config`'s `on_init` <A HREF="eval.html#method">method</A>
+        before text is sent to the server.
+      • {handlers} (table): The handlers used by the client <A HREF="motion.html#as">as</A> described in
+        |<A HREF="#lsp-handler">lsp-handler</A>|.
+      • {requests} (table): The current pending requests in flight to the
+        server. Entries are key-value pairs with the key being the request ID
+        while the value is a table with `type`, `bufnr`, and `method`
+        key-value pairs. `type` is either &quot;pending&quot; for an active request, or
+        &quot;cancel&quot; for a cancel request.
+      • {config} (table): copy of the table that was passed by the user to
+        |<A HREF="vim.html">vim.lsp.start_client()</A>|.
+      • {server_capabilities} (table): Response from the server sent on
+        `initialize` describing the server's capabilities.
+
+
+client_is_stopped({client_id})                   *<A NAME="vim.lsp.client_is_stopped()"></A><B>vim.lsp.client_is_stopped()</B>*
+    Checks whether a client is stopped.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {client_id}  (Number)
+
+<B><FONT COLOR="PURPLE">    Return: </FONT></B>
+        true if client is stopped, false otherwise.
+
+
+                                            *<A NAME="vim.lsp.for_each_buffer_client()"></A><B>vim.lsp.for_each_buffer_client()</B>*
+for_each_buffer_client({bufnr}, {fn})
+    Invokes a function for each <A HREF="#LSP">LSP</A> client attached to a buffer.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {bufnr}  (number) Buffer number
+        {fn}     (function) Function to run on each client attached to buffer
+                 {bufnr}. The function takes the client, client ID, and buffer
+                 number <A HREF="motion.html#as">as</A> arguments. Example:
+
+<B>                   vim.lsp.for_each_buffer_client(0, function(client, client_id, bufnr)</B>
+<B>                     print(vim.inspect(client))</B>
+<B>                   end)</B>
+ 
+
+
+formatexpr({opts})                                      *<A NAME="vim.lsp.formatexpr()"></A><B>vim.lsp.formatexpr()</B>*
+    Provides an interface between the built-in client and a `formatexpr`
+    function.
+
+    Currently only supports a single client. This can be set via `setlocal
+    formatexpr=v:lua.vim.lsp.formatexpr()` but will typically or in
+    `on_attach` via `vim.api.nvim_buf_set_option(bufnr, <A HREF="options.html#'formatexpr'">'formatexpr'</A>,
+    'v:lua.vim.lsp.formatexpr(#{timeout_ms:250})')`.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {opts}  (table) <A HREF="options.html#options">options</A> for customizing the <A HREF="change.html#formatting">formatting</A> <A HREF="eval.html#expression">expression</A>
+                which takes the following optional keys:
+                • timeout_ms (default 500ms). The timeout period for the
+                  <A HREF="change.html#formatting">formatting</A> request.
+
+
+get_active_clients({filter})                    *<A NAME="vim.lsp.get_active_clients()"></A><B>vim.lsp.get_active_clients()</B>*
+    Get active clients.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {filter}  (table|nil) A table with key-value pairs used to <A HREF="change.html#filter">filter</A> the
+                  returned clients. The available keys are:
+                  • id (number): Only return clients with the given id
+                  • bufnr (number): Only return clients attached to this
+                    buffer
+                  • name (string): Only return clients with the given name
+
+<B><FONT COLOR="PURPLE">    Return: </FONT></B>
+        (table) <A HREF="eval.html#List">List</A> of |<A HREF="vim.html">vim.lsp.client</A>| <A HREF="vimindex.html#objects">objects</A>
+
+
+                                          *<A NAME="vim.lsp.get_buffers_by_client_id()"></A><B>vim.lsp.get_buffers_by_client_id()</B>*
+get_buffers_by_client_id({client_id})
+    Returns <A HREF="eval.html#list">list</A> of <A HREF="windows.html#buffers">buffers</A> attached to client_id.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {client_id}  (number) client id
+
+<B><FONT COLOR="PURPLE">    Return: </FONT></B>
+        <A HREF="eval.html#list">list</A> of buffer ids
+
+
+get_client_by_id({client_id})                     *<A NAME="vim.lsp.get_client_by_id()"></A><B>vim.lsp.get_client_by_id()</B>*
+    Gets a client by id, or nil if the id is invalid. The returned client may
+    not yet be fully initialized.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {client_id}  (number) client id
+
+<B><FONT COLOR="PURPLE">    Return: </FONT></B>
+        |<A HREF="vim.html">vim.lsp.client</A>| object, or nil
+
+
+get_log_path()                                        *<A NAME="vim.lsp.get_log_path()"></A><B>vim.lsp.get_log_path()</B>*
+    Gets the path of the logfile used by the <A HREF="#LSP">LSP</A> client.
+
+<B><FONT COLOR="PURPLE">    Return: </FONT></B>
+        (String) Path to logfile.
+
+
+omnifunc({findstart}, {base})                             *<A NAME="vim.lsp.omnifunc()"></A><B>vim.lsp.omnifunc()</B>*
+    Implements <A HREF="options.html#'omnifunc'">'omnifunc'</A> compatible <A HREF="#LSP">LSP</A> completion.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {findstart}  0 or 1, decides behavior
+        {base}       If findstart=0, text to match against
+
+<B><FONT COLOR="PURPLE">    Return: </FONT></B>
+        (number) Decided by {findstart}:
+        • findstart=0: column where the completion starts, or -2 or -3
+        • findstart=1: <A HREF="eval.html#list">list</A> of matches (actually just calls |<A HREF="builtin.html#complete()">complete()</A>|)
+
+<B><FONT COLOR="PURPLE">    See also: </FONT></B>
+        |<A HREF="insert.html#complete-functions">complete-functions</A>|
+        |<A HREF="insert.html#complete-items">complete-items</A>|
+        |<A HREF="autocmd.html#CompleteDone">CompleteDone</A>|
+
+
+set_log_level({level})                               *<A NAME="vim.lsp.set_log_level()"></A><B>vim.lsp.set_log_level()</B>*
+    Sets the global log level for <A HREF="#LSP">LSP</A> logging.
+
+    Levels by name: &quot;TRACE&quot;, &quot;DEBUG&quot;, &quot;INFO&quot;, &quot;WARN&quot;, &quot;ERROR&quot;, &quot;OFF&quot;
+
+    Level numbers begin with &quot;TRACE&quot; at 0
+
+    Use `lsp.log_levels` for reverse lookup.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {level}  [number|string] the <A HREF="change.html#case">case</A> insensitive level name or number
+
+<B><FONT COLOR="PURPLE">    See also: </FONT></B>
+        |<A HREF="vim.html">vim.lsp.log_levels</A>|
+
+
+start({config}, {opts})                                      *<A NAME="vim.lsp.start()"></A><B>vim.lsp.start()</B>*
+    Create a new <A HREF="#LSP">LSP</A> client and start a language server or reuses an already
+    running client if one is found matching `name` and `root_dir`. Attaches
+    the current buffer to the client.
+
+    Example:
+
+
+<B>    vim.lsp.start({</B>
+<B>       name = 'my-server-name',</B>
+<B>       cmd = {'name-of-language-server-executable'},</B>
+<B>       root_dir = vim.fs.dirname(vim.fs.find({'pyproject.toml', 'setup.py'}, { upward = true })[1]),</B>
+<B>    })</B>
+ 
+
+    See |<A HREF="vim.html">vim.lsp.start_client()</A>| for all available <A HREF="options.html#options">options</A>. The most important
+    are:
+
+    `name` is an arbitrary name for the <A HREF="#LSP">LSP</A> client. It should be unique per
+    language server.
+
+    `cmd` the command <A HREF="motion.html#as">as</A> <A HREF="eval.html#list">list</A> - used to start the language server. The command must
+    be present in the `$PATH` environment variable or an absolute path to the executable. Shell
+    constructs like `~` are NOT expanded.
+
+    `root_dir` path to the project root. By default this is used to decide if
+    an existing client should be re-used. The example above uses
+    |<A HREF="lua.html#vim.fs.find()">vim.fs.find()</A>| and |<A HREF="lua.html#vim.fs.dirname()">vim.fs.dirname()</A>| to detect the root by traversing
+    the file system upwards starting from the current directory until either a
+    `pyproject.toml` or `setup.py` file is found.
+
+    `workspace_folders` a <A HREF="eval.html#list">list</A> of { uri:string, name: <A HREF="eval.html#string">string</A> } tables. The
+    project root folders used by the language server. If `nil` the property is
+    derived from the `root_dir` for convenience.
+
+    Language servers use this information to discover metadata like the
+    dependencies of your project and they tend to index the contents within
+    the project folder.
+
+    To ensure a language server is only started for languages <A HREF="motion.html#it">it</A> can handle,
+    make sure to call |<A HREF="vim.html">vim.lsp.start()</A>| within a |<A HREF="autocmd.html#FileType">FileType</A>| <A HREF="autocmd.html#autocmd">autocmd</A>. Either
+    use |<A HREF="autocmd.html#:au">:au</A>|, |<A HREF="api.html#nvim_create_autocmd()">nvim_create_autocmd()</A>| or put the call in a
+    `ftplugin/&lt;filetype_name&gt;.lua` (See |<A HREF="usr_05.html#ftplugin-name">ftplugin-name</A>|)
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {config}  (table) Same configuration <A HREF="motion.html#as">as</A> documented in
+                  |<A HREF="vim.html">vim.lsp.start_client()</A>|
+        {opts}    nil|table Optional keyword arguments:
+                  • reuse_client (fun(client: client, <A HREF="starting.html#config">config</A>: table): <A HREF="options.html#boolean">boolean</A>)
+                    Predicate used to decide if a client should be re-used.
+                    Used on all running clients. The default implementation
+                    re-uses a client if name and root_dir matches.
+
+<B><FONT COLOR="PURPLE">    Return: </FONT></B>
+        (number|nil) client_id
+
+
+start_client({config})                                *<A NAME="vim.lsp.start_client()"></A><B>vim.lsp.start_client()</B>*
+    Starts and initializes a client with the given configuration.
+
+    Parameter `cmd` is required.
+
+    The following parameters describe fields in the {config} table.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {cmd}                (table|<A HREF="eval.html#string">string</A>|fun(dispatchers: table):table)
+                             command <A HREF="eval.html#string">string</A> or <A HREF="eval.html#list">list</A> treated like |<A HREF="builtin.html#jobstart()">jobstart()</A>|.
+                             The command must launch the language server
+                             process. `cmd` can also be a function that
+                             creates an <A HREF="api.html#RPC">RPC</A> client. The function receives a
+                             dispatchers table and must return a table with
+                             the <A HREF="eval.html#functions">functions</A> `request`, `notify`, `is_closing`
+                             and `terminate` See |<A HREF="vim.html">vim.lsp.rpc.request()</A>| and
+                             |<A HREF="vim.html">vim.lsp.rpc.notify()</A>| For TCP there is a
+                             built-in <A HREF="api.html#rpc">rpc</A> client factory:
+                             |<A HREF="vim.html">vim.lsp.rpc.connect()</A>|
+        {cmd_cwd}            (string, default=|<A HREF="builtin.html#getcwd()">getcwd()</A>|) Directory to launch
+                             the `cmd` process. Not related to `root_dir`.
+        {cmd_env}            (table) Environment flags to pass to the <A HREF="#LSP">LSP</A> on
+                             spawn. Can be specified using keys like a map or
+                             <A HREF="motion.html#as">as</A> a <A HREF="eval.html#list">list</A> with `k=v` pairs or both. Non-string values are coerced to
+                             <A HREF="eval.html#string">string</A>. Example:
+
+<B>     { "PRODUCTION=true"; "TEST=123"; PORT = 8080; HOST = "0.0.0.0"; }</B>
+ 
+        {detached}           (boolean, default true) Daemonize the server
+                             process so that <A HREF="motion.html#it">it</A> runs in a separate process
+                             group from Nvim. Nvim will shutdown the process
+                             on exit, but if Nvim fails to exit cleanly this
+                             could leave behind orphaned server processes.
+        {workspace_folders}  (table) <A HREF="eval.html#List">List</A> of workspace folders passed to the
+                             language server. For backwards compatibility
+                             rootUri and rootPath will be derived from the
+                             first workspace folder in this <A HREF="eval.html#list">list</A>. See
+                             `workspaceFolders` in the <A HREF="#LSP">LSP</A> spec.
+        {capabilities}       Map overriding the default capabilities defined
+                             by |<A HREF="vim.html">vim.lsp.protocol.make_client_capabilities()</A>|,
+                             passed to the language server on <A HREF="starting.html#initialization">initialization</A>.
+                             Hint: use make_client_capabilities() and modify
+                             its result.
+                             • Note: To send an empty dictionary use
+                               `{[vim.type_idx]=vim.types.dictionary}`, else
+                               <A HREF="motion.html#it">it</A> will be encoded <A HREF="motion.html#as">as</A> an array.
+        {handlers}           Map of language server <A HREF="eval.html#method">method</A> names to
+                             |<A HREF="#lsp-handler">lsp-handler</A>|
+        {settings}           Map with language server specific settings. These
+                             are returned to the language server if requested
+                             via `workspace/configuration`. Keys are
+                             case-sensitive.
+        {commands}           (table) Table that maps <A HREF="eval.html#string">string</A> of clientside
+                             commands to user-defined <A HREF="eval.html#functions">functions</A>. Commands
+                             passed to start_client take precedence over the
+                             global command registry. Each key must be a
+                             unique command name, and the value is a function
+                             which is called if any <A HREF="#LSP">LSP</A> action (code action,
+                             code lenses, <A HREF="userfunc.html#...">...</A>) triggers the command.
+        {init_options}       Values to pass in the <A HREF="starting.html#initialization">initialization</A> request <A HREF="motion.html#as">as</A>
+                             `initializationOptions`. See `initialize` in the
+                             <A HREF="#LSP">LSP</A> spec.
+        {name}               (string, default=client-id) Name in log <A HREF="message.html#messages">messages</A>.
+        {get_language_id}    function(bufnr, <A HREF="filetype.html#filetype">filetype</A>) <A HREF="eval.html#-&gt;">-&gt;</A> language ID <A HREF="motion.html#as">as</A>
+                             <A HREF="eval.html#string">string</A>. Defaults to the <A HREF="filetype.html#filetype">filetype</A>.
+        {offset_encoding}    (default=&quot;utf-16&quot;) One of &quot;<A HREF="mbyte.html#utf-8">utf-8</A>&quot;, &quot;utf-16&quot;, or
+                             &quot;utf-32&quot; which is the encoding that the <A HREF="#LSP">LSP</A>
+                             server expects. Client does not verify this is
+                             correct.
+        {on_error}           Callback with parameters (code, ...), invoked
+                             when the client operation throws an error. `code`
+                             is a number describing the error. Other arguments
+                             may be passed depending on the error kind. See
+                             `vim.lsp.rpc.client_errors` for possible <A HREF="message.html#errors">errors</A>.
+                             Use `vim.lsp.rpc.client_errors[code]` to get
+                             human-friendly name.
+        {before_init}        Callback with parameters (initialize_params,
+                             <A HREF="starting.html#config">config</A>) invoked before the <A HREF="#LSP">LSP</A> &quot;initialize&quot;
+                             phase, where `params` contains the parameters
+                             being sent to the server and `config` is the
+                             <A HREF="starting.html#config">config</A> that was passed to
+                             |<A HREF="vim.html">vim.lsp.start_client()</A>|. You can use this to
+                             modify parameters before they are sent.
+        {on_init}            Callback (client, initialize_result) invoked
+                             after <A HREF="#LSP">LSP</A> &quot;initialize&quot;, where `result` is a table
+                             of `capabilities` and anything else the server
+                             may send. For example, clangd sends
+                             `initialize_result.offsetEncoding` if
+                             `capabilities.offsetEncoding` was sent to <A HREF="motion.html#it">it</A>. You
+                             can only modify the `client.offset_encoding` here
+                             before any notifications are sent. Most language
+                             servers expect to be sent client specified
+                             settings after <A HREF="starting.html#initialization">initialization</A>. Neovim does not
+                             make this assumption. A
+                             `workspace/didChangeConfiguration` notification
+                             should be sent to the server during on_init.
+        {on_exit}            Callback (code, signal, client_id) invoked on
+                             client exit.
+                             • code: exit code of the process
+                             • signal: number describing the signal used to
+                               terminate (if any)
+                             • client_id: client handle
+        {on_attach}          Callback (client, bufnr) invoked when client
+                             attaches to a buffer.
+        {trace}              &quot;off&quot; &#124; &quot;<A HREF="message.html#messages">messages</A>&quot; &#124; &quot;<A HREF="starting.html#verbose">verbose</A>&quot; &#124; nil passed
+                             directly to the language server in the initialize
+                             request. Invalid/empty values will default to
+                             &quot;off&quot;
+        {flags}              A table with flags for the client. The current
+                             (experimental) flags are:
+                             • allow_incremental_sync (bool, default true):
+                               Allow using incremental sync for buffer edits
+                             • debounce_text_changes (number, default 150):
+                               Debounce didChange notifications to the server
+                               by the given number in milliseconds. No
+                               debounce occurs if nil
+                             • exit_timeout (number|boolean, default false):
+                               Milliseconds to wait for server to exit cleanly
+                               after sending the &quot;shutdown&quot; request before
+                               sending kill -15. If set to false, <A HREF="nvim.html#nvim">nvim</A> exits
+                               immediately after sending the &quot;shutdown&quot;
+                               request to the server.
+        {root_dir}           (string) Directory where the <A HREF="#LSP">LSP</A> server will base
+                             its workspaceFolders, rootUri, and rootPath on
+                             <A HREF="starting.html#initialization">initialization</A>.
+
+<B><FONT COLOR="PURPLE">    Return: </FONT></B>
+        Client id. |<A HREF="vim.html">vim.lsp.get_client_by_id()</A>| Note: client may not be fully
+        initialized. Use `on_init` to <A HREF="diff.html#do">do</A> any actions once the client has been
+        initialized.
+
+
+stop_client({client_id}, {force})                      *<A NAME="vim.lsp.stop_client()"></A><B>vim.lsp.stop_client()</B>*
+    Stops a client(s).
+
+    You can also use the `stop()` function on a |<A HREF="vim.html">vim.lsp.client</A>| object. To
+    stop all clients:
+
+
+<B>    vim.lsp.stop_client(vim.lsp.get_active_clients())</B>
+ 
+
+    By default asks the server to shutdown, unless stop was requested already
+    for this client, then force-shutdown is attempted.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {client_id}  client id or |<A HREF="vim.html">vim.lsp.client</A>| object, or <A HREF="eval.html#list">list</A> thereof
+        {force}      (boolean) (optional) shutdown forcefully
+
+
+tagfunc({...})                                             *<A NAME="vim.lsp.tagfunc()"></A><B>vim.lsp.tagfunc()</B>*
+    Provides an interface between the built-in client and <A HREF="options.html#'tagfunc'">'tagfunc'</A>.
+
+    When used with normal mode commands (e.g. |<A HREF="tagsrch.html#CTRL-]">CTRL-]</A>|) this will invoke the
+    &quot;textDocument/definition&quot; <A HREF="#LSP">LSP</A> <A HREF="eval.html#method">method</A> to find the <A HREF="tagsrch.html#tag">tag</A> under the cursor.
+    Otherwise, uses &quot;workspace/symbol&quot;. If no results are returned from any
+    <A HREF="#LSP">LSP</A> servers, falls back to using built-in <A HREF="tagsrch.html#tags">tags</A>.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {pattern}  <A HREF="pattern.html#Pattern">Pattern</A> used to find a workspace symbol
+        {flags}    See |<A HREF="tagsrch.html#tag-function">tag-function</A>|
+
+<B><FONT COLOR="PURPLE">    Return: </FONT></B>
+        A <A HREF="eval.html#list">list</A> of matching <A HREF="tagsrch.html#tags">tags</A>
+
+
+with({handler}, {override_config})                            *<A NAME="vim.lsp.with()"></A><B>vim.lsp.with()</B>*
+    Function to manage overriding defaults for <A HREF="#LSP">LSP</A> handlers.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {handler}          (function) See |<A HREF="#lsp-handler">lsp-handler</A>|
+        {override_config}  (table) Table containing the keys to override
+                           behavior of the {handler}
+
+
+==============================================================================
+
+<A HREF="lua.html#Lua">Lua</A> module: vim.lsp.buf                                              *<A NAME="lsp-buf"></A><B>lsp-buf</B>*
+
+
+                                          *<A NAME="vim.lsp.buf.add_workspace_folder()"></A><B>vim.lsp.buf.add_workspace_folder()</B>*
+add_workspace_folder({workspace_folder})
+    Add the folder at path to the workspace folders. If {path} is not
+    provided, the user will be prompted for a path using |<A HREF="builtin.html#input()">input()</A>|.
+
+
+clear_references()                            *<A NAME="vim.lsp.buf.clear_references()"></A><B>vim.lsp.buf.clear_references()</B>*
+    Removes document highlights from current buffer.
+
+
+code_action({options})                             *<A NAME="vim.lsp.buf.code_action()"></A><B>vim.lsp.buf.code_action()</B>*
+    Selects a code action available at the current cursor position.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {options}  (table|nil) Optional table which holds the following
+                   optional fields:
+                   • <A HREF="repeat.html#context">context</A>: (table|nil) Corresponds to `CodeActionContext` of the <A HREF="#LSP">LSP</A> specification:
+                     • diagnostics (table|nil): LSP`Diagnostic[]` . Inferred from the current position if not provided.
+                     • only (table|nil): <A HREF="eval.html#List">List</A> of <A HREF="#LSP">LSP</A> `CodeActionKind`s used to
+                       <A HREF="change.html#filter">filter</A> the code actions. Most language servers support
+                       values like `refactor` or `quickfix`.
+
+                   • <A HREF="change.html#filter">filter</A>: (function|nil) Predicate taking an `CodeAction`
+                     and returning a <A HREF="options.html#boolean">boolean</A>.
+                   • apply: (boolean|nil) When set to `true`, and there is
+                     just one remaining action (after filtering), the action
+                     is applied without user query.
+                   • range: (table|nil) Range for which code actions should be
+                     requested. If in visual mode this defaults to the active
+                     selection. Table must contain `start` and `end` keys with
+                     {row, col} tuples using mark-like indexing. See
+                     |<A HREF="api.html#api-indexing">api-indexing</A>|
+
+<B><FONT COLOR="PURPLE">    See also: </FONT></B>
+        https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_codeAction
+
+
+completion({context})                               *<A NAME="vim.lsp.buf.completion()"></A><B>vim.lsp.buf.completion()</B>*
+    Retrieves the completion items at the current cursor position. Can only be
+    called in <A HREF="insert.html#Insert">Insert</A> mode.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {context}  (context support not yet implemented) Additional
+                   information about the <A HREF="repeat.html#context">context</A> in which a completion was
+                   triggered (how <A HREF="motion.html#it">it</A> was triggered, and by which trigger
+                   character, if applicable)
+
+<B><FONT COLOR="PURPLE">    See also: </FONT></B>
+        vim.lsp.protocol.constants.CompletionTriggerKind
+
+
+declaration({options})                             *<A NAME="vim.lsp.buf.declaration()"></A><B>vim.lsp.buf.declaration()</B>*
+    Jumps to the declaration of the symbol under the cursor.
+    Note:
+        Many servers <A HREF="diff.html#do">do</A> not implement this <A HREF="eval.html#method">method</A>. Generally, see
+        |<A HREF="vim.html">vim.lsp.buf.definition()</A>| instead.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {options}  (table|nil) additional <A HREF="options.html#options">options</A>
+                   • reuse_win: (boolean) Jump to existing <A HREF="windows.html#window">window</A> if buffer is
+                     already open.
+                   • on_list: (function) handler for <A HREF="eval.html#list">list</A> results. See
+                     |<A HREF="#lsp-on-list-handler">lsp-on-list-handler</A>|
+
+
+definition({options})                               *<A NAME="vim.lsp.buf.definition()"></A><B>vim.lsp.buf.definition()</B>*
+    Jumps to the definition of the symbol under the cursor.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {options}  (table|nil) additional <A HREF="options.html#options">options</A>
+                   • reuse_win: (boolean) Jump to existing <A HREF="windows.html#window">window</A> if buffer is
+                     already open.
+                   • on_list: (function) handler for <A HREF="eval.html#list">list</A> results. See
+                     |<A HREF="#lsp-on-list-handler">lsp-on-list-handler</A>|
+
+
+document_highlight()                        *<A NAME="vim.lsp.buf.document_highlight()"></A><B>vim.lsp.buf.document_highlight()</B>*
+    Send request to the server to resolve document highlights for the current
+    text document position. This request can be triggered by a key <A HREF="map.html#mapping">mapping</A> or
+    by <A HREF="autocmd.html#events">events</A> such <A HREF="motion.html#as">as</A> `CursorHold`, e.g.:
+
+<B>    autocmd CursorHold  &lt;buffer&gt; lua vim.lsp.buf.document_highlight()</B>
+<B>    autocmd CursorHoldI &lt;buffer&gt; lua vim.lsp.buf.document_highlight()</B>
+<B>    autocmd CursorMoved &lt;buffer&gt; lua vim.lsp.buf.clear_references()</B>
+ 
+
+    Note: Usage of |<A HREF="vim.html">vim.lsp.buf.document_highlight()</A>| requires the following
+    highlight groups to be defined or you won't be able to see the actual
+    highlights. |<A HREF="#hl-LspReferenceText">hl-LspReferenceText</A>| |<A HREF="#hl-LspReferenceRead">hl-LspReferenceRead</A>|
+    |<A HREF="#hl-LspReferenceWrite">hl-LspReferenceWrite</A>|
+
+
+document_symbol({options})                     *<A NAME="vim.lsp.buf.document_symbol()"></A><B>vim.lsp.buf.document_symbol()</B>*
+    <A HREF="eval.html#Lists">Lists</A> all symbols in the current buffer in the <A HREF="quickfix.html#quickfix">quickfix</A> <A HREF="windows.html#window">window</A>.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {options}  (table|nil) additional <A HREF="options.html#options">options</A>
+                   • on_list: (function) handler for <A HREF="eval.html#list">list</A> results. See
+                     |<A HREF="#lsp-on-list-handler">lsp-on-list-handler</A>|
+
+
+execute_command({command_params})              *<A NAME="vim.lsp.buf.execute_command()"></A><B>vim.lsp.buf.execute_command()</B>*
+    Executes an <A HREF="#LSP">LSP</A> server command.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {command_params}  (table) A valid `ExecuteCommandParams` object
+
+<B><FONT COLOR="PURPLE">    See also: </FONT></B>
+        https://microsoft.github.io/language-server-protocol/specifications/specification-current/#workspace_executeCommand
+
+
+format({options})                                       *<A NAME="vim.lsp.buf.format()"></A><B>vim.lsp.buf.format()</B>*
+    Formats a buffer using the attached (and optionally filtered) language
+    server clients.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {options}  table|nil Optional table which holds the following optional
+                   fields:
+                   • formatting_options (table|nil): Can be used to specify
+                     FormattingOptions. Some unspecified <A HREF="options.html#options">options</A> will be
+                     automatically derived from the current Neovim <A HREF="options.html#options">options</A>.
+                     See https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#formattingOptions
+                   • timeout_ms (integer|nil, default 1000): Time in
+                     milliseconds to block for <A HREF="change.html#formatting">formatting</A> requests. No effect
+                     if async=true
+                   • bufnr (number|nil): Restrict <A HREF="change.html#formatting">formatting</A> to the clients
+                     attached to the given buffer, defaults to the current
+                     buffer (0).
+                   • <A HREF="change.html#filter">filter</A> (function|nil): Predicate used to <A HREF="change.html#filter">filter</A> clients.
+                     Receives a client <A HREF="motion.html#as">as</A> argument and must return a <A HREF="options.html#boolean">boolean</A>.
+                     Clients matching the predicate are included. Example:               •
+
+<B>            -- Never request typescript-language-server for formatting</B>
+<B>            vim.lsp.buf.format {</B>
+<B>              filter = function(client) return client.name ~= "tsserver" end</B>
+<B>            }</B>
+ 
+                   • async boolean|nil If true the <A HREF="eval.html#method">method</A> won't block.
+                     Defaults to false. Editing the buffer while <A HREF="change.html#formatting">formatting</A>
+                     asynchronous can lead to unexpected changes.
+                   • id (number|nil): Restrict <A HREF="change.html#formatting">formatting</A> to the client with
+                     ID (client.id) matching this field.
+                   • name (string|nil): Restrict <A HREF="change.html#formatting">formatting</A> to the client with
+                     name (client.name) matching this field.
+                   • range (table|nil) Range to format. Table must contain
+                     `start` and `end` keys with {row, col} tuples using (1,0)
+                     indexing. Defaults to current selection in visual mode
+                     Defaults to `nil` in other modes, <A HREF="change.html#formatting">formatting</A> the full
+                     buffer
+
+
+formatting({options})                               *<A NAME="vim.lsp.buf.formatting()"></A><B>vim.lsp.buf.formatting()</B>*
+    Formats the current buffer.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {options}  (table|nil) Can be used to specify FormattingOptions. Some
+                   unspecified <A HREF="options.html#options">options</A> will be automatically derived from the
+                   current Neovim <A HREF="options.html#options">options</A>.
+
+<B><FONT COLOR="PURPLE">    See also: </FONT></B>
+        https://microsoft.github.io/language-server-protocol/specification#textDocument_formatting
+
+
+                                           *<A NAME="vim.lsp.buf.formatting_seq_sync()"></A><B>vim.lsp.buf.formatting_seq_sync()</B>*
+formatting_seq_sync({options}, {timeout_ms}, {order})
+    Formats the current buffer by sequentially requesting <A HREF="change.html#formatting">formatting</A> from
+    attached clients.
+
+    Useful when multiple clients with <A HREF="change.html#formatting">formatting</A> capability are attached.
+
+    Since it's synchronous, can be used for running on save, to make sure
+    buffer is formatted prior to being saved. {timeout_ms} is passed on to the
+    |<A HREF="vim.html">vim.lsp.client</A>| `request_sync` <A HREF="eval.html#method">method</A>. Example:
+
+<B>     vim.api.nvim_command[[autocmd BufWritePre &lt;buffer&gt; lua vim.lsp.buf.formatting_seq_sync()]]</B>
+ 
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {options}     (table|nil) `FormattingOptions` entries
+        {timeout_ms}  (number|nil) Request timeout
+        {order}       (table|nil) <A HREF="eval.html#List">List</A> of client names. Formatting is
+                      requested from clients in the following order: first all
+                      clients that are not in the `order` <A HREF="eval.html#list">list</A>, then the
+                      remaining clients in the order <A HREF="motion.html#as">as</A> they occur in the
+                      `order` <A HREF="eval.html#list">list</A>.
+
+
+                                               *<A NAME="vim.lsp.buf.formatting_sync()"></A><B>vim.lsp.buf.formatting_sync()</B>*
+formatting_sync({options}, {timeout_ms})
+    Performs |<A HREF="vim.html">vim.lsp.buf.formatting()</A>| synchronously.
+
+    Useful for running on save, to make sure buffer is formatted prior to
+    being saved. {timeout_ms} is passed on to |<A HREF="vim.html">vim.lsp.buf_request_sync()</A>|.
+    Example:
+
+
+<B>    autocmd BufWritePre &lt;buffer&gt; lua vim.lsp.buf.formatting_sync()</B>
+ 
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {options}     (table|nil) with valid `FormattingOptions` entries
+        {timeout_ms}  (number) Request timeout
+
+<B><FONT COLOR="PURPLE">    See also: </FONT></B>
+        |<A HREF="vim.html">vim.lsp.buf.format()</A>|
+
+
+hover()                                                  *<A NAME="vim.lsp.buf.hover()"></A><B>vim.lsp.buf.hover()</B>*
+    Displays hover information about the symbol under the cursor in a floating
+    <A HREF="windows.html#window">window</A>. Calling the function <A HREF="if_cscop.html#twice">twice</A> will jump into the floating <A HREF="windows.html#window">window</A>.
+
+
+implementation({options})                       *<A NAME="vim.lsp.buf.implementation()"></A><B>vim.lsp.buf.implementation()</B>*
+    <A HREF="eval.html#Lists">Lists</A> all the implementations for the symbol under the cursor in the
+    <A HREF="quickfix.html#quickfix">quickfix</A> <A HREF="windows.html#window">window</A>.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {options}  (table|nil) additional <A HREF="options.html#options">options</A>
+                   • on_list: (function) handler for <A HREF="eval.html#list">list</A> results. See
+                     |<A HREF="#lsp-on-list-handler">lsp-on-list-handler</A>|
+
+
+incoming_calls()                                *<A NAME="vim.lsp.buf.incoming_calls()"></A><B>vim.lsp.buf.incoming_calls()</B>*
+    <A HREF="eval.html#Lists">Lists</A> all the call sites of the symbol under the cursor in the |<A HREF="quickfix.html#quickfix">quickfix</A>|
+    <A HREF="windows.html#window">window</A>. If the symbol can resolve to multiple items, the user can pick one
+    in the |<A HREF="builtin.html#inputlist()">inputlist()</A>|.
+
+
+list_workspace_folders()                *<A NAME="vim.lsp.buf.list_workspace_folders()"></A><B>vim.lsp.buf.list_workspace_folders()</B>*
+    <A HREF="eval.html#List">List</A> workspace folders.
+
+
+outgoing_calls()                                *<A NAME="vim.lsp.buf.outgoing_calls()"></A><B>vim.lsp.buf.outgoing_calls()</B>*
+    <A HREF="eval.html#Lists">Lists</A> all the items that are called by the symbol under the cursor in the
+    |<A HREF="quickfix.html#quickfix">quickfix</A>| <A HREF="windows.html#window">window</A>. If the symbol can resolve to multiple items, the user
+    can pick one in the |<A HREF="builtin.html#inputlist()">inputlist()</A>|.
+
+
+                                             *<A NAME="vim.lsp.buf.range_code_action()"></A><B>vim.lsp.buf.range_code_action()</B>*
+range_code_action({context}, {start_pos}, {end_pos})
+    Performs |<A HREF="vim.html">vim.lsp.buf.code_action()</A>| for a given range.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {context}    (table|nil) `CodeActionContext` of the <A HREF="#LSP">LSP</A> specification:
+                     • diagnostics: (table|nil) LSP`Diagnostic[]` . Inferred from the current position if not provided.
+                     • only: (table|nil) <A HREF="eval.html#List">List</A> of <A HREF="#LSP">LSP</A> `CodeActionKind`s used to
+                       <A HREF="change.html#filter">filter</A> the code actions. Most language servers support
+                       values like `refactor` or `quickfix`.
+        {start_pos}  ({number, number}, optional) mark-indexed position.
+                     Defaults to the start of the last visual selection.
+        {end_pos}    ({number, number}, optional) mark-indexed position.
+                     Defaults to the end of the last visual selection.
+
+
+                                              *<A NAME="vim.lsp.buf.range_formatting()"></A><B>vim.lsp.buf.range_formatting()</B>*
+range_formatting({options}, {start_pos}, {end_pos})
+    Formats a given range.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {options}    Table with valid `FormattingOptions` entries.
+        {start_pos}  ({number, number}, optional) mark-indexed position.
+                     Defaults to the start of the last visual selection.
+        {end_pos}    ({number, number}, optional) mark-indexed position.
+                     Defaults to the end of the last visual selection.
+
+
+references({context}, {options})                    *<A NAME="vim.lsp.buf.references()"></A><B>vim.lsp.buf.references()</B>*
+    <A HREF="eval.html#Lists">Lists</A> all the references to the symbol under the cursor in the <A HREF="quickfix.html#quickfix">quickfix</A>
+    <A HREF="windows.html#window">window</A>.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {context}  (table) <A HREF="repeat.html#Context">Context</A> for the request
+        {options}  (table|nil) additional <A HREF="options.html#options">options</A>
+                   • on_list: (function) handler for <A HREF="eval.html#list">list</A> results. See
+                     |<A HREF="#lsp-on-list-handler">lsp-on-list-handler</A>|
+
+<B><FONT COLOR="PURPLE">    See also: </FONT></B>
+        https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_references
+
+
+                                       *<A NAME="vim.lsp.buf.remove_workspace_folder()"></A><B>vim.lsp.buf.remove_workspace_folder()</B>*
+remove_workspace_folder({workspace_folder})
+    Remove the folder at path from the workspace folders. If {path} is not
+    provided, the user will be prompted for a path using |<A HREF="builtin.html#input()">input()</A>|.
+
+
+rename({new_name}, {options})                           *<A NAME="vim.lsp.buf.rename()"></A><B>vim.lsp.buf.rename()</B>*
+    Renames all references to the symbol under the cursor.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {new_name}  (string|nil) If not provided, the user will be prompted
+                    for a new name using |<A HREF="lua.html#vim.ui.input()">vim.ui.input()</A>|.
+        {options}   (table|nil) additional <A HREF="options.html#options">options</A>
+                    • <A HREF="change.html#filter">filter</A> (function|nil): Predicate used to <A HREF="change.html#filter">filter</A> clients.
+                      Receives a client <A HREF="motion.html#as">as</A> argument and must return a <A HREF="options.html#boolean">boolean</A>.
+                      Clients matching the predicate are included.
+                    • name (string|nil): Restrict clients used for rename to
+                      ones where client.name matches this field.
+
+
+server_ready()                                    *<A NAME="vim.lsp.buf.server_ready()"></A><B>vim.lsp.buf.server_ready()</B>*
+    Checks whether the language servers attached to the current buffer are
+    ready.
+
+<B><FONT COLOR="PURPLE">    Return: </FONT></B>
+        `true` if server responds.
+
+
+signature_help()                                *<A NAME="vim.lsp.buf.signature_help()"></A><B>vim.lsp.buf.signature_help()</B>*
+    Displays signature information about the symbol under the cursor in a
+    floating <A HREF="windows.html#window">window</A>.
+
+
+type_definition({options})                     *<A NAME="vim.lsp.buf.type_definition()"></A><B>vim.lsp.buf.type_definition()</B>*
+    Jumps to the definition of the type of the symbol under the cursor.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {options}  (table|nil) additional <A HREF="options.html#options">options</A>
+                   • reuse_win: (boolean) Jump to existing <A HREF="windows.html#window">window</A> if buffer is
+                     already open.
+                   • on_list: (function) handler for <A HREF="eval.html#list">list</A> results. See
+                     |<A HREF="#lsp-on-list-handler">lsp-on-list-handler</A>|
+
+
+workspace_symbol({query}, {options})          *<A NAME="vim.lsp.buf.workspace_symbol()"></A><B>vim.lsp.buf.workspace_symbol()</B>*
+    <A HREF="eval.html#Lists">Lists</A> all symbols in the current workspace in the <A HREF="quickfix.html#quickfix">quickfix</A> <A HREF="windows.html#window">window</A>.
+
+    The <A HREF="eval.html#list">list</A> is filtered against {query}; if the argument is omitted from the
+    call, the user is prompted to enter a <A HREF="eval.html#string">string</A> on the command line. An empty
+    <A HREF="eval.html#string">string</A> means no filtering is done.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {query}    (string, optional)
+        {options}  (table|nil) additional <A HREF="options.html#options">options</A>
+                   • on_list: (function) handler for <A HREF="eval.html#list">list</A> results. See
+                     |<A HREF="#lsp-on-list-handler">lsp-on-list-handler</A>|
+
+
+==============================================================================
+
+<A HREF="lua.html#Lua">Lua</A> module: vim.lsp.diagnostic                                *<A NAME="lsp-diagnostic"></A><B>lsp-diagnostic</B>*
+
+
+get_namespace({client_id})                *<A NAME="vim.lsp.diagnostic.get_namespace()"></A><B>vim.lsp.diagnostic.get_namespace()</B>*
+    Get the diagnostic <A HREF="api.html#namespace">namespace</A> associated with an <A HREF="#LSP">LSP</A> client
+    |<A HREF="vim.html">vim.diagnostic</A>|.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {client_id}  (number) The id of the <A HREF="#LSP">LSP</A> client
+
+
+                                 *<A NAME="vim.lsp.diagnostic.on_publish_diagnostics()"></A><B>vim.lsp.diagnostic.on_publish_diagnostics()</B>*
+on_publish_diagnostics({_}, {result}, {ctx}, {config})
+    |<A HREF="#lsp-handler">lsp-handler</A>| for the <A HREF="eval.html#method">method</A> &quot;textDocument/publishDiagnostics&quot;
+
+    See |<A HREF="vim.html">vim.diagnostic.config()</A>| for configuration <A HREF="options.html#options">options</A>. Handler-specific
+    configuration can be set using YXXYvim.lsp.with()|:
+
+<B>     vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(</B>
+<B>       vim.lsp.diagnostic.on_publish_diagnostics, {</B>
+<B>         -- Enable underline, use default values</B>
+<B>         underline = true,</B>
+<B>         -- Enable virtual text, override spacing to 4</B>
+<B>         virtual_text = {</B>
+<B>           spacing = 4,</B>
+<B>         },</B>
+<B>         -- Use a function to dynamically turn signs off</B>
+<B>         -- and on, using buffer local variables</B>
+<B>         signs = function(namespace, bufnr)</B>
+<B>           return vim.b[bufnr].show_signs == true</B>
+<B>         end,</B>
+<B>         -- Disable a feature</B>
+<B>         update_in_insert = false,</B>
+<B>       }</B>
+<B>     )</B>
+ 
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {config}  (table) Configuration table (see |<A HREF="vim.html">vim.diagnostic.config()</A>|).
+
+
+==============================================================================
+
+<A HREF="lua.html#Lua">Lua</A> module: vim.lsp.codelens                                    *<A NAME="lsp-codelens"></A><B>lsp-codelens</B>*
+
+
+display({lenses}, {bufnr}, {client_id})           *<A NAME="vim.lsp.codelens.display()"></A><B>vim.lsp.codelens.display()</B>*
+    Display the lenses using virtual text
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {lenses}     (table) of lenses to display (`CodeLens[] &#124; null`)
+        {bufnr}      (number)
+        {client_id}  (number)
+
+
+get({bufnr})                                          *<A NAME="vim.lsp.codelens.get()"></A><B>vim.lsp.codelens.get()</B>*
+    Return all lenses for the given buffer
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {bufnr}  (number) Buffer number. 0 can be used for the current buffer.
+
+<B><FONT COLOR="PURPLE">    Return: </FONT></B>
+        (table) (`CodeLens[]`)
+
+
+                                              *<A NAME="vim.lsp.codelens.on_codelens()"></A><B>vim.lsp.codelens.on_codelens()</B>*
+on_codelens({err}, {result}, {ctx}, {_})
+    |<A HREF="#lsp-handler">lsp-handler</A>| for the <A HREF="eval.html#method">method</A> `textDocument/codeLens`
+
+
+refresh()                                         *<A NAME="vim.lsp.codelens.refresh()"></A><B>vim.lsp.codelens.refresh()</B>*
+    Refresh the codelens for the current buffer
+
+    It is recommended to trigger this using an <A HREF="autocmd.html#autocmd">autocmd</A> or via keymap.
+
+<B>    autocmd BufEnter,CursorHold,InsertLeave &lt;buffer&gt; lua vim.lsp.codelens.refresh()</B>
+ 
+
+
+run()                                                 *<A NAME="vim.lsp.codelens.run()"></A><B>vim.lsp.codelens.run()</B>*
+    Run the code lens in the current line
+
+
+save({lenses}, {bufnr}, {client_id})                 *<A NAME="vim.lsp.codelens.save()"></A><B>vim.lsp.codelens.save()</B>*
+    Store lenses for a specific buffer and client
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {lenses}     (table) of lenses to store (`CodeLens[] &#124; null`)
+        {bufnr}      (number)
+        {client_id}  (number)
+
+
+==============================================================================
+
+<A HREF="lua.html#Lua">Lua</A> module: <A HREF="#vim.lsp.handlers">vim.lsp.handlers</A>                                    *<A NAME="lsp-handlers"></A><B>lsp-handlers</B>*
+
+
+hover({_}, {result}, {ctx}, {config})               *<A NAME="vim.lsp.handlers.hover()"></A><B>vim.lsp.handlers.hover()</B>*
+    |<A HREF="#lsp-handler">lsp-handler</A>| for the <A HREF="eval.html#method">method</A> &quot;textDocument/hover&quot;
+
+<B>     vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(</B>
+<B>       vim.lsp.handlers.hover, {</B>
+<B>         -- Use a sharp border with `FloatBorder` highlights</B>
+<B>         border = "single"</B>
+<B>       }</B>
+<B>     )</B>
+ 
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {config}  (table) Configuration table.
+                  • border: (default=nil)
+                    • Add borders to the floating <A HREF="windows.html#window">window</A>
+                    • See |<A HREF="api.html#nvim_open_win()">nvim_open_win()</A>|
+
+
+                                           *<A NAME="vim.lsp.handlers.signature_help()"></A><B>vim.lsp.handlers.signature_help()</B>*
+signature_help({_}, {result}, {ctx}, {config})
+    |<A HREF="#lsp-handler">lsp-handler</A>| for the <A HREF="eval.html#method">method</A> &quot;textDocument/signatureHelp&quot;. The active
+    parameter is highlighted with |<A HREF="#hl-LspSignatureActiveParameter">hl-LspSignatureActiveParameter</A>|.
+
+<B>     vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(</B>
+<B>       vim.lsp.handlers.signature_help, {</B>
+<B>         -- Use a sharp border with `FloatBorder` highlights</B>
+<B>         border = "single"</B>
+<B>       }</B>
+<B>     )</B>
+ 
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {config}  (table) Configuration table.
+                  • border: (default=nil)
+                    • Add borders to the floating <A HREF="windows.html#window">window</A>
+                    • See |<A HREF="api.html#nvim_open_win()">nvim_open_win()</A>|
+
+
+==============================================================================
+
+<A HREF="lua.html#Lua">Lua</A> module: vim.lsp.util                                            *<A NAME="lsp-util"></A><B>lsp-util</B>*
+
+
+                                     *<A NAME="vim.lsp.util.apply_text_document_edit()"></A><B>vim.lsp.util.apply_text_document_edit()</B>*
+apply_text_document_edit({text_document_edit}, {index}, {offset_encoding})
+    Applies a `TextDocumentEdit`, which is a <A HREF="eval.html#list">list</A> of changes to a single
+    document.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {text_document_edit}  table: a `TextDocumentEdit` object
+        {index}               number: Optional index of the edit, if from a
+                              <A HREF="eval.html#list">list</A> of edits (or nil, if not from a <A HREF="eval.html#list">list</A>)
+
+<B><FONT COLOR="PURPLE">    See also: </FONT></B>
+        https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocumentEdit
+
+
+                                             *<A NAME="vim.lsp.util.apply_text_edits()"></A><B>vim.lsp.util.apply_text_edits()</B>*
+apply_text_edits({text_edits}, {bufnr}, {offset_encoding})
+    Applies a <A HREF="eval.html#list">list</A> of text edits to a buffer.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {text_edits}       (table) <A HREF="eval.html#list">list</A> of `TextEdit` <A HREF="vimindex.html#objects">objects</A>
+        {bufnr}            (number) Buffer id
+        {offset_encoding}  (string) utf-8|utf-16|utf-32
+
+<B><FONT COLOR="PURPLE">    See also: </FONT></B>
+        https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textEdit
+
+
+                                         *<A NAME="vim.lsp.util.apply_workspace_edit()"></A><B>vim.lsp.util.apply_workspace_edit()</B>*
+apply_workspace_edit({workspace_edit}, {offset_encoding})
+    Applies a `WorkspaceEdit`.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {workspace_edit}   (table) `WorkspaceEdit`
+        {offset_encoding}  (string) utf-8|utf-16|utf-32 (required)
+
+
+buf_clear_references({bufnr})            *<A NAME="vim.lsp.util.buf_clear_references()"></A><B>vim.lsp.util.buf_clear_references()</B>*
+    Removes document highlights from a buffer.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {bufnr}  (number) Buffer id
+
+
+                                     *<A NAME="vim.lsp.util.buf_highlight_references()"></A><B>vim.lsp.util.buf_highlight_references()</B>*
+buf_highlight_references({bufnr}, {references}, {offset_encoding})
+    Shows a <A HREF="eval.html#list">list</A> of document highlights for a certain buffer.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {bufnr}            (number) Buffer id
+        {references}       (table) <A HREF="eval.html#List">List</A> of `DocumentHighlight` <A HREF="vimindex.html#objects">objects</A> to
+                           highlight
+        {offset_encoding}  (string) One of &quot;<A HREF="mbyte.html#utf-8">utf-8</A>&quot;, &quot;utf-16&quot;, &quot;utf-32&quot;.
+
+<B><FONT COLOR="PURPLE">    See also: </FONT></B>
+        https://microsoft.github.io/language-server-protocol/specifications/specification-3-17/#documentHighlight
+
+
+                                             *<A NAME="vim.lsp.util.character_offset()"></A><B>vim.lsp.util.character_offset()</B>*
+character_offset({buf}, {row}, {col}, {offset_encoding})
+    Returns the UTF-32 and UTF-16 offsets for a position in a certain buffer.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {buf}              (number) buffer number (0 for current)
+        {row}              0-indexed line
+        {col}              0-indexed byte offset in line
+        {offset_encoding}  (string) utf-8|utf-16|utf-32|nil defaults to
+                           `offset_encoding` of first client of `buf`
+
+<B><FONT COLOR="PURPLE">    Return: </FONT></B>
+        (number, number) `offset_encoding` index of the character in line
+        {row} column {col} in buffer {buf}
+
+
+                              *<A NAME="vim.lsp.util.convert_input_to_markdown_lines()"></A><B>vim.lsp.util.convert_input_to_markdown_lines()</B>*
+convert_input_to_markdown_lines({input}, {contents})
+    Converts any of `MarkedString` &#124; `MarkedString[]` &#124; `MarkupContent` into a
+    <A HREF="eval.html#list">list</A> of lines containing valid markdown. Useful to populate the hover
+    <A HREF="windows.html#window">window</A> for `textDocument/hover`, for parsing the result of
+    `textDocument/signatureHelp`, and potentially others.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {input}     (`MarkedString` &#124; `MarkedString[]` &#124; `MarkupContent`)
+        {contents}  (table, optional, default `{}`) <A HREF="eval.html#List">List</A> of strings to extend
+                    with converted lines
+
+<B><FONT COLOR="PURPLE">    Return: </FONT></B>
+        {contents}, extended with lines of converted markdown.
+
+<B><FONT COLOR="PURPLE">    See also: </FONT></B>
+        https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_hover
+
+
+                     *<A NAME="vim.lsp.util.convert_signature_help_to_markdown_lines()"></A><B>vim.lsp.util.convert_signature_help_to_markdown_lines()</B>*
+convert_signature_help_to_markdown_lines({signature_help}, {ft}, {triggers})
+    Converts `textDocument/SignatureHelp` response to markdown lines.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {signature_help}  Response of `textDocument/SignatureHelp`
+        {ft}              optional <A HREF="filetype.html#filetype">filetype</A> that will be use <A HREF="motion.html#as">as</A> the `lang` for
+                          the label markdown code block
+        {triggers}        optional <A HREF="eval.html#list">list</A> of trigger characters from the <A HREF="#lsp">lsp</A>
+                          server. used to better determine parameter offsets
+
+<B><FONT COLOR="PURPLE">    Return: </FONT></B>
+        <A HREF="eval.html#list">list</A> of lines of converted markdown.
+
+<B><FONT COLOR="PURPLE">    See also: </FONT></B>
+        https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_signatureHelp
+
+
+                                     *<A NAME="vim.lsp.util.extract_completion_items()"></A><B>vim.lsp.util.extract_completion_items()</B>*
+extract_completion_items({result})
+    Can be used to extract the completion items from a `textDocument/completion` request, which may return one of `CompletionItem[]` , `CompletionList` or null.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {result}  (table) The result of a `textDocument/completion` request
+
+<B><FONT COLOR="PURPLE">    Return: </FONT></B>
+        (table) <A HREF="eval.html#List">List</A> of completion items
+
+<B><FONT COLOR="PURPLE">    See also: </FONT></B>
+        https://microsoft.github.io/language-server-protocol/specification#textDocument_completion
+
+
+get_effective_tabstop({bufnr})          *<A NAME="vim.lsp.util.get_effective_tabstop()"></A><B>vim.lsp.util.get_effective_tabstop()</B>*
+    Returns indentation size.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {bufnr}  (number|nil): Buffer handle, defaults to current
+
+<B><FONT COLOR="PURPLE">    Return: </FONT></B>
+        (number) indentation size
+
+<B><FONT COLOR="PURPLE">    See also: </FONT></B>
+        <A HREF="options.html#'shiftwidth'">'shiftwidth'</A>
+
+
+                                             *<A NAME="vim.lsp.util.jump_to_location()"></A><B>vim.lsp.util.jump_to_location()</B>*
+jump_to_location({location}, {offset_encoding}, {reuse_win})
+    Jumps to a location.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {location}         (table) (`Location`|`LocationLink`)
+        {offset_encoding}  (string) utf-8|utf-16|utf-32 (required)
+        {reuse_win}        (boolean) Jump to existing <A HREF="windows.html#window">window</A> if buffer is
+                           already opened.
+
+<B><FONT COLOR="PURPLE">    Return: </FONT></B>
+        `true` if the jump succeeded
+
+
+                                           *<A NAME="vim.lsp.util.locations_to_items()"></A><B>vim.lsp.util.locations_to_items()</B>*
+locations_to_items({locations}, {offset_encoding})
+    Returns the items with the byte position calculated correctly and in
+    sorted order, for display in <A HREF="quickfix.html#quickfix">quickfix</A> and location lists.
+
+    The result can be passed to the {list} argument of |<A HREF="builtin.html#setqflist()">setqflist()</A>| or
+    |<A HREF="builtin.html#setloclist()">setloclist()</A>|.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {locations}        (table) <A HREF="eval.html#list">list</A> of `Location`s or `LocationLink`s
+        {offset_encoding}  (string) offset_encoding for locations
+                           utf-8|utf-16|utf-32
+
+<B><FONT COLOR="PURPLE">    Return: </FONT></B>
+        (table) <A HREF="eval.html#list">list</A> of items
+
+
+lookup_section({settings}, {section})          *<A NAME="vim.lsp.util.lookup_section()"></A><B>vim.lsp.util.lookup_section()</B>*
+    Helper function to return nested values in language server settings
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {settings}  a table of language server settings
+        {section}   a <A HREF="eval.html#string">string</A> indicating the field of the settings table
+
+<B><FONT COLOR="PURPLE">    Return: </FONT></B>
+        (table or <A HREF="eval.html#string">string</A>) The value of settings accessed via section
+
+
+                                  *<A NAME="vim.lsp.util.make_floating_popup_options()"></A><B>vim.lsp.util.make_floating_popup_options()</B>*
+make_floating_popup_options({width}, {height}, {opts})
+    Creates a table with sensible default <A HREF="options.html#options">options</A> for a floating <A HREF="windows.html#window">window</A>. The
+    table can be passed to |<A HREF="api.html#nvim_open_win()">nvim_open_win()</A>|.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {width}   (number) <A HREF="windows.html#window">window</A> width (in character cells)
+        {height}  (number) <A HREF="windows.html#window">window</A> height (in character cells)
+        {opts}    (table, optional)
+                  • offset_x (number) offset to add to `col`
+                  • offset_y (number) offset to add to `row`
+                  • border (string or table) override `border`
+                  • focusable (string or table) override `focusable`
+                  • zindex (string or table) override `zindex`, defaults to 50
+
+<B><FONT COLOR="PURPLE">    Return: </FONT></B>
+        (table) Options
+
+
+                                       *<A NAME="vim.lsp.util.make_formatting_params()"></A><B>vim.lsp.util.make_formatting_params()</B>*
+make_formatting_params({options})
+    Creates a `DocumentFormattingParams` object for the current buffer and
+    cursor position.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {options}  (table|nil) with valid `FormattingOptions` entries
+
+<B><FONT COLOR="PURPLE">    Return: </FONT></B>
+        `DocumentFormattingParams` object
+
+<B><FONT COLOR="PURPLE">    See also: </FONT></B>
+        https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_formatting
+
+
+                                      *<A NAME="vim.lsp.util.make_given_range_params()"></A><B>vim.lsp.util.make_given_range_params()</B>*
+make_given_range_params({start_pos}, {end_pos}, {bufnr}, {offset_encoding})
+    Using the given range in the current buffer, creates an object that is
+    similar to |<A HREF="vim.html">vim.lsp.util.make_range_params()</A>|.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {start_pos}        number[]|nil {row, col} mark-indexed position.
+                           Defaults to the start of the last visual selection.
+        {end_pos}          number[]|nil {row, col} mark-indexed position.
+                           Defaults to the end of the last visual selection.
+        {bufnr}            (number|nil) buffer handle or 0 for current,
+                           defaults to current
+        {offset_encoding}  &quot;utf-8&quot;|&quot;utf-16&quot;|&quot;utf-32&quot;|nil defaults to
+                           `offset_encoding` of first client of `bufnr`
+
+<B><FONT COLOR="PURPLE">    Return: </FONT></B>
+        { textDocument = { uri = `current_file_uri` }, range = { start =
+        `start_position`, end = `end_position` } }
+
+
+                                         *<A NAME="vim.lsp.util.make_position_params()"></A><B>vim.lsp.util.make_position_params()</B>*
+make_position_params({window}, {offset_encoding})
+    Creates a `TextDocumentPositionParams` object for the current buffer and
+    cursor position.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {window}           number|nil: <A HREF="windows.html#window">window</A> handle or 0 for current,
+                           defaults to current
+        {offset_encoding}  (string) utf-8|utf-16|utf-32|nil defaults to
+                           `offset_encoding` of first client of buffer of
+                           `window`
+
+<B><FONT COLOR="PURPLE">    Return: </FONT></B>
+        `TextDocumentPositionParams` object
+
+<B><FONT COLOR="PURPLE">    See also: </FONT></B>
+        https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocumentPositionParams
+
+
+                                            *<A NAME="vim.lsp.util.make_range_params()"></A><B>vim.lsp.util.make_range_params()</B>*
+make_range_params({window}, {offset_encoding})
+    Using the current position in the current buffer, creates an object that
+    can be used <A HREF="motion.html#as">as</A> a building block for several <A HREF="#LSP">LSP</A> requests, such <A HREF="motion.html#as">as</A>
+    `textDocument/codeAction`, `textDocument/colorPresentation`,
+    `textDocument/rangeFormatting`.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {window}           number|nil: <A HREF="windows.html#window">window</A> handle or 0 for current,
+                           defaults to current
+        {offset_encoding}  &quot;utf-8&quot;|&quot;utf-16&quot;|&quot;utf-32&quot;|nil defaults to
+                           `offset_encoding` of first client of buffer of
+                           `window`
+
+<B><FONT COLOR="PURPLE">    Return: </FONT></B>
+        { textDocument = { uri = `current_file_uri` }, range = { start =
+        `current_position`, end = `current_position` } }
+
+
+                                    *<A NAME="vim.lsp.util.make_text_document_params()"></A><B>vim.lsp.util.make_text_document_params()</B>*
+make_text_document_params({bufnr})
+    Creates a `TextDocumentIdentifier` object for the current buffer.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {bufnr}  number|nil: Buffer handle, defaults to current
+
+<B><FONT COLOR="PURPLE">    Return: </FONT></B>
+        `TextDocumentIdentifier`
+
+<B><FONT COLOR="PURPLE">    See also: </FONT></B>
+        https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocumentIdentifier
+
+
+                                        *<A NAME="vim.lsp.util.make_workspace_params()"></A><B>vim.lsp.util.make_workspace_params()</B>*
+make_workspace_params({added}, {removed})
+    Create the workspace params
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {added}    
+        {removed}
+
+
+                                        *<A NAME="vim.lsp.util.open_floating_preview()"></A><B>vim.lsp.util.open_floating_preview()</B>*
+open_floating_preview({contents}, {syntax}, {opts})
+    Shows contents in a floating <A HREF="windows.html#window">window</A>.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {contents}  (table) of lines to show in <A HREF="windows.html#window">window</A>
+        {syntax}    (string) of <A HREF="syntax.html#syntax">syntax</A> to set for opened buffer
+        {opts}      (table) with optional fields (additional keys are passed
+                    on to |<A HREF="api.html#nvim_open_win()">nvim_open_win()</A>|)
+                    • height: (number) height of floating <A HREF="windows.html#window">window</A>
+                    • width: (number) width of floating <A HREF="windows.html#window">window</A>
+                    • wrap: (boolean, default true) wrap long lines
+                    • wrap_at: (number) character to wrap at for computing
+                      height when wrap is enabled
+                    • max_width: (number) maximal width of floating <A HREF="windows.html#window">window</A>
+                    • max_height: (number) maximal height of floating <A HREF="windows.html#window">window</A>
+                    • pad_top: (number) number of lines to pad contents at top
+                    • pad_bottom: (number) number of lines to pad contents at
+                      bottom
+                    • focus_id: (string) if a popup with this id is opened,
+                      then focus <A HREF="motion.html#it">it</A>
+                    • close_events: (table) <A HREF="eval.html#list">list</A> of <A HREF="autocmd.html#events">events</A> that closes the
+                      floating <A HREF="windows.html#window">window</A>
+                    • focusable: (boolean, default true) Make float focusable
+                    • focus: (boolean, default true) If `true`, and if
+                      {focusable} is also `true`, focus an existing floating
+                      <A HREF="windows.html#window">window</A> with the same {focus_id}
+
+<B><FONT COLOR="PURPLE">    Return: </FONT></B>
+        bufnr,winnr buffer and <A HREF="windows.html#window">window</A> number of the newly created floating
+        preview <A HREF="windows.html#window">window</A>
+
+
+parse_snippet({input})                          *<A NAME="vim.lsp.util.parse_snippet()"></A><B>vim.lsp.util.parse_snippet()</B>*
+    Parses snippets in a completion entry.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {input}  (string) unparsed snippet
+
+<B><FONT COLOR="PURPLE">    Return: </FONT></B>
+        (string) parsed snippet
+
+
+preview_location({location}, {opts})         *<A NAME="vim.lsp.util.preview_location()"></A><B>vim.lsp.util.preview_location()</B>*
+    Previews a location in a floating <A HREF="windows.html#window">window</A>
+
+    behavior depends on type of location:
+    • for Location, range is shown (e.g., function definition)
+    • for LocationLink, targetRange is shown (e.g., body of function
+      definition)
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {location}  a single `Location` or `LocationLink`
+
+<B><FONT COLOR="PURPLE">    Return: </FONT></B>
+        (bufnr,winnr) buffer and <A HREF="windows.html#window">window</A> number of floating <A HREF="windows.html#window">window</A> or nil
+
+
+rename({old_fname}, {new_fname}, {opts})               *<A NAME="vim.lsp.util.rename()"></A><B>vim.lsp.util.rename()</B>*
+    Rename old_fname to new_fname
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {opts}  (table)
+
+
+set_lines({lines}, {A}, {B}, {new_lines})           *<A NAME="vim.lsp.util.set_lines()"></A><B>vim.lsp.util.set_lines()</B>*
+    Replaces text in a range with new text.
+
+    CAUTION: Changes in-place!
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {lines}      (table) Original <A HREF="eval.html#list">list</A> of strings
+        {A}          (table) Start position; a 2-tuple of {line, col} numbers
+        {B}          (table) End position; a 2-tuple of {line, col} numbers
+        {new_lines}  A <A HREF="eval.html#list">list</A> of strings to replace the original
+
+<B><FONT COLOR="PURPLE">    Return: </FONT></B>
+        (table) The modified {lines} object
+
+
+                                             *<A NAME="vim.lsp.util.stylize_markdown()"></A><B>vim.lsp.util.stylize_markdown()</B>*
+stylize_markdown({bufnr}, {contents}, {opts})
+    Converts markdown into <A HREF="syntax.html#syntax">syntax</A> highlighted regions by stripping the code
+    blocks and converting them into highlighted code. This will by default
+    insert a blank line separator after those code block regions to improve
+    readability.
+
+    This <A HREF="eval.html#method">method</A> configures the given buffer and returns the lines to set.
+
+    If you want to open a popup with fancy markdown, use
+    `open_floating_preview` instead
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {contents}  (table) of lines to show in <A HREF="windows.html#window">window</A>
+        {opts}      dictionary with optional fields
+                    • height of floating <A HREF="windows.html#window">window</A>
+                    • width of floating <A HREF="windows.html#window">window</A>
+                    • wrap_at character to wrap at for computing height
+                    • max_width maximal width of floating <A HREF="windows.html#window">window</A>
+                    • max_height maximal height of floating <A HREF="windows.html#window">window</A>
+                    • pad_top number of lines to pad contents at top
+                    • pad_bottom number of lines to pad contents at bottom
+                    • separator insert separator after code block
+
+<B><FONT COLOR="PURPLE">    Return: </FONT></B>
+        width,height size of float
+
+
+symbols_to_items({symbols}, {bufnr})         *<A NAME="vim.lsp.util.symbols_to_items()"></A><B>vim.lsp.util.symbols_to_items()</B>*
+    Converts symbols to <A HREF="quickfix.html#quickfix">quickfix</A> <A HREF="eval.html#list">list</A> items.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {symbols}  DocumentSymbol[] or SymbolInformation[]
+
+
+              *<A NAME="vim.lsp.util.text_document_completion_list_to_complete_items()"></A><B>vim.lsp.util.text_document_completion_list_to_complete_items()</B>*
+text_document_completion_list_to_complete_items({result}, {prefix})
+    Turns the result of a `textDocument/completion` request into
+    vim-compatible |<A HREF="insert.html#complete-items">complete-items</A>|.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {result}  The result of a `textDocument/completion` call, e.g. from
+                  |<A HREF="vim.html">vim.lsp.buf.completion()</A>|, which may be one of
+                  `CompletionItem[]`, `CompletionList` or `null`
+        {prefix}  (string) the prefix to <A HREF="change.html#filter">filter</A> the completion items
+
+<B><FONT COLOR="PURPLE">    Return: </FONT></B>
+        { matches = <A HREF="insert.html#complete-items">complete-items</A> table, incomplete = bool }
+
+<B><FONT COLOR="PURPLE">    See also: </FONT></B>
+        |<A HREF="insert.html#complete-items">complete-items</A>|
+
+
+trim_empty_lines({lines})                    *<A NAME="vim.lsp.util.trim_empty_lines()"></A><B>vim.lsp.util.trim_empty_lines()</B>*
+    Removes empty lines from the beginning and end.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {lines}  (table) <A HREF="eval.html#list">list</A> of lines to trim
+
+<B><FONT COLOR="PURPLE">    Return: </FONT></B>
+        (table) trimmed <A HREF="eval.html#list">list</A> of lines
+
+
+                                *<A NAME="vim.lsp.util.try_trim_markdown_code_blocks()"></A><B>vim.lsp.util.try_trim_markdown_code_blocks()</B>*
+try_trim_markdown_code_blocks({lines})
+    Accepts markdown lines and tries to reduce them to a <A HREF="filetype.html#filetype">filetype</A> if they
+    comprise just a single code block.
+
+    CAUTION: Modifies the input in-place!
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {lines}  (table) <A HREF="eval.html#list">list</A> of lines
+
+<B><FONT COLOR="PURPLE">    Return: </FONT></B>
+        (string) <A HREF="filetype.html#filetype">filetype</A> or &quot;markdown&quot; if <A HREF="motion.html#it">it</A> was unchanged.
+
+
+==============================================================================
+
+<A HREF="lua.html#Lua">Lua</A> module: vim.lsp.log                                              *<A NAME="lsp-log"></A><B>lsp-log</B>*
+
+
+get_filename()                                    *<A NAME="vim.lsp.log.get_filename()"></A><B>vim.lsp.log.get_filename()</B>*
+    Returns the log filename.
+
+<B><FONT COLOR="PURPLE">    Return: </FONT></B>
+        (string) log filename
+
+
+get_level()                                          *<A NAME="vim.lsp.log.get_level()"></A><B>vim.lsp.log.get_level()</B>*
+    Gets the current log level.
+
+<B><FONT COLOR="PURPLE">    Return: </FONT></B>
+        (string) current log level
+
+
+set_format_func({handle})                      *<A NAME="vim.lsp.log.set_format_func()"></A><B>vim.lsp.log.set_format_func()</B>*
+    Sets <A HREF="change.html#formatting">formatting</A> function used to format logs
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {handle}  (function) function to apply to logging arguments, pass
+                  vim.inspect for multi-line <A HREF="change.html#formatting">formatting</A>
+
+
+set_level({level})                                   *<A NAME="vim.lsp.log.set_level()"></A><B>vim.lsp.log.set_level()</B>*
+    Sets the current log level.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {level}  (string or number) One of `vim.lsp.log.levels`
+
+
+should_log({level})                                 *<A NAME="vim.lsp.log.should_log()"></A><B>vim.lsp.log.should_log()</B>*
+    Checks whether the level is sufficient for logging.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {level}  (number) log level
+
+<B><FONT COLOR="PURPLE">    Return: </FONT></B>
+        (bool) true if would log, false if not
+
+
+==============================================================================
+
+<A HREF="lua.html#Lua">Lua</A> module: vim.lsp.rpc                                              *<A NAME="lsp-rpc"></A><B>lsp-rpc</B>*
+
+
+connect({host}, {port})                                *<A NAME="vim.lsp.rpc.connect()"></A><B>vim.lsp.rpc.connect()</B>*
+    Create a <A HREF="#LSP">LSP</A> <A HREF="api.html#RPC">RPC</A> client factory that connects via TCP to the given host
+    and port
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {host}  (string)
+        {port}  (number)
+
+<B><FONT COLOR="PURPLE">    Return: </FONT></B>
+        (function)
+
+
+format_rpc_error({err})                       *<A NAME="vim.lsp.rpc.format_rpc_error()"></A><B>vim.lsp.rpc.format_rpc_error()</B>*
+    Constructs an error message from an <A HREF="#LSP">LSP</A> error object.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {err}  (table) The error object
+
+<B><FONT COLOR="PURPLE">    Return: </FONT></B>
+        (string) The formatted error message
+
+
+notify({method}, {params})                              *<A NAME="vim.lsp.rpc.notify()"></A><B>vim.lsp.rpc.notify()</B>*
+    Sends a notification to the <A HREF="#LSP">LSP</A> server.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {method}  (string) The invoked <A HREF="#LSP">LSP</A> <A HREF="eval.html#method">method</A>
+        {params}  (table|nil): Parameters for the invoked <A HREF="#LSP">LSP</A> <A HREF="eval.html#method">method</A>
+
+<B><FONT COLOR="PURPLE">    Return: </FONT></B>
+        (bool) `true` if notification could be sent, `false` if not
+
+
+                                                       *<A NAME="vim.lsp.rpc.request()"></A><B>vim.lsp.rpc.request()</B>*
+request({method}, {params}, {callback}, {notify_reply_callback})
+    Sends a request to the <A HREF="#LSP">LSP</A> server and runs {callback} upon response.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {method}                 (string) The invoked <A HREF="#LSP">LSP</A> <A HREF="eval.html#method">method</A>
+        {params}                 (table|nil) Parameters for the invoked <A HREF="#LSP">LSP</A>
+                                 <A HREF="eval.html#method">method</A>
+        {callback}               (function) Callback to invoke
+        {notify_reply_callback}  (function|nil) Callback to invoke <A HREF="motion.html#as">as</A> soon <A HREF="motion.html#as">as</A>
+                                 a request is no longer pending
+
+<B><FONT COLOR="PURPLE">    Return: </FONT></B>
+        (bool, number) `(true, message_id)` if request could be sent, `false`
+        if not
+
+
+                                            *<A NAME="vim.lsp.rpc.rpc_response_error()"></A><B>vim.lsp.rpc.rpc_response_error()</B>*
+rpc_response_error({code}, {message}, {data})
+    Creates an <A HREF="api.html#RPC">RPC</A> response object/table.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {code}     (number) <A HREF="api.html#RPC">RPC</A> error code defined in
+                   `vim.lsp.protocol.ErrorCodes`
+        {message}  (string|nil) arbitrary message to send to server
+        {data}     any|nil arbitrary data to send to server
+
+
+                                                         *<A NAME="vim.lsp.rpc.start()"></A><B>vim.lsp.rpc.start()</B>*
+start({cmd}, {cmd_args}, {dispatchers}, {extra_spawn_params})
+    Starts an <A HREF="#LSP">LSP</A> server process and create an <A HREF="#LSP">LSP</A> <A HREF="api.html#RPC">RPC</A> client object to
+    interact with <A HREF="motion.html#it">it</A>. Communication with the spawned process happens via
+    stdio. For communication via TCP, spawn a process manually and use
+    |<A HREF="vim.html">vim.lsp.rpc.connect()</A>|
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {cmd}                 (string) Command to start the <A HREF="#LSP">LSP</A> server.
+        {cmd_args}            (table) <A HREF="eval.html#List">List</A> of additional <A HREF="eval.html#string">string</A> arguments to
+                              pass to {cmd}.
+        {dispatchers}         (table|nil) Dispatchers for <A HREF="#LSP">LSP</A> message types.
+                              Valid dispatcher names are:
+                              • `&quot;notification&quot;`
+                              • `&quot;server_request&quot;`
+                              • `&quot;on_error&quot;`
+                              • `&quot;on_exit&quot;`
+        {extra_spawn_params}  (table|nil) Additional <A HREF="repeat.html#context">context</A> for the <A HREF="#LSP">LSP</A>
+                              server process. May contain:
+                              • {cwd} (string) Working directory for the <A HREF="#LSP">LSP</A>
+                                server process
+                              • {env} (table) Additional environment <A HREF="eval.html#variables">variables</A>
+                                for <A HREF="#LSP">LSP</A> server process
+
+<B><FONT COLOR="PURPLE">    Return: </FONT></B>
+        Client <A HREF="api.html#RPC">RPC</A> object.
+        Methods:
+        • `notify()` |<A HREF="vim.html">vim.lsp.rpc.notify()</A>|
+        • `request()` |<A HREF="vim.html">vim.lsp.rpc.request()</A>|
+        • `is_closing()` returns a <A HREF="options.html#boolean">boolean</A> indicating if the <A HREF="api.html#RPC">RPC</A> is closing.
+        • `terminate()` terminates the <A HREF="api.html#RPC">RPC</A> client.
+
+
+==============================================================================
+
+<A HREF="lua.html#Lua">Lua</A> module: vim.lsp.sync                                            *<A NAME="lsp-sync"></A><B>lsp-sync</B>*
+
+
+                                                 *<A NAME="vim.lsp.sync.compute_diff()"></A><B>vim.lsp.sync.compute_diff()</B>*
+compute_diff({___MissingCloseParenHere___})
+    Returns the range table for the difference between prev and curr lines
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {prev_lines}       (table) <A HREF="eval.html#list">list</A> of lines
+        {curr_lines}       (table) <A HREF="eval.html#list">list</A> of lines
+        {firstline}        (number) line to begin search for first difference
+        {lastline}         (number) line to begin search in old_lines for last
+                           difference
+        {new_lastline}     (number) line to begin search in new_lines for last
+                           difference
+        {offset_encoding}  (string) encoding requested by language server
+
+<B><FONT COLOR="PURPLE">    Return: </FONT></B>
+        (table) TextDocumentContentChangeEvent see https://microsoft.github.io/language-server-protocol/specifications/specification-3-17/#textDocumentContentChangeEvent
+
+
+==============================================================================
+
+<A HREF="lua.html#Lua">Lua</A> module: <A HREF="#vim.lsp.protocol">vim.lsp.protocol</A>                                    *<A NAME="lsp-protocol"></A><B>lsp-protocol</B>*
+
+
+                                 *<A NAME="vim.lsp.protocol.make_client_capabilities()"></A><B>vim.lsp.protocol.make_client_capabilities()</B>*
+make_client_capabilities()
+    Gets a new ClientCapabilities object describing the <A HREF="#LSP">LSP</A> client
+    capabilities.
+
+
+                                     *<A NAME="vim.lsp.protocol.resolve_capabilities()"></A><B>vim.lsp.protocol.resolve_capabilities()</B>*
+resolve_capabilities({server_capabilities})
+    Creates a normalized object describing <A HREF="#LSP">LSP</A> server capabilities.
+
+<B><FONT COLOR="PURPLE">    Parameters: </FONT></B>
+        {server_capabilities}  (table) Table of capabilities supported by the
+                               server
+
+<B><FONT COLOR="PURPLE">    Return: </FONT></B>
+        (table) Normalized table of capabilities
+
+<A HREF="#top">top</A> - <A HREF="index.html">main help file</A>
+</PRE>
+</BODY>
+
+
+</HTML>

@@ -1,0 +1,108 @@
+
+
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>pytest-2.5.1: fixes and new home page styling &#8212; pytest documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments_pytest.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="pytest-2.5.0: now down to ZERO reported bugs!" href="release-2.5.0.html" />
+    <link rel="prev" title="pytest-2.5.2: fixes" href="release-2.5.2.html" />
+  <script>DOCUMENTATION_OPTIONS.URL_ROOT = '../';</script>
+   
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="release-2.5.0.html" title="pytest-2.5.0: now down to ZERO reported bugs!"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="release-2.5.2.html" title="pytest-2.5.2: fixes"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../contents.html">pytest-6.2</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Release announcements</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">pytest-2.5.1: fixes and new home page styling</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="pytest-2-5-1-fixes-and-new-home-page-styling">
+<h1>pytest-2.5.1: fixes and new home page styling<a class="headerlink" href="#pytest-2-5-1-fixes-and-new-home-page-styling" title="Permalink to this headline">¶</a></h1>
+<p>pytest is a mature Python testing tool with more than 1000 tests
+against itself, passing on many different interpreters and platforms.</p>
+<p>The 2.5.1 release maintains the “zero-reported-bugs” promise by fixing
+the three bugs reported since the last release a few days ago.  It also
+features a new home page styling implemented by Tobias Bieniek, based on
+the flask theme from Armin Ronacher:</p>
+<blockquote>
+<div><p><a class="reference external" href="http://pytest.org">http://pytest.org</a></p>
+</div></blockquote>
+<p>If you have anything more to improve styling and docs,
+we’d be very happy to merge further pull requests.</p>
+<p>On the coding side, the release also contains a little enhancement to
+fixture decorators allowing to directly influence generation of test
+ids, thanks to Floris Bruynooghe.  Other thanks for helping with
+this release go to Anatoly Bubenkoff and Ronny Pfannschmidt.</p>
+<p>As usual, you can upgrade from pypi via:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">U</span> <span class="n">pytest</span>
+</pre></div>
+</div>
+<p>have fun and a nice remaining “bug-free” time of the year :)
+holger krekel</p>
+<div class="section" id="id1">
+<h2>2.5.1<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>merge new documentation styling PR from Tobias Bieniek.</p></li>
+<li><p>fix issue403: allow parametrize of multiple same-name functions within
+a collection node.  Thanks Andreas Kloeckner and Alex Gaynor for reporting
+and analysis.</p></li>
+<li><p>Allow parameterized fixtures to specify the ID of the parameters by
+adding an ids argument to pytest.fixture() and pytest.yield_fixture().
+Thanks Floris Bruynooghe.</p></li>
+<li><p>fix issue404 by always using the binary xml escape in the junitxml
+plugin.  Thanks Ronny Pfannschmidt.</p></li>
+<li><p>fix issue407: fix addoption docstring to point to argparse instead of
+optparse. Thanks Daniel D. Wright.</p></li>
+</ul>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+      </div>
+  <span id="sidebar-top"></span>
+      <div class="clearer"></div>
+    </div>
+  
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2015–2020, holger krekel and pytest-dev team.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
+    </div>
+  <script src="../_static/version_warning_offset.js"></script>
+
+  </body>
+</html>

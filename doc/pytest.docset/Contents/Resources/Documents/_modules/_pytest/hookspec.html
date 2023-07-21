@@ -3,35 +3,33 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>_pytest.hookspec &#8212; pytest documentation</title>
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/pygments_pytest.css" />
-    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <link rel="shortcut icon" href="../../_static/favicon.png"/>
-    <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-  <script>DOCUMENTATION_OPTIONS.URL_ROOT = '../../';</script>
+  <script>DOCUMENTATION_OPTIONS.URL_ROOT = '';</script>
    
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
-          <a href="../../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../contents.html">pytest-6.2</a> &#187;</li>
+             >modules</a></li>
+        <li class="nav-item nav-item-0"><a href="../../contents.html">pytest-7.3</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">_pytest.hookspec</a></li> 
       </ul>
@@ -44,6 +42,7 @@
   <h1>Source code for _pytest.hookspec</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Hook specifications for pytest plugins which are invoked by pytest itself</span>
 <span class="sd">and by builtin plugins.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
@@ -54,10 +53,9 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
 
-<span class="kn">import</span> <span class="nn">py.path</span>
 <span class="kn">from</span> <span class="nn">pluggy</span> <span class="kn">import</span> <span class="n">HookspecMarker</span>
 
-<span class="kn">from</span> <span class="nn">_pytest.deprecated</span> <span class="kn">import</span> <span class="n">WARNING_CAPTURED_HOOK</span>
+<span class="kn">from</span> <span class="nn">_pytest.deprecated</span> <span class="kn">import</span> <span class="n">WARNING_CMDLINE_PREPARSE_HOOK</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">pdb</span>
@@ -77,14 +75,15 @@
     <span class="kn">from</span> <span class="nn">_pytest.nodes</span> <span class="kn">import</span> <span class="n">Collector</span>
     <span class="kn">from</span> <span class="nn">_pytest.nodes</span> <span class="kn">import</span> <span class="n">Item</span>
     <span class="kn">from</span> <span class="nn">_pytest.outcomes</span> <span class="kn">import</span> <span class="n">Exit</span>
+    <span class="kn">from</span> <span class="nn">_pytest.python</span> <span class="kn">import</span> <span class="n">Class</span>
     <span class="kn">from</span> <span class="nn">_pytest.python</span> <span class="kn">import</span> <span class="n">Function</span>
     <span class="kn">from</span> <span class="nn">_pytest.python</span> <span class="kn">import</span> <span class="n">Metafunc</span>
     <span class="kn">from</span> <span class="nn">_pytest.python</span> <span class="kn">import</span> <span class="n">Module</span>
-    <span class="kn">from</span> <span class="nn">_pytest.python</span> <span class="kn">import</span> <span class="n">PyCollector</span>
     <span class="kn">from</span> <span class="nn">_pytest.reports</span> <span class="kn">import</span> <span class="n">CollectReport</span>
     <span class="kn">from</span> <span class="nn">_pytest.reports</span> <span class="kn">import</span> <span class="n">TestReport</span>
     <span class="kn">from</span> <span class="nn">_pytest.runner</span> <span class="kn">import</span> <span class="n">CallInfo</span>
     <span class="kn">from</span> <span class="nn">_pytest.terminal</span> <span class="kn">import</span> <span class="n">TerminalReporter</span>
+    <span class="kn">from</span> <span class="nn">_pytest.compat</span> <span class="kn">import</span> <span class="n">LEGACY_PATH</span>
 
 
 <span class="n">hookspec</span> <span class="o">=</span> <span class="n">HookspecMarker</span><span class="p">(</span><span class="s2">&quot;pytest&quot;</span><span class="p">)</span>
@@ -94,35 +93,35 @@
 <span class="c1"># -------------------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="pytest_addhooks"><a class="viewcode-back" href="../../writing_plugins.html#_pytest.hookspec.pytest_addhooks">[docs]</a><span class="nd">@hookspec</span><span class="p">(</span><span class="n">historic</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="pytest_addhooks"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_addhooks">[docs]</a><span class="nd">@hookspec</span><span class="p">(</span><span class="n">historic</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">pytest_addhooks</span><span class="p">(</span><span class="n">pluginmanager</span><span class="p">:</span> <span class="s2">&quot;PytestPluginManager&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Called at plugin registration time to allow adding new hooks via a call to</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Called at plugin registration time to allow adding new hooks via a call to</span>
 <span class="sd">    ``pluginmanager.add_hookspecs(module_or_class, prefix)``.</span>
 
-<span class="sd">    :param _pytest.config.PytestPluginManager pluginmanager: pytest plugin manager.</span>
+<span class="sd">    :param pytest.PytestPluginManager pluginmanager: The pytest plugin manager.</span>
 
 <span class="sd">    .. note::</span>
 <span class="sd">        This hook is incompatible with ``hookwrapper=True``.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="pytest_plugin_registered"><a class="viewcode-back" href="../../reference.html#_pytest.hookspec.pytest_plugin_registered">[docs]</a><span class="nd">@hookspec</span><span class="p">(</span><span class="n">historic</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="pytest_plugin_registered"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_plugin_registered">[docs]</a><span class="nd">@hookspec</span><span class="p">(</span><span class="n">historic</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">pytest_plugin_registered</span><span class="p">(</span>
     <span class="n">plugin</span><span class="p">:</span> <span class="s2">&quot;_PluggyPlugin&quot;</span><span class="p">,</span> <span class="n">manager</span><span class="p">:</span> <span class="s2">&quot;PytestPluginManager&quot;</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;A new pytest plugin got registered.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A new pytest plugin got registered.</span>
 
 <span class="sd">    :param plugin: The plugin module or instance.</span>
-<span class="sd">    :param _pytest.config.PytestPluginManager manager: pytest plugin manager.</span>
+<span class="sd">    :param pytest.PytestPluginManager manager: pytest plugin manager.</span>
 
 <span class="sd">    .. note::</span>
 <span class="sd">        This hook is incompatible with ``hookwrapper=True``.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="pytest_addoption"><a class="viewcode-back" href="../../reference.html#_pytest.hookspec.pytest_addoption">[docs]</a><span class="nd">@hookspec</span><span class="p">(</span><span class="n">historic</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="pytest_addoption"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_addoption">[docs]</a><span class="nd">@hookspec</span><span class="p">(</span><span class="n">historic</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">pytest_addoption</span><span class="p">(</span><span class="n">parser</span><span class="p">:</span> <span class="s2">&quot;Parser&quot;</span><span class="p">,</span> <span class="n">pluginmanager</span><span class="p">:</span> <span class="s2">&quot;PytestPluginManager&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Register argparse-style options and ini-style config values,</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Register argparse-style options and ini-style config values,</span>
 <span class="sd">    called once at the beginning of a test run.</span>
 
 <span class="sd">    .. note::</span>
@@ -131,24 +130,24 @@
 <span class="sd">        files situated at the tests root directory due to how pytest</span>
 <span class="sd">        :ref:`discovers plugins during startup &lt;pluginorder&gt;`.</span>
 
-<span class="sd">    :param _pytest.config.argparsing.Parser parser:</span>
+<span class="sd">    :param pytest.Parser parser:</span>
 <span class="sd">        To add command line options, call</span>
-<span class="sd">        :py:func:`parser.addoption(...) &lt;_pytest.config.argparsing.Parser.addoption&gt;`.</span>
+<span class="sd">        :py:func:`parser.addoption(...) &lt;pytest.Parser.addoption&gt;`.</span>
 <span class="sd">        To add ini-file values call :py:func:`parser.addini(...)</span>
-<span class="sd">        &lt;_pytest.config.argparsing.Parser.addini&gt;`.</span>
+<span class="sd">        &lt;pytest.Parser.addini&gt;`.</span>
 
-<span class="sd">    :param _pytest.config.PytestPluginManager pluginmanager:</span>
-<span class="sd">        pytest plugin manager, which can be used to install :py:func:`hookspec`&#39;s</span>
+<span class="sd">    :param pytest.PytestPluginManager pluginmanager:</span>
+<span class="sd">        The pytest plugin manager, which can be used to install :py:func:`hookspec`&#39;s</span>
 <span class="sd">        or :py:func:`hookimpl`&#39;s and allow one plugin to call another plugin&#39;s hooks</span>
 <span class="sd">        to change how command line options are added.</span>
 
 <span class="sd">    Options can later be accessed through the</span>
-<span class="sd">    :py:class:`config &lt;_pytest.config.Config&gt;` object, respectively:</span>
+<span class="sd">    :py:class:`config &lt;pytest.Config&gt;` object, respectively:</span>
 
-<span class="sd">    - :py:func:`config.getoption(name) &lt;_pytest.config.Config.getoption&gt;` to</span>
+<span class="sd">    - :py:func:`config.getoption(name) &lt;pytest.Config.getoption&gt;` to</span>
 <span class="sd">      retrieve the value of a command line option.</span>
 
-<span class="sd">    - :py:func:`config.getini(name) &lt;_pytest.config.Config.getini&gt;` to retrieve</span>
+<span class="sd">    - :py:func:`config.getini(name) &lt;pytest.Config.getini&gt;` to retrieve</span>
 <span class="sd">      a value read from an ini-style file.</span>
 
 <span class="sd">    The config object is passed around on many internal objects via the ``.config``</span>
@@ -159,9 +158,9 @@
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="pytest_configure"><a class="viewcode-back" href="../../reference.html#_pytest.hookspec.pytest_configure">[docs]</a><span class="nd">@hookspec</span><span class="p">(</span><span class="n">historic</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="pytest_configure"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_configure">[docs]</a><span class="nd">@hookspec</span><span class="p">(</span><span class="n">historic</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">pytest_configure</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="s2">&quot;Config&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Allow plugins and conftest files to perform initial configuration.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Allow plugins and conftest files to perform initial configuration.</span>
 
 <span class="sd">    This hook is called for every plugin and initial conftest file</span>
 <span class="sd">    after command line options have been parsed.</span>
@@ -172,7 +171,7 @@
 <span class="sd">    .. note::</span>
 <span class="sd">        This hook is incompatible with ``hookwrapper=True``.</span>
 
-<span class="sd">    :param _pytest.config.Config config: The pytest config object.</span>
+<span class="sd">    :param pytest.Config config: The pytest config object.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
@@ -182,11 +181,11 @@
 <span class="c1"># -------------------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="pytest_cmdline_parse"><a class="viewcode-back" href="../../reference.html#_pytest.hookspec.pytest_cmdline_parse">[docs]</a><span class="nd">@hookspec</span><span class="p">(</span><span class="n">firstresult</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="pytest_cmdline_parse"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_cmdline_parse">[docs]</a><span class="nd">@hookspec</span><span class="p">(</span><span class="n">firstresult</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">pytest_cmdline_parse</span><span class="p">(</span>
     <span class="n">pluginmanager</span><span class="p">:</span> <span class="s2">&quot;PytestPluginManager&quot;</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Config&quot;</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Return an initialized config object, parsing the specified args.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return an initialized :class:`~pytest.Config`, parsing the specified args.</span>
 
 <span class="sd">    Stops at first non-None result, see :ref:`firstresult`.</span>
 
@@ -195,51 +194,51 @@
 <span class="sd">        ``plugins`` arg when using `pytest.main`_ to perform an in-process</span>
 <span class="sd">        test run.</span>
 
-<span class="sd">    :param _pytest.config.PytestPluginManager pluginmanager: Pytest plugin manager.</span>
-<span class="sd">    :param List[str] args: List of arguments passed on the command line.</span>
+<span class="sd">    :param pluginmanager: The pytest plugin manager.</span>
+<span class="sd">    :param args: List of arguments passed on the command line.</span>
+<span class="sd">    :returns: A pytest config object.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="pytest_cmdline_preparse"><a class="viewcode-back" href="../../reference.html#_pytest.hookspec.pytest_cmdline_preparse">[docs]</a><span class="k">def</span> <span class="nf">pytest_cmdline_preparse</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="s2">&quot;Config&quot;</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;(**Deprecated**) modify command line arguments before option parsing.</span>
+<div class="viewcode-block" id="pytest_cmdline_preparse"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_cmdline_preparse">[docs]</a><span class="nd">@hookspec</span><span class="p">(</span><span class="n">warn_on_impl</span><span class="o">=</span><span class="n">WARNING_CMDLINE_PREPARSE_HOOK</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">pytest_cmdline_preparse</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="s2">&quot;Config&quot;</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;(**Deprecated**) modify command line arguments before option parsing.</span>
 
 <span class="sd">    This hook is considered deprecated and will be removed in a future pytest version. Consider</span>
-<span class="sd">    using :func:`pytest_load_initial_conftests` instead.</span>
+<span class="sd">    using :hook:`pytest_load_initial_conftests` instead.</span>
 
 <span class="sd">    .. note::</span>
 <span class="sd">        This hook will not be called for ``conftest.py`` files, only for setuptools plugins.</span>
 
-<span class="sd">    :param _pytest.config.Config config: The pytest config object.</span>
-<span class="sd">    :param List[str] args: Arguments passed on the command line.</span>
+<span class="sd">    :param config: The pytest config object.</span>
+<span class="sd">    :param args: Arguments passed on the command line.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="pytest_cmdline_main"><a class="viewcode-back" href="../../reference.html#_pytest.hookspec.pytest_cmdline_main">[docs]</a><span class="nd">@hookspec</span><span class="p">(</span><span class="n">firstresult</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="pytest_cmdline_main"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_cmdline_main">[docs]</a><span class="nd">@hookspec</span><span class="p">(</span><span class="n">firstresult</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">pytest_cmdline_main</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="s2">&quot;Config&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s2">&quot;ExitCode&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
-    <span class="sd">&quot;&quot;&quot;Called for performing the main command line action. The default</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Called for performing the main command line action. The default</span>
 <span class="sd">    implementation will invoke the configure hooks and runtest_mainloop.</span>
-
-<span class="sd">    .. note::</span>
-<span class="sd">        This hook will not be called for ``conftest.py`` files, only for setuptools plugins.</span>
 
 <span class="sd">    Stops at first non-None result, see :ref:`firstresult`.</span>
 
-<span class="sd">    :param _pytest.config.Config config: The pytest config object.</span>
+<span class="sd">    :param config: The pytest config object.</span>
+<span class="sd">    :returns: The exit code.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="pytest_load_initial_conftests"><a class="viewcode-back" href="../../reference.html#_pytest.hookspec.pytest_load_initial_conftests">[docs]</a><span class="k">def</span> <span class="nf">pytest_load_initial_conftests</span><span class="p">(</span>
+<div class="viewcode-block" id="pytest_load_initial_conftests"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_load_initial_conftests">[docs]</a><span class="k">def</span> <span class="nf">pytest_load_initial_conftests</span><span class="p">(</span>
     <span class="n">early_config</span><span class="p">:</span> <span class="s2">&quot;Config&quot;</span><span class="p">,</span> <span class="n">parser</span><span class="p">:</span> <span class="s2">&quot;Parser&quot;</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Called to implement the loading of initial conftest files ahead</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Called to implement the loading of initial conftest files ahead</span>
 <span class="sd">    of command line option parsing.</span>
 
 <span class="sd">    .. note::</span>
 <span class="sd">        This hook will not be called for ``conftest.py`` files, only for setuptools plugins.</span>
 
-<span class="sd">    :param _pytest.config.Config early_config: The pytest config object.</span>
-<span class="sd">    :param List[str] args: Arguments passed on the command line.</span>
-<span class="sd">    :param _pytest.config.argparsing.Parser parser: To add command line options.</span>
+<span class="sd">    :param early_config: The pytest config object.</span>
+<span class="sd">    :param args: Arguments passed on the command line.</span>
+<span class="sd">    :param parser: To add command line options.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
@@ -248,9 +247,9 @@
 <span class="c1"># -------------------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="pytest_collection"><a class="viewcode-back" href="../../reference.html#_pytest.hookspec.pytest_collection">[docs]</a><span class="nd">@hookspec</span><span class="p">(</span><span class="n">firstresult</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="pytest_collection"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_collection">[docs]</a><span class="nd">@hookspec</span><span class="p">(</span><span class="n">firstresult</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">pytest_collection</span><span class="p">(</span><span class="n">session</span><span class="p">:</span> <span class="s2">&quot;Session&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">object</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Perform the collection phase for the given session.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Perform the collection phase for the given session.</span>
 
 <span class="sd">    Stops at first non-None result, see :ref:`firstresult`.</span>
 <span class="sd">    The return value is not used, but only stops further processing.</span>
@@ -281,81 +280,114 @@
 <span class="sd">    for example the terminal plugin uses it to start displaying the collection</span>
 <span class="sd">    counter (and returns `None`).</span>
 
-<span class="sd">    :param pytest.Session session: The pytest session object.</span>
+<span class="sd">    :param session: The pytest session object.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="pytest_collection_modifyitems"><a class="viewcode-back" href="../../reference.html#_pytest.hookspec.pytest_collection_modifyitems">[docs]</a><span class="k">def</span> <span class="nf">pytest_collection_modifyitems</span><span class="p">(</span>
+<div class="viewcode-block" id="pytest_collection_modifyitems"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_collection_modifyitems">[docs]</a><span class="k">def</span> <span class="nf">pytest_collection_modifyitems</span><span class="p">(</span>
     <span class="n">session</span><span class="p">:</span> <span class="s2">&quot;Session&quot;</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="s2">&quot;Config&quot;</span><span class="p">,</span> <span class="n">items</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s2">&quot;Item&quot;</span><span class="p">]</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Called after collection has been performed. May filter or re-order</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Called after collection has been performed. May filter or re-order</span>
 <span class="sd">    the items in-place.</span>
 
-<span class="sd">    :param pytest.Session session: The pytest session object.</span>
-<span class="sd">    :param _pytest.config.Config config: The pytest config object.</span>
-<span class="sd">    :param List[pytest.Item] items: List of item objects.</span>
+<span class="sd">    :param session: The pytest session object.</span>
+<span class="sd">    :param config: The pytest config object.</span>
+<span class="sd">    :param items: List of item objects.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="pytest_collection_finish"><a class="viewcode-back" href="../../reference.html#_pytest.hookspec.pytest_collection_finish">[docs]</a><span class="k">def</span> <span class="nf">pytest_collection_finish</span><span class="p">(</span><span class="n">session</span><span class="p">:</span> <span class="s2">&quot;Session&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Called after collection has been performed and modified.</span>
+<div class="viewcode-block" id="pytest_collection_finish"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_collection_finish">[docs]</a><span class="k">def</span> <span class="nf">pytest_collection_finish</span><span class="p">(</span><span class="n">session</span><span class="p">:</span> <span class="s2">&quot;Session&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Called after collection has been performed and modified.</span>
 
-<span class="sd">    :param pytest.Session session: The pytest session object.</span>
+<span class="sd">    :param session: The pytest session object.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="pytest_ignore_collect"><a class="viewcode-back" href="../../reference.html#_pytest.hookspec.pytest_ignore_collect">[docs]</a><span class="nd">@hookspec</span><span class="p">(</span><span class="n">firstresult</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">pytest_ignore_collect</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">py</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">local</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="s2">&quot;Config&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Return True to prevent considering this path for collection.</span>
+<div class="viewcode-block" id="pytest_ignore_collect"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_ignore_collect">[docs]</a><span class="nd">@hookspec</span><span class="p">(</span><span class="n">firstresult</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">pytest_ignore_collect</span><span class="p">(</span>
+    <span class="n">collection_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="s2">&quot;LEGACY_PATH&quot;</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="s2">&quot;Config&quot;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return True to prevent considering this path for collection.</span>
 
 <span class="sd">    This hook is consulted for all files and directories prior to calling</span>
 <span class="sd">    more specific hooks.</span>
 
 <span class="sd">    Stops at first non-None result, see :ref:`firstresult`.</span>
 
-<span class="sd">    :param py.path.local path: The path to analyze.</span>
-<span class="sd">    :param _pytest.config.Config config: The pytest config object.</span>
+<span class="sd">    :param collection_path: The path to analyze.</span>
+<span class="sd">    :param path: The path to analyze (deprecated).</span>
+<span class="sd">    :param config: The pytest config object.</span>
+
+<span class="sd">    .. versionchanged:: 7.0.0</span>
+<span class="sd">        The ``collection_path`` parameter was added as a :class:`pathlib.Path`</span>
+<span class="sd">        equivalent of the ``path`` parameter. The ``path`` parameter</span>
+<span class="sd">        has been deprecated.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="pytest_collect_file"><a class="viewcode-back" href="../../reference.html#_pytest.hookspec.pytest_collect_file">[docs]</a><span class="k">def</span> <span class="nf">pytest_collect_file</span><span class="p">(</span>
-    <span class="n">path</span><span class="p">:</span> <span class="n">py</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">local</span><span class="p">,</span> <span class="n">parent</span><span class="p">:</span> <span class="s2">&quot;Collector&quot;</span>
+<div class="viewcode-block" id="pytest_collect_file"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_collect_file">[docs]</a><span class="k">def</span> <span class="nf">pytest_collect_file</span><span class="p">(</span>
+    <span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="s2">&quot;LEGACY_PATH&quot;</span><span class="p">,</span> <span class="n">parent</span><span class="p">:</span> <span class="s2">&quot;Collector&quot;</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Optional[Collector]&quot;</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Create a Collector for the given path, or None if not relevant.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a :class:`~pytest.Collector` for the given path, or None if not relevant.</span>
 
 <span class="sd">    The new node needs to have the specified ``parent`` as a parent.</span>
 
-<span class="sd">    :param py.path.local path: The path to collect.</span>
+<span class="sd">    :param file_path: The path to analyze.</span>
+<span class="sd">    :param path: The path to collect (deprecated).</span>
+
+<span class="sd">    .. versionchanged:: 7.0.0</span>
+<span class="sd">        The ``file_path`` parameter was added as a :class:`pathlib.Path`</span>
+<span class="sd">        equivalent of the ``path`` parameter. The ``path`` parameter</span>
+<span class="sd">        has been deprecated.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 <span class="c1"># logging hooks for collection</span>
 
 
-<div class="viewcode-block" id="pytest_collectstart"><a class="viewcode-back" href="../../reference.html#_pytest.hookspec.pytest_collectstart">[docs]</a><span class="k">def</span> <span class="nf">pytest_collectstart</span><span class="p">(</span><span class="n">collector</span><span class="p">:</span> <span class="s2">&quot;Collector&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Collector starts collecting.&quot;&quot;&quot;</span></div>
+<div class="viewcode-block" id="pytest_collectstart"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_collectstart">[docs]</a><span class="k">def</span> <span class="nf">pytest_collectstart</span><span class="p">(</span><span class="n">collector</span><span class="p">:</span> <span class="s2">&quot;Collector&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Collector starts collecting.</span>
 
-
-<div class="viewcode-block" id="pytest_itemcollected"><a class="viewcode-back" href="../../reference.html#_pytest.hookspec.pytest_itemcollected">[docs]</a><span class="k">def</span> <span class="nf">pytest_itemcollected</span><span class="p">(</span><span class="n">item</span><span class="p">:</span> <span class="s2">&quot;Item&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;We just collected a test item.&quot;&quot;&quot;</span></div>
-
-
-<div class="viewcode-block" id="pytest_collectreport"><a class="viewcode-back" href="../../reference.html#_pytest.hookspec.pytest_collectreport">[docs]</a><span class="k">def</span> <span class="nf">pytest_collectreport</span><span class="p">(</span><span class="n">report</span><span class="p">:</span> <span class="s2">&quot;CollectReport&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Collector finished collecting.&quot;&quot;&quot;</span></div>
-
-
-<div class="viewcode-block" id="pytest_deselected"><a class="viewcode-back" href="../../reference.html#_pytest.hookspec.pytest_deselected">[docs]</a><span class="k">def</span> <span class="nf">pytest_deselected</span><span class="p">(</span><span class="n">items</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="s2">&quot;Item&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Called for deselected test items, e.g. by keyword.</span>
-
-<span class="sd">    May be called multiple times.</span>
+<span class="sd">    :param collector:</span>
+<span class="sd">        The collector.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="pytest_make_collect_report"><a class="viewcode-back" href="../../reference.html#_pytest.hookspec.pytest_make_collect_report">[docs]</a><span class="nd">@hookspec</span><span class="p">(</span><span class="n">firstresult</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="pytest_itemcollected"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_itemcollected">[docs]</a><span class="k">def</span> <span class="nf">pytest_itemcollected</span><span class="p">(</span><span class="n">item</span><span class="p">:</span> <span class="s2">&quot;Item&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;We just collected a test item.</span>
+
+<span class="sd">    :param item:</span>
+<span class="sd">        The item.</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="pytest_collectreport"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_collectreport">[docs]</a><span class="k">def</span> <span class="nf">pytest_collectreport</span><span class="p">(</span><span class="n">report</span><span class="p">:</span> <span class="s2">&quot;CollectReport&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Collector finished collecting.</span>
+
+<span class="sd">    :param report:</span>
+<span class="sd">        The collect report.</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="pytest_deselected"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_deselected">[docs]</a><span class="k">def</span> <span class="nf">pytest_deselected</span><span class="p">(</span><span class="n">items</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="s2">&quot;Item&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Called for deselected test items, e.g. by keyword.</span>
+
+<span class="sd">    May be called multiple times.</span>
+
+<span class="sd">    :param items:</span>
+<span class="sd">        The items.</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="pytest_make_collect_report"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_make_collect_report">[docs]</a><span class="nd">@hookspec</span><span class="p">(</span><span class="n">firstresult</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">pytest_make_collect_report</span><span class="p">(</span><span class="n">collector</span><span class="p">:</span> <span class="s2">&quot;Collector&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Optional[CollectReport]&quot;</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Perform ``collector.collect()`` and return a CollectReport.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Perform :func:`collector.collect() &lt;pytest.Collector.collect&gt;` and return</span>
+<span class="sd">    a :class:`~pytest.CollectReport`.</span>
 
 <span class="sd">    Stops at first non-None result, see :ref:`firstresult`.</span>
+
+<span class="sd">    :param collector:</span>
+<span class="sd">        The collector.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
@@ -364,47 +396,72 @@
 <span class="c1"># -------------------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="pytest_pycollect_makemodule"><a class="viewcode-back" href="../../reference.html#_pytest.hookspec.pytest_pycollect_makemodule">[docs]</a><span class="nd">@hookspec</span><span class="p">(</span><span class="n">firstresult</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">pytest_pycollect_makemodule</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">py</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">local</span><span class="p">,</span> <span class="n">parent</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Module&quot;</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Return a Module collector or None for the given path.</span>
+<div class="viewcode-block" id="pytest_pycollect_makemodule"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_pycollect_makemodule">[docs]</a><span class="nd">@hookspec</span><span class="p">(</span><span class="n">firstresult</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">pytest_pycollect_makemodule</span><span class="p">(</span>
+    <span class="n">module_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="s2">&quot;LEGACY_PATH&quot;</span><span class="p">,</span> <span class="n">parent</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Module&quot;</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a :class:`pytest.Module` collector or None for the given path.</span>
 
 <span class="sd">    This hook will be called for each matching test module path.</span>
-<span class="sd">    The pytest_collect_file hook needs to be used if you want to</span>
+<span class="sd">    The :hook:`pytest_collect_file` hook needs to be used if you want to</span>
 <span class="sd">    create test modules for files that do not match as a test module.</span>
 
 <span class="sd">    Stops at first non-None result, see :ref:`firstresult`.</span>
 
-<span class="sd">    :param py.path.local path: The path of module to collect.</span>
+<span class="sd">    :param module_path: The path of the module to collect.</span>
+<span class="sd">    :param path: The path of the module to collect (deprecated).</span>
+
+<span class="sd">    .. versionchanged:: 7.0.0</span>
+<span class="sd">        The ``module_path`` parameter was added as a :class:`pathlib.Path`</span>
+<span class="sd">        equivalent of the ``path`` parameter.</span>
+
+<span class="sd">        The ``path`` parameter has been deprecated in favor of ``fspath``.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="pytest_pycollect_makeitem"><a class="viewcode-back" href="../../reference.html#_pytest.hookspec.pytest_pycollect_makeitem">[docs]</a><span class="nd">@hookspec</span><span class="p">(</span><span class="n">firstresult</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="pytest_pycollect_makeitem"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_pycollect_makeitem">[docs]</a><span class="nd">@hookspec</span><span class="p">(</span><span class="n">firstresult</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">pytest_pycollect_makeitem</span><span class="p">(</span>
-    <span class="n">collector</span><span class="p">:</span> <span class="s2">&quot;PyCollector&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="nb">object</span>
+    <span class="n">collector</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s2">&quot;Module&quot;</span><span class="p">,</span> <span class="s2">&quot;Class&quot;</span><span class="p">],</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="nb">object</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Item&quot;</span><span class="p">,</span> <span class="s2">&quot;Collector&quot;</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s2">&quot;Item&quot;</span><span class="p">,</span> <span class="s2">&quot;Collector&quot;</span><span class="p">]]]:</span>
-    <span class="sd">&quot;&quot;&quot;Return a custom item/collector for a Python object in a module, or None.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a custom item/collector for a Python object in a module, or None.</span>
 
 <span class="sd">    Stops at first non-None result, see :ref:`firstresult`.</span>
+
+<span class="sd">    :param collector:</span>
+<span class="sd">        The module/class collector.</span>
+<span class="sd">    :param name:</span>
+<span class="sd">        The name of the object in the module/class.</span>
+<span class="sd">    :param obj:</span>
+<span class="sd">        The object.</span>
+<span class="sd">    :returns:</span>
+<span class="sd">        The created items/collectors.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="pytest_pyfunc_call"><a class="viewcode-back" href="../../reference.html#_pytest.hookspec.pytest_pyfunc_call">[docs]</a><span class="nd">@hookspec</span><span class="p">(</span><span class="n">firstresult</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="pytest_pyfunc_call"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_pyfunc_call">[docs]</a><span class="nd">@hookspec</span><span class="p">(</span><span class="n">firstresult</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">pytest_pyfunc_call</span><span class="p">(</span><span class="n">pyfuncitem</span><span class="p">:</span> <span class="s2">&quot;Function&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">object</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Call underlying test function.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Call underlying test function.</span>
 
 <span class="sd">    Stops at first non-None result, see :ref:`firstresult`.</span>
+
+<span class="sd">    :param pyfuncitem:</span>
+<span class="sd">        The function item.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="pytest_generate_tests"><a class="viewcode-back" href="../../reference.html#_pytest.hookspec.pytest_generate_tests">[docs]</a><span class="k">def</span> <span class="nf">pytest_generate_tests</span><span class="p">(</span><span class="n">metafunc</span><span class="p">:</span> <span class="s2">&quot;Metafunc&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Generate (multiple) parametrized calls to a test function.&quot;&quot;&quot;</span></div>
+<div class="viewcode-block" id="pytest_generate_tests"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_generate_tests">[docs]</a><span class="k">def</span> <span class="nf">pytest_generate_tests</span><span class="p">(</span><span class="n">metafunc</span><span class="p">:</span> <span class="s2">&quot;Metafunc&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate (multiple) parametrized calls to a test function.</span>
+
+<span class="sd">    :param metafunc:</span>
+<span class="sd">        The :class:`~pytest.Metafunc` helper for the test function.</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="pytest_make_parametrize_id"><a class="viewcode-back" href="../../reference.html#_pytest.hookspec.pytest_make_parametrize_id">[docs]</a><span class="nd">@hookspec</span><span class="p">(</span><span class="n">firstresult</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="pytest_make_parametrize_id"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_make_parametrize_id">[docs]</a><span class="nd">@hookspec</span><span class="p">(</span><span class="n">firstresult</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">pytest_make_parametrize_id</span><span class="p">(</span>
     <span class="n">config</span><span class="p">:</span> <span class="s2">&quot;Config&quot;</span><span class="p">,</span> <span class="n">val</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="n">argname</span><span class="p">:</span> <span class="nb">str</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Return a user-friendly string representation of the given ``val``</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a user-friendly string representation of the given ``val``</span>
 <span class="sd">    that will be used by @pytest.mark.parametrize calls, or None if the hook</span>
 <span class="sd">    doesn&#39;t know about ``val``.</span>
 
@@ -412,7 +469,7 @@
 
 <span class="sd">    Stops at first non-None result, see :ref:`firstresult`.</span>
 
-<span class="sd">    :param _pytest.config.Config config: The pytest config object.</span>
+<span class="sd">    :param config: The pytest config object.</span>
 <span class="sd">    :param val: The parametrized value.</span>
 <span class="sd">    :param str argname: The automatic parameter name produced by pytest.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
@@ -423,9 +480,9 @@
 <span class="c1"># -------------------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="pytest_runtestloop"><a class="viewcode-back" href="../../reference.html#_pytest.hookspec.pytest_runtestloop">[docs]</a><span class="nd">@hookspec</span><span class="p">(</span><span class="n">firstresult</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="pytest_runtestloop"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_runtestloop">[docs]</a><span class="nd">@hookspec</span><span class="p">(</span><span class="n">firstresult</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">pytest_runtestloop</span><span class="p">(</span><span class="n">session</span><span class="p">:</span> <span class="s2">&quot;Session&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">object</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Perform the main runtest loop (after collection finished).</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Perform the main runtest loop (after collection finished).</span>
 
 <span class="sd">    The default hook implementation performs the runtest protocol for all items</span>
 <span class="sd">    collected in the session (``session.items``), unless the collection failed</span>
@@ -437,18 +494,18 @@
 <span class="sd">    If at any point ``session.shouldfail`` or ``session.shouldstop`` are set, the</span>
 <span class="sd">    loop is terminated after the runtest protocol for the current item is finished.</span>
 
-<span class="sd">    :param pytest.Session session: The pytest session object.</span>
+<span class="sd">    :param session: The pytest session object.</span>
 
 <span class="sd">    Stops at first non-None result, see :ref:`firstresult`.</span>
 <span class="sd">    The return value is not used, but only stops further processing.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="pytest_runtest_protocol"><a class="viewcode-back" href="../../reference.html#_pytest.hookspec.pytest_runtest_protocol">[docs]</a><span class="nd">@hookspec</span><span class="p">(</span><span class="n">firstresult</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="pytest_runtest_protocol"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_runtest_protocol">[docs]</a><span class="nd">@hookspec</span><span class="p">(</span><span class="n">firstresult</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">pytest_runtest_protocol</span><span class="p">(</span>
     <span class="n">item</span><span class="p">:</span> <span class="s2">&quot;Item&quot;</span><span class="p">,</span> <span class="n">nextitem</span><span class="p">:</span> <span class="s2">&quot;Optional[Item]&quot;</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">object</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Perform the runtest protocol for a single test item.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Perform the runtest protocol for a single test item.</span>
 
 <span class="sd">    The default runtest protocol is this (see individual hooks for full details):</span>
 
@@ -482,99 +539,122 @@
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="pytest_runtest_logstart"><a class="viewcode-back" href="../../reference.html#_pytest.hookspec.pytest_runtest_logstart">[docs]</a><span class="k">def</span> <span class="nf">pytest_runtest_logstart</span><span class="p">(</span>
+<div class="viewcode-block" id="pytest_runtest_logstart"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_runtest_logstart">[docs]</a><span class="k">def</span> <span class="nf">pytest_runtest_logstart</span><span class="p">(</span>
     <span class="n">nodeid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">location</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">str</span><span class="p">]</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Called at the start of running the runtest protocol for a single item.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Called at the start of running the runtest protocol for a single item.</span>
 
-<span class="sd">    See :func:`pytest_runtest_protocol` for a description of the runtest protocol.</span>
+<span class="sd">    See :hook:`pytest_runtest_protocol` for a description of the runtest protocol.</span>
 
-<span class="sd">    :param str nodeid: Full node ID of the item.</span>
-<span class="sd">    :param location: A tuple of ``(filename, lineno, testname)``.</span>
+<span class="sd">    :param nodeid: Full node ID of the item.</span>
+<span class="sd">    :param location: A tuple of ``(filename, lineno, testname)``</span>
+<span class="sd">        where ``filename`` is a file path relative to ``config.rootpath``</span>
+<span class="sd">        and ``lineno`` is 0-based.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="pytest_runtest_logfinish"><a class="viewcode-back" href="../../reference.html#_pytest.hookspec.pytest_runtest_logfinish">[docs]</a><span class="k">def</span> <span class="nf">pytest_runtest_logfinish</span><span class="p">(</span>
+<div class="viewcode-block" id="pytest_runtest_logfinish"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_runtest_logfinish">[docs]</a><span class="k">def</span> <span class="nf">pytest_runtest_logfinish</span><span class="p">(</span>
     <span class="n">nodeid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">location</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">str</span><span class="p">]</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Called at the end of running the runtest protocol for a single item.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Called at the end of running the runtest protocol for a single item.</span>
 
-<span class="sd">    See :func:`pytest_runtest_protocol` for a description of the runtest protocol.</span>
+<span class="sd">    See :hook:`pytest_runtest_protocol` for a description of the runtest protocol.</span>
 
-<span class="sd">    :param str nodeid: Full node ID of the item.</span>
-<span class="sd">    :param location: A tuple of ``(filename, lineno, testname)``.</span>
+<span class="sd">    :param nodeid: Full node ID of the item.</span>
+<span class="sd">    :param location: A tuple of ``(filename, lineno, testname)``</span>
+<span class="sd">        where ``filename`` is a file path relative to ``config.rootpath``</span>
+<span class="sd">        and ``lineno`` is 0-based.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="pytest_runtest_setup"><a class="viewcode-back" href="../../reference.html#_pytest.hookspec.pytest_runtest_setup">[docs]</a><span class="k">def</span> <span class="nf">pytest_runtest_setup</span><span class="p">(</span><span class="n">item</span><span class="p">:</span> <span class="s2">&quot;Item&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Called to perform the setup phase for a test item.</span>
+<div class="viewcode-block" id="pytest_runtest_setup"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_runtest_setup">[docs]</a><span class="k">def</span> <span class="nf">pytest_runtest_setup</span><span class="p">(</span><span class="n">item</span><span class="p">:</span> <span class="s2">&quot;Item&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Called to perform the setup phase for a test item.</span>
 
 <span class="sd">    The default implementation runs ``setup()`` on ``item`` and all of its</span>
 <span class="sd">    parents (which haven&#39;t been setup yet). This includes obtaining the</span>
 <span class="sd">    values of fixtures required by the item (which haven&#39;t been obtained</span>
 <span class="sd">    yet).</span>
+
+<span class="sd">    :param item:</span>
+<span class="sd">        The item.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="pytest_runtest_call"><a class="viewcode-back" href="../../reference.html#_pytest.hookspec.pytest_runtest_call">[docs]</a><span class="k">def</span> <span class="nf">pytest_runtest_call</span><span class="p">(</span><span class="n">item</span><span class="p">:</span> <span class="s2">&quot;Item&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Called to run the test for test item (the call phase).</span>
+<div class="viewcode-block" id="pytest_runtest_call"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_runtest_call">[docs]</a><span class="k">def</span> <span class="nf">pytest_runtest_call</span><span class="p">(</span><span class="n">item</span><span class="p">:</span> <span class="s2">&quot;Item&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Called to run the test for test item (the call phase).</span>
 
 <span class="sd">    The default implementation calls ``item.runtest()``.</span>
+
+<span class="sd">    :param item:</span>
+<span class="sd">        The item.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="pytest_runtest_teardown"><a class="viewcode-back" href="../../reference.html#_pytest.hookspec.pytest_runtest_teardown">[docs]</a><span class="k">def</span> <span class="nf">pytest_runtest_teardown</span><span class="p">(</span><span class="n">item</span><span class="p">:</span> <span class="s2">&quot;Item&quot;</span><span class="p">,</span> <span class="n">nextitem</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Item&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Called to perform the teardown phase for a test item.</span>
+<div class="viewcode-block" id="pytest_runtest_teardown"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_runtest_teardown">[docs]</a><span class="k">def</span> <span class="nf">pytest_runtest_teardown</span><span class="p">(</span><span class="n">item</span><span class="p">:</span> <span class="s2">&quot;Item&quot;</span><span class="p">,</span> <span class="n">nextitem</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Item&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Called to perform the teardown phase for a test item.</span>
 
 <span class="sd">    The default implementation runs the finalizers and calls ``teardown()``</span>
 <span class="sd">    on ``item`` and all of its parents (which need to be torn down). This</span>
 <span class="sd">    includes running the teardown phase of fixtures required by the item (if</span>
 <span class="sd">    they go out of scope).</span>
 
+<span class="sd">    :param item:</span>
+<span class="sd">        The item.</span>
 <span class="sd">    :param nextitem:</span>
 <span class="sd">        The scheduled-to-be-next test item (None if no further test item is</span>
-<span class="sd">        scheduled). This argument can be used to perform exact teardowns,</span>
-<span class="sd">        i.e. calling just enough finalizers so that nextitem only needs to</span>
-<span class="sd">        call setup-functions.</span>
+<span class="sd">        scheduled). This argument is used to perform exact teardowns, i.e.</span>
+<span class="sd">        calling just enough finalizers so that nextitem only needs to call</span>
+<span class="sd">        setup functions.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="pytest_runtest_makereport"><a class="viewcode-back" href="../../reference.html#_pytest.hookspec.pytest_runtest_makereport">[docs]</a><span class="nd">@hookspec</span><span class="p">(</span><span class="n">firstresult</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="pytest_runtest_makereport"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_runtest_makereport">[docs]</a><span class="nd">@hookspec</span><span class="p">(</span><span class="n">firstresult</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">pytest_runtest_makereport</span><span class="p">(</span>
     <span class="n">item</span><span class="p">:</span> <span class="s2">&quot;Item&quot;</span><span class="p">,</span> <span class="n">call</span><span class="p">:</span> <span class="s2">&quot;CallInfo[None]&quot;</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;TestReport&quot;</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Called to create a :py:class:`_pytest.reports.TestReport` for each of</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Called to create a :class:`~pytest.TestReport` for each of</span>
 <span class="sd">    the setup, call and teardown runtest phases of a test item.</span>
 
-<span class="sd">    See :func:`pytest_runtest_protocol` for a description of the runtest protocol.</span>
+<span class="sd">    See :hook:`pytest_runtest_protocol` for a description of the runtest protocol.</span>
 
-<span class="sd">    :param CallInfo[None] call: The ``CallInfo`` for the phase.</span>
+<span class="sd">    :param item: The item.</span>
+<span class="sd">    :param call: The :class:`~pytest.CallInfo` for the phase.</span>
 
 <span class="sd">    Stops at first non-None result, see :ref:`firstresult`.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="pytest_runtest_logreport"><a class="viewcode-back" href="../../reference.html#_pytest.hookspec.pytest_runtest_logreport">[docs]</a><span class="k">def</span> <span class="nf">pytest_runtest_logreport</span><span class="p">(</span><span class="n">report</span><span class="p">:</span> <span class="s2">&quot;TestReport&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Process the :py:class:`_pytest.reports.TestReport` produced for each</span>
+<div class="viewcode-block" id="pytest_runtest_logreport"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_runtest_logreport">[docs]</a><span class="k">def</span> <span class="nf">pytest_runtest_logreport</span><span class="p">(</span><span class="n">report</span><span class="p">:</span> <span class="s2">&quot;TestReport&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Process the :class:`~pytest.TestReport` produced for each</span>
 <span class="sd">    of the setup, call and teardown runtest phases of an item.</span>
 
-<span class="sd">    See :func:`pytest_runtest_protocol` for a description of the runtest protocol.</span>
+<span class="sd">    See :hook:`pytest_runtest_protocol` for a description of the runtest protocol.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-<span class="nd">@hookspec</span><span class="p">(</span><span class="n">firstresult</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="pytest_report_to_serializable"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_report_to_serializable">[docs]</a><span class="nd">@hookspec</span><span class="p">(</span><span class="n">firstresult</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">pytest_report_to_serializable</span><span class="p">(</span>
-    <span class="n">config</span><span class="p">:</span> <span class="s2">&quot;Config&quot;</span><span class="p">,</span> <span class="n">report</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s2">&quot;CollectReport&quot;</span><span class="p">,</span> <span class="s2">&quot;TestReport&quot;</span><span class="p">],</span>
+    <span class="n">config</span><span class="p">:</span> <span class="s2">&quot;Config&quot;</span><span class="p">,</span>
+    <span class="n">report</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s2">&quot;CollectReport&quot;</span><span class="p">,</span> <span class="s2">&quot;TestReport&quot;</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
-    <span class="sd">&quot;&quot;&quot;Serialize the given report object into a data structure suitable for</span>
-<span class="sd">    sending over the wire, e.g. converted to JSON.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Serialize the given report object into a data structure suitable for</span>
+<span class="sd">    sending over the wire, e.g. converted to JSON.</span>
+
+<span class="sd">    :param config: The pytest config object.</span>
+<span class="sd">    :param report: The report.</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-<span class="nd">@hookspec</span><span class="p">(</span><span class="n">firstresult</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="pytest_report_from_serializable"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_report_from_serializable">[docs]</a><span class="nd">@hookspec</span><span class="p">(</span><span class="n">firstresult</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">pytest_report_from_serializable</span><span class="p">(</span>
-    <span class="n">config</span><span class="p">:</span> <span class="s2">&quot;Config&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="n">config</span><span class="p">:</span> <span class="s2">&quot;Config&quot;</span><span class="p">,</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s2">&quot;CollectReport&quot;</span><span class="p">,</span> <span class="s2">&quot;TestReport&quot;</span><span class="p">]]:</span>
-    <span class="sd">&quot;&quot;&quot;Restore a report object previously serialized with pytest_report_to_serializable().&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Restore a report object previously serialized with</span>
+<span class="sd">    :hook:`pytest_report_to_serializable`.</span>
+
+<span class="sd">    :param config: The pytest config object.</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 <span class="c1"># -------------------------------------------------------------------------</span>
@@ -582,13 +662,18 @@
 <span class="c1"># -------------------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="pytest_fixture_setup"><a class="viewcode-back" href="../../reference.html#_pytest.hookspec.pytest_fixture_setup">[docs]</a><span class="nd">@hookspec</span><span class="p">(</span><span class="n">firstresult</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="pytest_fixture_setup"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_fixture_setup">[docs]</a><span class="nd">@hookspec</span><span class="p">(</span><span class="n">firstresult</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">pytest_fixture_setup</span><span class="p">(</span>
     <span class="n">fixturedef</span><span class="p">:</span> <span class="s2">&quot;FixtureDef[Any]&quot;</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="s2">&quot;SubRequest&quot;</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">object</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Perform fixture setup execution.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Perform fixture setup execution.</span>
 
-<span class="sd">    :returns: The return value of the call to the fixture function.</span>
+<span class="sd">    :param fixturdef:</span>
+<span class="sd">        The fixture definition object.</span>
+<span class="sd">    :param request:</span>
+<span class="sd">        The fixture request object.</span>
+<span class="sd">    :returns:</span>
+<span class="sd">        The return value of the call to the fixture function.</span>
 
 <span class="sd">    Stops at first non-None result, see :ref:`firstresult`.</span>
 
@@ -599,12 +684,18 @@
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="pytest_fixture_post_finalizer"><a class="viewcode-back" href="../../reference.html#_pytest.hookspec.pytest_fixture_post_finalizer">[docs]</a><span class="k">def</span> <span class="nf">pytest_fixture_post_finalizer</span><span class="p">(</span>
+<div class="viewcode-block" id="pytest_fixture_post_finalizer"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_fixture_post_finalizer">[docs]</a><span class="k">def</span> <span class="nf">pytest_fixture_post_finalizer</span><span class="p">(</span>
     <span class="n">fixturedef</span><span class="p">:</span> <span class="s2">&quot;FixtureDef[Any]&quot;</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="s2">&quot;SubRequest&quot;</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Called after fixture teardown, but before the cache is cleared, so</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Called after fixture teardown, but before the cache is cleared, so</span>
 <span class="sd">    the fixture result ``fixturedef.cached_result`` is still available (not</span>
-<span class="sd">    ``None``).&quot;&quot;&quot;</span></div>
+<span class="sd">    ``None``).</span>
+
+<span class="sd">    :param fixturdef:</span>
+<span class="sd">        The fixture definition object.</span>
+<span class="sd">    :param request:</span>
+<span class="sd">        The fixture request object.</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 <span class="c1"># -------------------------------------------------------------------------</span>
@@ -612,28 +703,29 @@
 <span class="c1"># -------------------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="pytest_sessionstart"><a class="viewcode-back" href="../../reference.html#_pytest.hookspec.pytest_sessionstart">[docs]</a><span class="k">def</span> <span class="nf">pytest_sessionstart</span><span class="p">(</span><span class="n">session</span><span class="p">:</span> <span class="s2">&quot;Session&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Called after the ``Session`` object has been created and before performing collection</span>
+<div class="viewcode-block" id="pytest_sessionstart"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_sessionstart">[docs]</a><span class="k">def</span> <span class="nf">pytest_sessionstart</span><span class="p">(</span><span class="n">session</span><span class="p">:</span> <span class="s2">&quot;Session&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Called after the ``Session`` object has been created and before performing collection</span>
 <span class="sd">    and entering the run test loop.</span>
 
-<span class="sd">    :param pytest.Session session: The pytest session object.</span>
+<span class="sd">    :param session: The pytest session object.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="pytest_sessionfinish"><a class="viewcode-back" href="../../reference.html#_pytest.hookspec.pytest_sessionfinish">[docs]</a><span class="k">def</span> <span class="nf">pytest_sessionfinish</span><span class="p">(</span>
-    <span class="n">session</span><span class="p">:</span> <span class="s2">&quot;Session&quot;</span><span class="p">,</span> <span class="n">exitstatus</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="s2">&quot;ExitCode&quot;</span><span class="p">],</span>
+<div class="viewcode-block" id="pytest_sessionfinish"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_sessionfinish">[docs]</a><span class="k">def</span> <span class="nf">pytest_sessionfinish</span><span class="p">(</span>
+    <span class="n">session</span><span class="p">:</span> <span class="s2">&quot;Session&quot;</span><span class="p">,</span>
+    <span class="n">exitstatus</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="s2">&quot;ExitCode&quot;</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Called after whole test run finished, right before returning the exit status to the system.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Called after whole test run finished, right before returning the exit status to the system.</span>
 
-<span class="sd">    :param pytest.Session session: The pytest session object.</span>
-<span class="sd">    :param int exitstatus: The status which pytest will return to the system.</span>
+<span class="sd">    :param session: The pytest session object.</span>
+<span class="sd">    :param exitstatus: The status which pytest will return to the system.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="pytest_unconfigure"><a class="viewcode-back" href="../../reference.html#_pytest.hookspec.pytest_unconfigure">[docs]</a><span class="k">def</span> <span class="nf">pytest_unconfigure</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="s2">&quot;Config&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Called before test process is exited.</span>
+<div class="viewcode-block" id="pytest_unconfigure"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_unconfigure">[docs]</a><span class="k">def</span> <span class="nf">pytest_unconfigure</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="s2">&quot;Config&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Called before test process is exited.</span>
 
-<span class="sd">    :param _pytest.config.Config config: The pytest config object.</span>
+<span class="sd">    :param config: The pytest config object.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
@@ -642,22 +734,25 @@
 <span class="c1"># -------------------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="pytest_assertrepr_compare"><a class="viewcode-back" href="../../reference.html#_pytest.hookspec.pytest_assertrepr_compare">[docs]</a><span class="k">def</span> <span class="nf">pytest_assertrepr_compare</span><span class="p">(</span>
+<div class="viewcode-block" id="pytest_assertrepr_compare"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_assertrepr_compare">[docs]</a><span class="k">def</span> <span class="nf">pytest_assertrepr_compare</span><span class="p">(</span>
     <span class="n">config</span><span class="p">:</span> <span class="s2">&quot;Config&quot;</span><span class="p">,</span> <span class="n">op</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">left</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="n">right</span><span class="p">:</span> <span class="nb">object</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
-    <span class="sd">&quot;&quot;&quot;Return explanation for comparisons in failing assert expressions.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return explanation for comparisons in failing assert expressions.</span>
 
 <span class="sd">    Return None for no custom explanation, otherwise return a list</span>
 <span class="sd">    of strings. The strings will be joined by newlines but any newlines</span>
 <span class="sd">    *in* a string will be escaped. Note that all but the first line will</span>
 <span class="sd">    be indented slightly, the intention is for the first line to be a summary.</span>
 
-<span class="sd">    :param _pytest.config.Config config: The pytest config object.</span>
+<span class="sd">    :param config: The pytest config object.</span>
+<span class="sd">    :param op: The operator, e.g. `&quot;==&quot;`, `&quot;!=&quot;`, `&quot;not in&quot;`.</span>
+<span class="sd">    :param left: The left operand.</span>
+<span class="sd">    :param right: The right operand.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="pytest_assertion_pass"><a class="viewcode-back" href="../../reference.html#_pytest.hookspec.pytest_assertion_pass">[docs]</a><span class="k">def</span> <span class="nf">pytest_assertion_pass</span><span class="p">(</span><span class="n">item</span><span class="p">:</span> <span class="s2">&quot;Item&quot;</span><span class="p">,</span> <span class="n">lineno</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">orig</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">expl</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;**(Experimental)** Called whenever an assertion passes.</span>
+<div class="viewcode-block" id="pytest_assertion_pass"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_assertion_pass">[docs]</a><span class="k">def</span> <span class="nf">pytest_assertion_pass</span><span class="p">(</span><span class="n">item</span><span class="p">:</span> <span class="s2">&quot;Item&quot;</span><span class="p">,</span> <span class="n">lineno</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">orig</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">expl</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Called whenever an assertion passes.</span>
 
 <span class="sd">    .. versionadded:: 5.0</span>
 
@@ -677,17 +772,10 @@
 <span class="sd">    You need to **clean the .pyc** files in your project directory and interpreter libraries</span>
 <span class="sd">    when enabling this option, as assertions will require to be re-written.</span>
 
-<span class="sd">    :param pytest.Item item: pytest item object of current test.</span>
-<span class="sd">    :param int lineno: Line number of the assert statement.</span>
-<span class="sd">    :param str orig: String with the original assertion.</span>
-<span class="sd">    :param str expl: String with the assert explanation.</span>
-
-<span class="sd">    .. note::</span>
-
-<span class="sd">        This hook is **experimental**, so its parameters or even the hook itself might</span>
-<span class="sd">        be changed/removed without warning in any future pytest release.</span>
-
-<span class="sd">        If you find this hook useful, please share your feedback in an issue.</span>
+<span class="sd">    :param item: pytest item object of current test.</span>
+<span class="sd">    :param lineno: Line number of the assert statement.</span>
+<span class="sd">    :param orig: String with the original assertion.</span>
+<span class="sd">    :param expl: String with the assert explanation.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
@@ -696,13 +784,14 @@
 <span class="c1"># -------------------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="pytest_report_header"><a class="viewcode-back" href="../../reference.html#_pytest.hookspec.pytest_report_header">[docs]</a><span class="k">def</span> <span class="nf">pytest_report_header</span><span class="p">(</span>
-    <span class="n">config</span><span class="p">:</span> <span class="s2">&quot;Config&quot;</span><span class="p">,</span> <span class="n">startdir</span><span class="p">:</span> <span class="n">py</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">local</span>
+<div class="viewcode-block" id="pytest_report_header"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_report_header">[docs]</a><span class="k">def</span> <span class="nf">pytest_report_header</span><span class="p">(</span>  <span class="c1"># type:ignore[empty-body]</span>
+    <span class="n">config</span><span class="p">:</span> <span class="s2">&quot;Config&quot;</span><span class="p">,</span> <span class="n">start_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">startdir</span><span class="p">:</span> <span class="s2">&quot;LEGACY_PATH&quot;</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
-    <span class="sd">&quot;&quot;&quot;Return a string or list of strings to be displayed as header info for terminal reporting.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a string or list of strings to be displayed as header info for terminal reporting.</span>
 
-<span class="sd">    :param _pytest.config.Config config: The pytest config object.</span>
-<span class="sd">    :param py.path.local startdir: The starting dir.</span>
+<span class="sd">    :param config: The pytest config object.</span>
+<span class="sd">    :param start_path: The starting dir.</span>
+<span class="sd">    :param startdir: The starting dir (deprecated).</span>
 
 <span class="sd">    .. note::</span>
 
@@ -716,21 +805,30 @@
 <span class="sd">        This function should be implemented only in plugins or ``conftest.py``</span>
 <span class="sd">        files situated at the tests root directory due to how pytest</span>
 <span class="sd">        :ref:`discovers plugins during startup &lt;pluginorder&gt;`.</span>
+
+<span class="sd">    .. versionchanged:: 7.0.0</span>
+<span class="sd">        The ``start_path`` parameter was added as a :class:`pathlib.Path`</span>
+<span class="sd">        equivalent of the ``startdir`` parameter. The ``startdir`` parameter</span>
+<span class="sd">        has been deprecated.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="pytest_report_collectionfinish"><a class="viewcode-back" href="../../reference.html#_pytest.hookspec.pytest_report_collectionfinish">[docs]</a><span class="k">def</span> <span class="nf">pytest_report_collectionfinish</span><span class="p">(</span>
-    <span class="n">config</span><span class="p">:</span> <span class="s2">&quot;Config&quot;</span><span class="p">,</span> <span class="n">startdir</span><span class="p">:</span> <span class="n">py</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">local</span><span class="p">,</span> <span class="n">items</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="s2">&quot;Item&quot;</span><span class="p">],</span>
+<div class="viewcode-block" id="pytest_report_collectionfinish"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_report_collectionfinish">[docs]</a><span class="k">def</span> <span class="nf">pytest_report_collectionfinish</span><span class="p">(</span>  <span class="c1"># type:ignore[empty-body]</span>
+    <span class="n">config</span><span class="p">:</span> <span class="s2">&quot;Config&quot;</span><span class="p">,</span>
+    <span class="n">start_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
+    <span class="n">startdir</span><span class="p">:</span> <span class="s2">&quot;LEGACY_PATH&quot;</span><span class="p">,</span>
+    <span class="n">items</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="s2">&quot;Item&quot;</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
-    <span class="sd">&quot;&quot;&quot;Return a string or list of strings to be displayed after collection</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a string or list of strings to be displayed after collection</span>
 <span class="sd">    has finished successfully.</span>
 
 <span class="sd">    These strings will be displayed after the standard &quot;collected X items&quot; message.</span>
 
 <span class="sd">    .. versionadded:: 3.2</span>
 
-<span class="sd">    :param _pytest.config.Config config: The pytest config object.</span>
-<span class="sd">    :param py.path.local startdir: The starting dir.</span>
+<span class="sd">    :param config: The pytest config object.</span>
+<span class="sd">    :param start_path: The starting dir.</span>
+<span class="sd">    :param startdir: The starting dir (deprecated).</span>
 <span class="sd">    :param items: List of pytest items that are going to be executed; this list should not be modified.</span>
 
 <span class="sd">    .. note::</span>
@@ -739,16 +837,19 @@
 <span class="sd">        ran before it.</span>
 <span class="sd">        If you want to have your line(s) displayed first, use</span>
 <span class="sd">        :ref:`trylast=True &lt;plugin-hookorder&gt;`.</span>
+
+<span class="sd">    .. versionchanged:: 7.0.0</span>
+<span class="sd">        The ``start_path`` parameter was added as a :class:`pathlib.Path`</span>
+<span class="sd">        equivalent of the ``startdir`` parameter. The ``startdir`` parameter</span>
+<span class="sd">        has been deprecated.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="pytest_report_teststatus"><a class="viewcode-back" href="../../reference.html#_pytest.hookspec.pytest_report_teststatus">[docs]</a><span class="nd">@hookspec</span><span class="p">(</span><span class="n">firstresult</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">pytest_report_teststatus</span><span class="p">(</span>
+<div class="viewcode-block" id="pytest_report_teststatus"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_report_teststatus">[docs]</a><span class="nd">@hookspec</span><span class="p">(</span><span class="n">firstresult</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">pytest_report_teststatus</span><span class="p">(</span>  <span class="c1"># type:ignore[empty-body]</span>
     <span class="n">report</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s2">&quot;CollectReport&quot;</span><span class="p">,</span> <span class="s2">&quot;TestReport&quot;</span><span class="p">],</span> <span class="n">config</span><span class="p">:</span> <span class="s2">&quot;Config&quot;</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span>
-    <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]],</span>
-<span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Return result-category, shortletter and verbose word for status</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return result-category, shortletter and verbose word for status</span>
 <span class="sd">    reporting.</span>
 
 <span class="sd">    The result-category is a category in which to count the result, for</span>
@@ -765,85 +866,53 @@
 <span class="sd">    for example ``&quot;rerun&quot;, &quot;R&quot;, (&quot;RERUN&quot;, {&quot;yellow&quot;: True})``.</span>
 
 <span class="sd">    :param report: The report object whose status is to be returned.</span>
-<span class="sd">    :param _pytest.config.Config config: The pytest config object.</span>
+<span class="sd">    :param config: The pytest config object.</span>
+<span class="sd">    :returns: The test status.</span>
 
 <span class="sd">    Stops at first non-None result, see :ref:`firstresult`.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="pytest_terminal_summary"><a class="viewcode-back" href="../../reference.html#_pytest.hookspec.pytest_terminal_summary">[docs]</a><span class="k">def</span> <span class="nf">pytest_terminal_summary</span><span class="p">(</span>
-    <span class="n">terminalreporter</span><span class="p">:</span> <span class="s2">&quot;TerminalReporter&quot;</span><span class="p">,</span> <span class="n">exitstatus</span><span class="p">:</span> <span class="s2">&quot;ExitCode&quot;</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="s2">&quot;Config&quot;</span><span class="p">,</span>
+<div class="viewcode-block" id="pytest_terminal_summary"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_terminal_summary">[docs]</a><span class="k">def</span> <span class="nf">pytest_terminal_summary</span><span class="p">(</span>
+    <span class="n">terminalreporter</span><span class="p">:</span> <span class="s2">&quot;TerminalReporter&quot;</span><span class="p">,</span>
+    <span class="n">exitstatus</span><span class="p">:</span> <span class="s2">&quot;ExitCode&quot;</span><span class="p">,</span>
+    <span class="n">config</span><span class="p">:</span> <span class="s2">&quot;Config&quot;</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Add a section to terminal summary reporting.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add a section to terminal summary reporting.</span>
 
-<span class="sd">    :param _pytest.terminal.TerminalReporter terminalreporter: The internal terminal reporter object.</span>
-<span class="sd">    :param int exitstatus: The exit status that will be reported back to the OS.</span>
-<span class="sd">    :param _pytest.config.Config config: The pytest config object.</span>
+<span class="sd">    :param terminalreporter: The internal terminal reporter object.</span>
+<span class="sd">    :param exitstatus: The exit status that will be reported back to the OS.</span>
+<span class="sd">    :param config: The pytest config object.</span>
 
 <span class="sd">    .. versionadded:: 4.2</span>
 <span class="sd">        The ``config`` parameter.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="pytest_warning_captured"><a class="viewcode-back" href="../../reference.html#_pytest.hookspec.pytest_warning_captured">[docs]</a><span class="nd">@hookspec</span><span class="p">(</span><span class="n">historic</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">warn_on_impl</span><span class="o">=</span><span class="n">WARNING_CAPTURED_HOOK</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">pytest_warning_captured</span><span class="p">(</span>
-    <span class="n">warning_message</span><span class="p">:</span> <span class="s2">&quot;warnings.WarningMessage&quot;</span><span class="p">,</span>
-    <span class="n">when</span><span class="p">:</span> <span class="s2">&quot;Literal[&#39;config&#39;, &#39;collect&#39;, &#39;runtest&#39;]&quot;</span><span class="p">,</span>
-    <span class="n">item</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Item&quot;</span><span class="p">],</span>
-    <span class="n">location</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]],</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;(**Deprecated**) Process a warning captured by the internal pytest warnings plugin.</span>
-
-<span class="sd">    .. deprecated:: 6.0</span>
-
-<span class="sd">    This hook is considered deprecated and will be removed in a future pytest version.</span>
-<span class="sd">    Use :func:`pytest_warning_recorded` instead.</span>
-
-<span class="sd">    :param warnings.WarningMessage warning_message:</span>
-<span class="sd">        The captured warning. This is the same object produced by :py:func:`warnings.catch_warnings`, and contains</span>
-<span class="sd">        the same attributes as the parameters of :py:func:`warnings.showwarning`.</span>
-
-<span class="sd">    :param str when:</span>
-<span class="sd">        Indicates when the warning was captured. Possible values:</span>
-
-<span class="sd">        * ``&quot;config&quot;``: during pytest configuration/initialization stage.</span>
-<span class="sd">        * ``&quot;collect&quot;``: during test collection.</span>
-<span class="sd">        * ``&quot;runtest&quot;``: during test execution.</span>
-
-<span class="sd">    :param pytest.Item|None item:</span>
-<span class="sd">        The item being executed if ``when`` is ``&quot;runtest&quot;``, otherwise ``None``.</span>
-
-<span class="sd">    :param tuple location:</span>
-<span class="sd">        When available, holds information about the execution context of the captured</span>
-<span class="sd">        warning (filename, linenumber, function). ``function`` evaluates to &lt;module&gt;</span>
-<span class="sd">        when the execution context is at the module level.</span>
-<span class="sd">    &quot;&quot;&quot;</span></div>
-
-
-<div class="viewcode-block" id="pytest_warning_recorded"><a class="viewcode-back" href="../../reference.html#_pytest.hookspec.pytest_warning_recorded">[docs]</a><span class="nd">@hookspec</span><span class="p">(</span><span class="n">historic</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="pytest_warning_recorded"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_warning_recorded">[docs]</a><span class="nd">@hookspec</span><span class="p">(</span><span class="n">historic</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">pytest_warning_recorded</span><span class="p">(</span>
     <span class="n">warning_message</span><span class="p">:</span> <span class="s2">&quot;warnings.WarningMessage&quot;</span><span class="p">,</span>
     <span class="n">when</span><span class="p">:</span> <span class="s2">&quot;Literal[&#39;config&#39;, &#39;collect&#39;, &#39;runtest&#39;]&quot;</span><span class="p">,</span>
     <span class="n">nodeid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">location</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Process a warning captured by the internal pytest warnings plugin.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Process a warning captured by the internal pytest warnings plugin.</span>
 
-<span class="sd">    :param warnings.WarningMessage warning_message:</span>
+<span class="sd">    :param warning_message:</span>
 <span class="sd">        The captured warning. This is the same object produced by :py:func:`warnings.catch_warnings`, and contains</span>
 <span class="sd">        the same attributes as the parameters of :py:func:`warnings.showwarning`.</span>
 
-<span class="sd">    :param str when:</span>
+<span class="sd">    :param when:</span>
 <span class="sd">        Indicates when the warning was captured. Possible values:</span>
 
 <span class="sd">        * ``&quot;config&quot;``: during pytest configuration/initialization stage.</span>
 <span class="sd">        * ``&quot;collect&quot;``: during test collection.</span>
 <span class="sd">        * ``&quot;runtest&quot;``: during test execution.</span>
 
-<span class="sd">    :param str nodeid:</span>
+<span class="sd">    :param nodeid:</span>
 <span class="sd">        Full id of the item.</span>
 
-<span class="sd">    :param tuple|None location:</span>
+<span class="sd">    :param location:</span>
 <span class="sd">        When available, holds information about the execution context of the captured</span>
 <span class="sd">        warning (filename, linenumber, function). ``function`` evaluates to &lt;module&gt;</span>
 <span class="sd">        when the execution context is at the module level.</span>
@@ -857,8 +926,10 @@
 <span class="c1"># -------------------------------------------------------------------------</span>
 
 
-<span class="k">def</span> <span class="nf">pytest_markeval_namespace</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="s2">&quot;Config&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Called when constructing the globals dictionary used for</span>
+<div class="viewcode-block" id="pytest_markeval_namespace"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_markeval_namespace">[docs]</a><span class="k">def</span> <span class="nf">pytest_markeval_namespace</span><span class="p">(</span>  <span class="c1"># type:ignore[empty-body]</span>
+    <span class="n">config</span><span class="p">:</span> <span class="s2">&quot;Config&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Called when constructing the globals dictionary used for</span>
 <span class="sd">    evaluating string conditions in xfail/skipif markers.</span>
 
 <span class="sd">    This is useful when the condition for a marker requires</span>
@@ -868,9 +939,9 @@
 
 <span class="sd">    .. versionadded:: 6.2</span>
 
-<span class="sd">    :param _pytest.config.Config config: The pytest config object.</span>
+<span class="sd">    :param config: The pytest config object.</span>
 <span class="sd">    :returns: A dictionary of additional globals to add.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 <span class="c1"># -------------------------------------------------------------------------</span>
@@ -878,61 +949,75 @@
 <span class="c1"># -------------------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="pytest_internalerror"><a class="viewcode-back" href="../../reference.html#_pytest.hookspec.pytest_internalerror">[docs]</a><span class="k">def</span> <span class="nf">pytest_internalerror</span><span class="p">(</span>
-    <span class="n">excrepr</span><span class="p">:</span> <span class="s2">&quot;ExceptionRepr&quot;</span><span class="p">,</span> <span class="n">excinfo</span><span class="p">:</span> <span class="s2">&quot;ExceptionInfo[BaseException]&quot;</span><span class="p">,</span>
+<div class="viewcode-block" id="pytest_internalerror"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_internalerror">[docs]</a><span class="k">def</span> <span class="nf">pytest_internalerror</span><span class="p">(</span>
+    <span class="n">excrepr</span><span class="p">:</span> <span class="s2">&quot;ExceptionRepr&quot;</span><span class="p">,</span>
+    <span class="n">excinfo</span><span class="p">:</span> <span class="s2">&quot;ExceptionInfo[BaseException]&quot;</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Called for internal errors.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Called for internal errors.</span>
 
 <span class="sd">    Return True to suppress the fallback handling of printing an</span>
 <span class="sd">    INTERNALERROR message directly to sys.stderr.</span>
+
+<span class="sd">    :param excrepr: The exception repr object.</span>
+<span class="sd">    :param excinfo: The exception info.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="pytest_keyboard_interrupt"><a class="viewcode-back" href="../../reference.html#_pytest.hookspec.pytest_keyboard_interrupt">[docs]</a><span class="k">def</span> <span class="nf">pytest_keyboard_interrupt</span><span class="p">(</span>
+<div class="viewcode-block" id="pytest_keyboard_interrupt"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_keyboard_interrupt">[docs]</a><span class="k">def</span> <span class="nf">pytest_keyboard_interrupt</span><span class="p">(</span>
     <span class="n">excinfo</span><span class="p">:</span> <span class="s2">&quot;ExceptionInfo[Union[KeyboardInterrupt, Exit]]&quot;</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Called for keyboard interrupt.&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Called for keyboard interrupt.</span>
+
+<span class="sd">    :param excinfo: The exception info.</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="pytest_exception_interact"><a class="viewcode-back" href="../../reference.html#_pytest.hookspec.pytest_exception_interact">[docs]</a><span class="k">def</span> <span class="nf">pytest_exception_interact</span><span class="p">(</span>
+<div class="viewcode-block" id="pytest_exception_interact"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_exception_interact">[docs]</a><span class="k">def</span> <span class="nf">pytest_exception_interact</span><span class="p">(</span>
     <span class="n">node</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s2">&quot;Item&quot;</span><span class="p">,</span> <span class="s2">&quot;Collector&quot;</span><span class="p">],</span>
     <span class="n">call</span><span class="p">:</span> <span class="s2">&quot;CallInfo[Any]&quot;</span><span class="p">,</span>
     <span class="n">report</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s2">&quot;CollectReport&quot;</span><span class="p">,</span> <span class="s2">&quot;TestReport&quot;</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Called when an exception was raised which can potentially be</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Called when an exception was raised which can potentially be</span>
 <span class="sd">    interactively handled.</span>
 
-<span class="sd">    May be called during collection (see :py:func:`pytest_make_collect_report`),</span>
-<span class="sd">    in which case ``report`` is a :py:class:`_pytest.reports.CollectReport`.</span>
+<span class="sd">    May be called during collection (see :hook:`pytest_make_collect_report`),</span>
+<span class="sd">    in which case ``report`` is a :class:`CollectReport`.</span>
 
-<span class="sd">    May be called during runtest of an item (see :py:func:`pytest_runtest_protocol`),</span>
-<span class="sd">    in which case ``report`` is a :py:class:`_pytest.reports.TestReport`.</span>
+<span class="sd">    May be called during runtest of an item (see :hook:`pytest_runtest_protocol`),</span>
+<span class="sd">    in which case ``report`` is a :class:`TestReport`.</span>
 
 <span class="sd">    This hook is not called if the exception that was raised is an internal</span>
 <span class="sd">    exception like ``skip.Exception``.</span>
+
+<span class="sd">    :param node:</span>
+<span class="sd">        The item or collector.</span>
+<span class="sd">    :param call:</span>
+<span class="sd">        The call information. Contains the exception.</span>
+<span class="sd">    :param report:</span>
+<span class="sd">        The collection or test report.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="pytest_enter_pdb"><a class="viewcode-back" href="../../reference.html#_pytest.hookspec.pytest_enter_pdb">[docs]</a><span class="k">def</span> <span class="nf">pytest_enter_pdb</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="s2">&quot;Config&quot;</span><span class="p">,</span> <span class="n">pdb</span><span class="p">:</span> <span class="s2">&quot;pdb.Pdb&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Called upon pdb.set_trace().</span>
+<div class="viewcode-block" id="pytest_enter_pdb"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_enter_pdb">[docs]</a><span class="k">def</span> <span class="nf">pytest_enter_pdb</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="s2">&quot;Config&quot;</span><span class="p">,</span> <span class="n">pdb</span><span class="p">:</span> <span class="s2">&quot;pdb.Pdb&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Called upon pdb.set_trace().</span>
 
 <span class="sd">    Can be used by plugins to take special action just before the python</span>
 <span class="sd">    debugger enters interactive mode.</span>
 
-<span class="sd">    :param _pytest.config.Config config: The pytest config object.</span>
-<span class="sd">    :param pdb.Pdb pdb: The Pdb instance.</span>
+<span class="sd">    :param config: The pytest config object.</span>
+<span class="sd">    :param pdb: The Pdb instance.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-<span class="k">def</span> <span class="nf">pytest_leave_pdb</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="s2">&quot;Config&quot;</span><span class="p">,</span> <span class="n">pdb</span><span class="p">:</span> <span class="s2">&quot;pdb.Pdb&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Called when leaving pdb (e.g. with continue after pdb.set_trace()).</span>
+<div class="viewcode-block" id="pytest_leave_pdb"><a class="viewcode-back" href="../../reference/reference.html#_pytest.hookspec.pytest_leave_pdb">[docs]</a><span class="k">def</span> <span class="nf">pytest_leave_pdb</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="s2">&quot;Config&quot;</span><span class="p">,</span> <span class="n">pdb</span><span class="p">:</span> <span class="s2">&quot;pdb.Pdb&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Called when leaving pdb (e.g. with continue after pdb.set_trace()).</span>
 
 <span class="sd">    Can be used by plugins to take special action just after the python</span>
 <span class="sd">    debugger leaves interactive mode.</span>
 
-<span class="sd">    :param _pytest.config.Config config: The pytest config object.</span>
-<span class="sd">    :param pdb.Pdb pdb: The Pdb instance.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    :param config: The pytest config object.</span>
+<span class="sd">    :param pdb: The Pdb instance.</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
 </pre></div>
 
             <div class="clearer"></div>
@@ -943,8 +1028,8 @@
     </div>
   
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2015–2020, holger krekel and pytest-dev team.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
+        &#169; Copyright 2015, holger krekel and pytest-dev team.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
     </div>
   <script src="../../_static/version_warning_offset.js"></script>
 

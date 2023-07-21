@@ -1,0 +1,15 @@
+li > a.paramlink {
+	visibility: hidden;
+}
+
+
+p:hover > a.headerlink, p:hover > a.paramlink, li:hover > a.paramlink, li:hover > a.headerlink {
+   visibility: visible;
+}
+
+a.paramname {
+    color:inherit;
+}
+
+
+#docs-body, #docs-sidebar {font-size:1.0em} #header, #docs-sidebar, #nav, #footer, #docs-header {display:none !important} #docs-body h1 {line-height:2em} #fixed-sidebar {display:none !important} .headerlink {display:none !important} #docs-body {border:none !important} #docs-body-container {border:none !important} body {margin: 0 20px !important; background-color:white !important} #docs-container {font-size:100%} #main-body {padding-top:0px !important} #wrap {max-width:none !important; min-width:none !important} #MathJax_Message {display:none !important} #docs-container {max-width:none !important} .navbar {display:none !important}

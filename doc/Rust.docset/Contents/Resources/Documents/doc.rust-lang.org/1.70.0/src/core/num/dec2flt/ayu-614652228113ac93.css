@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <title>Not Found</title>
+
+    <link rel="stylesheet" href="https://doc.rust-lang.org/rust.css">
+    <link rel="icon" href="https://www.rust-lang.org/favicon.ico">
+
+
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    <div id="versioninfo">
+  <img src="https://www.rust-lang.org/logos/rust-logo-32x32-blk.png" width="32" height="32" alt="Rust logo"><br>
+  <span class="white-sticker"><a href="https://www.rust-lang.org">Rust</a> 1.72.0-nightly</span><br>
+  <a href="https://github.com/rust-lang/rust/commit/46514218f6f31ad3a1510ecc32af47e9e486c27d"
+    class="hash white-sticker">46514218f</a>
+</div>
+
+
+    <h1 class="title">Not Found</h1>
+    <!-- Completely hide the TOC and the section numbers -->
+<style type="text/css">
+#TOC { display: none; }
+.header-section-number { display: none; }
+li {list-style-type: none; }
+#search-input {
+    width: calc(100% - 100px);
+}
+#search-but {
+    cursor: pointer;
+}
+#search-but, #search-input {
+    padding: 4px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    outline: none;
+    font-size: 0.7em;
+    background-color: #fff;
+}
+#search-but:hover, #search-input:focus {
+    border-color: #55a9ff;
+}
+#search-from {
+    border: none;
+    padding: 0;
+    font-size: 0.7em;
+}
+</style>
+<p>Looks like you’ve taken a wrong turn.</p>
+<p>Some things that might be helpful to you though:</p>
+<h1 id="search-1"><a href="#search-1">Search</a></h1><div>
+  <form id="search-form" action="https://duckduckgo.com/">
+    <input id="search-input" type="search" name="q"></input>
+    <input type="submit" value="Search" id="search-but">
+    <!--
+      Don't show the options by default,
+      since "From the Standary Library" doesn't work without JavaScript
+    -->
+    <fieldset id="search-from" style="display:none">
+      <label><input name="from" value="library" type="radio"> From the Standard Library</label>
+      <label><input name="from" value="duckduckgo" type="radio" checked> From DuckDuckGo</label>
+    </fieldset>
+  </form>
+</div>
+<h1 id="reference"><a href="#reference">Reference</a></h1>
+<ul>
+<li><a href="https://www.rust-lang.org">The Rust official site</a></li>
+<li><a href="https://doc.rust-lang.org/reference/index.html">The Rust reference</a></li>
+</ul>
+<h1 id="docs"><a href="#docs">Docs</a></h1>
+<p><a href="https://doc.rust-lang.org/std/">The standard library</a></p>
+<script>
+function get_url_fragments() {
+    var last = document.URL.split("/").pop();
+    var tokens = last.split(".");
+    var op = [];
+    for (var i=0; i < tokens.length; i++) {
+        var t = tokens[i];
+        if (t == 'html' || t.indexOf("#") != -1) {
+            // no html or anchors
+        } else {
+            op.push(t);
+        }
+    }
+    return op;
+}
+
+function on_submit(event) {
+    var form = event.target;
+    var q = form['q'].value;
+
+    event.preventDefault();
+
+    if (form['from'].value === 'duckduckgo') {
+        document.location.href = form.action + '?q=' + encodeURIComponent(q + ' site:doc.rust-lang.org');
+    } else if (form['from'].value === 'library') {
+        document.location.href = '/std/index.html?search=' + encodeURIComponent(q);
+    }
+}
+
+function populate_search() {
+    var form = document.getElementById('search-form');
+    form.addEventListener('submit', on_submit);
+    document.getElementById('search-from').style.display = '';
+
+    form['from'].value = 'library';
+
+    var op = get_url_fragments();
+    document.getElementById('search-input').value = op.join(' ');
+}
+populate_search();
+</script>
+
+    <!-- REUSE-IgnoreStart -->
+<footer><p>
+Copyright &copy; 2011 The Rust Project Developers. Licensed under the
+<a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>
+or the <a href="https://opensource.org/licenses/MIT">MIT license</a>, at your option.
+</p><p>
+This file may not be copied, modified, or distributed except according to those terms.
+</p></footer>
+<!-- REUSE-IgnoreEnd -->
+
+
+</body>
+</html>
+h1.section-link:hover a:after, h2.section-link:hover a:after, h3.section-link:hover a:after, h4.section-link:hover a:after, h5.section-link:hover a:after, h6.section-link:hover a:after {content:normal !important} .content main {max-width:none !important} .sidebar-visible .page-wrapper {margin-left:0 !important} #versioninfo {display:none !important} body.rustdoc {max-width:none !important} .nav-wide-wrapper { display:none !important} .nav-wrapper {display:block !important} h1.title {padding-top:0px !important; margin-top:10px !important} .sidebar {display:none !important} .sub {display:none !important} .section-header:hover a:after {content:normal !important} #toc, #nav {display:none !important} #page-wrapper {position:static !important; padding:0px !important} #page {max-width:none !important} .impl-methods .stability, .methods .stability {margin-right:0px !important; margin-left:20px !important} .tooltip {display:none !important} #collapse-all, #expand-all, .toggle-wrapper, .collapse-toggle {display:none !important} #menu-bar {display:none !important} .page {position:static !important;} body.rustdoc, body.rustdoc #main { padding-top:0px !important; } .play-button, .theme-picker {display:none !important} h1,h2,h3 {margin-top:0.67em !important} .content {margin:0px !important; max-width: none !important;} .anchor {display:none !important} h1, h2, h3, h4, h5, h6 {padding-left:0px !important} .section-header:hover a:before {content: '' !important} body {background: white !important} .hidden-by-impl-hider, .hidden-by-usual-hider {display:block !important} .docblock > .section-header:first-child {margin-left:0} h4 > .important-traits {left:-24px !important} h1 a.header:target::before, h2 a.header:target::before, h3 a.header:target::before, h4 a.header:target::before {content: none !important} .collapse-toggle {display:none !important} .impl-items .hidden {display:block !important} #sidebar-toggle { display:none !important} .content pre.line-numbers {margin-top:0 !important} .important-traits {display: none !important} #main>h2+div, #main>h2+h3, #main>h3+div {display:block !important} #sidebar-toggle { display:none !important} .content pre.line-numbers {margin-top:0 !important} .attributes {margin-left:0 !important} #main>h2+div, #main>h2+h3, #main>h3+div {display:block !important} .impl-items .hidden {display:flex !important} details.rustdoc-toggle>summary:not(.hideme)::before {display:none} div.docblock {width:auto !important} #toggle-all-docs {display:none !important} #main div.toggle-wrapper {display:none !important} .summary::before {display:none !important} :target {padding-right:0; background:transparent; border-right:none} .width-limiter {max-width:none !important;} main {padding:10px 30px 40px 30px !important} .mobile-topbar {display:none !important}

@@ -1,0 +1,180 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>How to use temporary directories and files in tests — pytest documentation</title>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/basic.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/pygments_pytest.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../_static/doctools.js"></script>
+<script src="../_static/sphinx_highlight.js"></script>
+<link href="../_static/favicon.png" rel="shortcut icon"/>
+<link href="../search.html" rel="search" title="Search"/>
+<link href="monkeypatch.html" rel="next" title="How to monkeypatch/mock modules and environments"/>
+<link href="parametrize.html" rel="prev" title="How to parametrize fixtures and test functions"/>
+<script>DOCUMENTATION_OPTIONS.URL_ROOT = '';</script>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../py-modindex.html" title="Python Module Index">modules</a></li>
+<li class="right">
+<a accesskey="N" href="monkeypatch.html" title="How to monkeypatch/mock modules and environments">next</a> |</li>
+<li class="right">
+<a accesskey="P" href="parametrize.html" title="How to parametrize fixtures and test functions">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../contents.html">pytest-7.3</a> »</li>
+<li class="nav-item nav-item-this"><a href="">How to use temporary directories and files in tests</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="body" role="main">
+<section id="how-to-use-temporary-directories-and-files-in-tests">
+<a class="dashAnchor" name="//apple_ref/cpp/Section/How to use temporary directories and files in tests"></a><span id="tmp-path"></span><a class="dashAnchor" name="//apple_ref/cpp/Section/How to use temporary directories and files in tests"></a><span id="tmp-path-handling"></span><h1>How to use temporary directories and files in tests<a class="headerlink" href="#how-to-use-temporary-directories-and-files-in-tests" title="Permalink to this heading">¶</a></h1>
+<section id="the-tmp-path-fixture">
+<h2>The <code class="docutils literal notranslate"><span class="pre">tmp_path</span></code> fixture<a class="headerlink" href="#the-tmp-path-fixture" title="Permalink to this heading">¶</a></h2>
+<p>You can use the <code class="docutils literal notranslate"><span class="pre">tmp_path</span></code> fixture which will
+provide a temporary directory unique to the test invocation,
+created in the <a class="reference internal" href="#base-temporary-directory">base temporary directory</a>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">tmp_path</span></code> is a <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a> object. Here is an example test usage:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># content of test_tmp_path.py</span>
+<span class="n">CONTENT</span> <span class="o">=</span> <span class="s2">"content"</span>
+
+
+<span class="k">def</span> <span class="nf">test_create_file</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">):</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">tmp_path</span> <span class="o">/</span> <span class="s2">"sub"</span>
+    <span class="n">d</span><span class="o">.</span><span class="n">mkdir</span><span class="p">()</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">d</span> <span class="o">/</span> <span class="s2">"hello.txt"</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">CONTENT</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">p</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span> <span class="o">==</span> <span class="n">CONTENT</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">tmp_path</span><span class="o">.</span><span class="n">iterdir</span><span class="p">()))</span> <span class="o">==</span> <span class="mi">1</span>
+    <span class="k">assert</span> <span class="mi">0</span>
+</pre></div>
+</div>
+<p>Running this would result in a passed test except for the last
+<code class="docutils literal notranslate"><span class="pre">assert</span> <span class="pre">0</span></code> line which we use to look at values:</p>
+<div class="highlight-pytest notranslate"><div class="highlight"><pre><span></span>$ pytest test_tmp_path.py
+<span class="-Color -Color-Bold">=========================== test session starts ============================</span>
+platform linux -- Python 3.x.y, pytest-7.x.y, pluggy-1.x.y
+rootdir: /home/sweet/project
+collected 1 item
+
+test_tmp_path.py <span class="-Color -Color-Red">F</span>                                                   <span class="-Color -Color-Red">[100%]</span>
+
+================================= FAILURES =================================
+<span class="-Color -Color-Bold -Color-Bold-Red">_____________________________ test_create_file _____________________________</span>
+
+tmp_path = PosixPath('PYTEST_TMPDIR/test_create_file0')
+
+    def test_create_file(tmp_path):
+        d = tmp_path / "sub"
+        d.mkdir()
+        p = d / "hello.txt"
+        p.write_text(CONTENT)
+        assert p.read_text() == CONTENT
+        assert len(list(tmp_path.iterdir())) == 1
+&gt;       assert 0
+<span class="-Color -Color-Bold -Color-Bold-Red">E       assert 0</span>
+
+<span class="-Color -Color-Bold -Color-Bold-Red">test_tmp_path.py</span>:11: AssertionError
+<span class="-Color -Color-Bold -Color-Bold-Cyan">========================= short test summary info ==========================</span>
+<span class="-Color -Color-Red">FAILED</span> test_tmp_path.py::<span class="-Color -Color-Bold">test_create_file</span> - assert 0
+<span class="-Color -Color-Red">============================ </span><span class="-Color -Color-Bold -Color-Bold-Red">1 failed</span><span class="-Color -Color-Red"> in 0.12s =============================</span>
+</pre></div>
+</div>
+</section>
+<section id="the-tmp-path-factory-fixture">
+<a class="dashAnchor" name="//apple_ref/cpp/Section/The tmp_path_factory fixture"></a><span id="tmp-path-factory-example"></span><h2>The <code class="docutils literal notranslate"><span class="pre">tmp_path_factory</span></code> fixture<a class="headerlink" href="#the-tmp-path-factory-fixture" title="Permalink to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">tmp_path_factory</span></code> is a session-scoped fixture which can be used
+to create arbitrary temporary directories from any other fixture or test.</p>
+<p>For example, suppose your test suite needs a large image on disk, which is
+generated procedurally. Instead of computing the same image for each test
+that uses it into its own <code class="docutils literal notranslate"><span class="pre">tmp_path</span></code>, you can generate it once per-session
+to save time:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># contents of conftest.py</span>
+<span class="kn">import</span> <span class="nn">pytest</span>
+
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">"session"</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">image_file</span><span class="p">(</span><span class="n">tmp_path_factory</span><span class="p">):</span>
+    <span class="n">img</span> <span class="o">=</span> <span class="n">compute_expensive_image</span><span class="p">()</span>
+    <span class="n">fn</span> <span class="o">=</span> <span class="n">tmp_path_factory</span><span class="o">.</span><span class="n">mktemp</span><span class="p">(</span><span class="s2">"data"</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"img.png"</span>
+    <span class="n">img</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fn</span>
+
+
+<span class="c1"># contents of test_image.py</span>
+<span class="k">def</span> <span class="nf">test_histogram</span><span class="p">(</span><span class="n">image_file</span><span class="p">):</span>
+    <span class="n">img</span> <span class="o">=</span> <span class="n">load_image</span><span class="p">(</span><span class="n">image_file</span><span class="p">)</span>
+    <span class="c1"># compute and test histogram</span>
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="../reference/reference.html#tmp-path-factory-factory-api"><span class="std std-ref">tmp_path_factory API</span></a> for details.</p>
+</section>
+<section id="the-tmpdir-and-tmpdir-factory-fixtures">
+<a class="dashAnchor" name="//apple_ref/cpp/Section/The tmpdir and tmpdir_factory fixtures"></a><span id="tmpdir"></span><a class="dashAnchor" name="//apple_ref/cpp/Section/The tmpdir and tmpdir_factory fixtures"></a><span id="tmpdir-and-tmpdir-factory"></span><h2>The <code class="docutils literal notranslate"><span class="pre">tmpdir</span></code> and <code class="docutils literal notranslate"><span class="pre">tmpdir_factory</span></code> fixtures<a class="headerlink" href="#the-tmpdir-and-tmpdir-factory-fixtures" title="Permalink to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">tmpdir</span></code> and <code class="docutils literal notranslate"><span class="pre">tmpdir_factory</span></code> fixtures are similar to <code class="docutils literal notranslate"><span class="pre">tmp_path</span></code>
+and <code class="docutils literal notranslate"><span class="pre">tmp_path_factory</span></code>, but use/return legacy <a class="reference external" href="https://py.readthedocs.io/en/latest/path.html">py.path.local</a> objects
+rather than standard <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a> objects.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>These days, it is preferred to use <code class="docutils literal notranslate"><span class="pre">tmp_path</span></code> and <code class="docutils literal notranslate"><span class="pre">tmp_path_factory</span></code>.</p>
+<p>In order to help modernize old code bases, one can run pytest with the legacypath
+plugin disabled:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>-p<span class="w"> </span>no:legacypath
+</pre></div>
+</div>
+<p>This will trigger errors on tests using the legacy paths.
+It can also be permanently set as part of the <a class="reference internal" href="../reference/reference.html#confval-addopts"><code class="xref std std-confval docutils literal notranslate"><span class="pre">addopts</span></code></a> parameter in the
+config file.</p>
+</div>
+<p>See <a class="reference internal" href="../reference/reference.html#std-fixture-tmpdir"><code class="xref std std-fixture docutils literal notranslate"><span class="pre">tmpdir</span></code></a> <a class="reference internal" href="../reference/reference.html#std-fixture-tmpdir_factory"><code class="xref std std-fixture docutils literal notranslate"><span class="pre">tmpdir_factory</span></code></a>
+API for details.</p>
+</section>
+<section id="the-default-base-temporary-directory">
+<a class="dashAnchor" name="//apple_ref/cpp/Section/The default base temporary directory"></a><span id="base-temporary-directory"></span><h2>The default base temporary directory<a class="headerlink" href="#the-default-base-temporary-directory" title="Permalink to this heading">¶</a></h2>
+<p>Temporary directories are by default created as sub-directories of
+the system temporary directory.  The base name will be <code class="docutils literal notranslate"><span class="pre">pytest-NUM</span></code> where
+<code class="docutils literal notranslate"><span class="pre">NUM</span></code> will be incremented with each test run.
+By default, entries older than 3 temporary directories will be removed.
+This behavior can be configured with <a class="reference internal" href="../reference/reference.html#confval-tmp_path_retention_count"><code class="xref std std-confval docutils literal notranslate"><span class="pre">tmp_path_retention_count</span></code></a> and
+<a class="reference internal" href="../reference/reference.html#confval-tmp_path_retention_policy"><code class="xref std std-confval docutils literal notranslate"><span class="pre">tmp_path_retention_policy</span></code></a>.</p>
+<p>Using the <code class="docutils literal notranslate"><span class="pre">--basetemp</span></code>
+option will remove the directory before every run, effectively meaning the temporary directories
+of only the most recent run will be kept.</p>
+<p>You can override the default temporary directory setting like this:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>--basetemp<span class="o">=</span>mydir
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The contents of <code class="docutils literal notranslate"><span class="pre">mydir</span></code> will be completely removed, so make sure to use a directory
+for that purpose only.</p>
+</div>
+<p>When distributing tests on the local machine using <code class="docutils literal notranslate"><span class="pre">pytest-xdist</span></code>, care is taken to
+automatically configure a basetemp directory for the sub processes such that all temporary
+data lands below a single per-test run basetemp directory.</p>
+</section>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+<span id="sidebar-top"></span>
+<div class="clearer"></div>
+</div>
+<div class="footer" role="contentinfo">
+        © Copyright 2015, holger krekel and pytest-dev team.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    </div>
+<script src="../_static/version_warning_offset.js"></script>
+</body>
+</html>

@@ -1,0 +1,869 @@
+<html><!-- Mirrored from docs.sqlalchemy.org/en/20/orm/extensions/declarative/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 06 Jul 2023 08:05:30 GMT --><!-- Added by HTTrack --><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><!-- /Added by HTTrack -->
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>
+        
+        
+    
+    Declarative Extensions
+ </title>
+
+    
+
+    
+
+    <link href="../../../../../../fonts.googleapis.com/cssa2b2.css?family=Lato:400,700|Roboto+Slab:400,700" rel="stylesheet" type="text/css">
+
+    
+        <!-- begin iterate through SQLA css_files -->
+            <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css">
+        <!-- end iterate through SQLA css_files -->
+
+        <!-- begin iterate through sphinx environment local css_files -->
+            <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css">
+            <link rel="stylesheet" href="../../../_static/default.css" type="text/css">
+            <link rel="stylesheet" href="../../../_static/copybutton.css" type="text/css">
+            <link rel="stylesheet" href="../../../_static/docs.css" type="text/css">
+            <link rel="stylesheet" href="../../../_static/changelog.css" type="text/css">
+            <link rel="stylesheet" href="../../../_static/sphinx_paramlinks.css" type="text/css">
+        <!-- end iterate through sphinx environment local css_files -->
+
+        <link rel="stylesheet" type="text/css" media="all" href="../../../../../../www.sqlalchemy.org/css/bootstrap.min.css">
+	    <link rel="stylesheet" type="text/css" media="all" href="../../../../../../www.sqlalchemy.org/css/site.css">
+        <link rel="stylesheet" type="text/css" media="all" href="../../../../../../www.sqlalchemy.org/css/sidebar_extra.css">
+        <link rel="stylesheet" type="text/css" media="print" href="../../../../../../www.sqlalchemy.org/css/print.css">
+
+        <!-- begin iterate through sphinx environment remote css_files -->
+        <!-- end iterate through sphinx environment remote css_files -->
+    
+
+    
+
+    
+
+    
+
+
+    
+        <link rel="canonical" href="http://docs.sqlalchemy.org/en/latest/orm/extensions/declarative/">
+
+    <script type="text/javascript">
+        var doc_version = "latest";
+        var doc_slug = "sqlalchemy";
+        var static_root = "../../../_static"
+
+        // copied from:
+        // https://github.com/rtfd/readthedocs.org/commit/edbbb4c753454cf20c128d4eb2fef60d740debaa#diff-2f70e8d9361202bfe3f378d2ff2c510bR8
+        var READTHEDOCS_DATA = {
+            project: "sqlalchemy",
+            version: "latest",
+            page: "orm/extensions/declarative/index",
+            theme: ""
+          };
+
+
+    </script>
+    <!-- end RTD <head> via SQLAlchemy adapter -->
+
+    
+
+    <!-- begin layout.mako headers -->
+
+    <link rel="index" title="Index" href="../../../genindex.html">
+    <link rel="search" title="Search" href="../../../search.html">
+        <link rel="copyright" title="Copyright" href="../../../copyright.html">
+    <link rel="top" title="SQLAlchemy 2.0 Documentation" href="../../../index-2.html">
+        <link rel="up" title="ORM Extensions" href="../index.html">
+        <link rel="next" title="Mypy  / Pep-484 Support for ORM Mappings" href="../mypy.html">
+        <link rel="prev" title="Baked Queries" href="../baked.html">
+    <!-- end layout.mako headers -->
+
+
+
+
+    
+
+    <!-- sqlalchemy.org docs base head -->
+    
+<link rel="shortcut icon" href="../../../../../../www.sqlalchemy.org/favicon.ico" type="image/x-icon">
+<link href="../../../../../../fonts.googleapis.com/css118a.css?family=Source+Sans+Pro:400,600,400italic" rel="stylesheet" type="text/css">
+
+<script type="text/javascript">
+var site_base='//www.sqlalchemy.org';
+var docs_base='//docs.sqlalchemy.org';
+</script>
+
+
+    <!-- end sqlalchemy.org docs base head -->
+
+</head>
+
+<body>
+
+<div id="wrap" class="container-xxl wrap px-0">
+
+
+
+
+
+<nav class="navbar navbar-light logo">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="http://www.sqlalchemy.org/">
+            <img src="../../../../../../www.sqlalchemy.org/img/sqla_logo.png" width="240" alt="SQLAlchemy">
+        </a>
+        <div class="navbar-brand align-self-end dbtoolkit">
+            <img src="../../../../../../www.sqlalchemy.org/img/dbtoolkit6.gif" width="180" height="12" alt="The Database Toolkit for Python">
+        </div>
+    </div>
+</nav>
+<nav class="navbar navbar-expand-md navbar-dark bg-sa-green py-0 navigation">
+    <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavigation" aria-controls="navbarNavigation" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <span class="navbar-brand d-md-block d-md-none" href="#">The Database Toolkit for Python</span>
+        <div class="collapse navbar-collapse" id="navbarNavigation">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link " href="http://www.sqlalchemy.org/">home</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle " href="#" id="feature-dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        features
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark bg-sa-green" aria-labelledby="feature-dropdown">
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/philosophy.html">Philosophy Statement</a></li>
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/features.html">Feature Overview</a></li>
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/quotes.html">Testimonials</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link " href="http://www.sqlalchemy.org/blog/">news</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle active" aria-current="page" href="#" id="docs-dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        documentation
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark bg-sa-green" aria-labelledby="docs-dropdown">
+                        <li><a class="dropdown-item" href="http://docs.sqlalchemy.org/">Current Documentation (version 2.0)</a></li>
+
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/library.html#reference">Documentation by Version</a></li>
+                        
+        <li>
+            <a class="dropdown-item" href="../../../index.html">
+                <span class="ps-2">Version 2.0</span>
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="http://docs.sqlalchemy.org/en/14/">
+                <span class="ps-2">Version 1.4</span>
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="http://docs.sqlalchemy.org/en/13/">
+                <span class="ps-2">Version 1.3</span>
+            </a>
+        </li>
+
+                        <li><hr class="dropdown-divider"></li>
+
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/library.html#talks">Talks and Tutorials</a></li>
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/library.html">Published content overview</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle " href="#" id="community-dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        community
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark bg-sa-green" aria-labelledby="community-dropdown">
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/support.html">Get Support</a></li>
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/participate.html">Participate</a></li>
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/develop.html">Develop</a></li>
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/codeofconduct.html">Code of Conduct</a></li>
+                        <li><a class="dropdown-item" href="https://github.com/sqlalchemy/sqlalchemy">Github</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle " href="#" id="download-dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        download
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark bg-sa-green" aria-labelledby="download-dropdown">
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/download.html">Download</a>
+                        
+
+
+
+
+
+
+    </li><li><a class="dropdown-item" href="http://www.sqlalchemy.org/download.html#current">Current Release Series (2.0)</a></li>
+
+    <li><a class="dropdown-item" href="http://www.sqlalchemy.org/download.html#maintenance">Maintenance Release (1.4)</a></li>
+
+    <li><a class="dropdown-item" href="http://www.sqlalchemy.org/download.html#development">Development Access</a></li>
+    <li><a class="dropdown-item" href="http://www.sqlalchemy.org/download.html#license">License</a></li>
+    <li><a class="dropdown-item" href="http://www.sqlalchemy.org/download.html#versions">Version Numbering</a></li>
+    <li><a class="dropdown-item" href="http://www.sqlalchemy.org/download.html#relstatus">Release Status</a></li>
+
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<div id="main-body" class="docs main-body row m-0">
+
+<main id="docs" class="docs">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div id="docs-container">
+
+
+
+
+
+<div id="docs-top-navigation-container" class="body-background">
+<div id="docs-header">
+    <div id="docs-version-header">
+        Release: <span class="version-num">2.0.18</span>
+
+            <span id="sidebar-current">current release</span>
+
+        | Release Date: July 5, 2023
+
+    </div>
+
+    <h1><a href="../../../index-2.html">SQLAlchemy 2.0 Documentation</a></h1>
+
+</div>
+</div>
+
+<div id="docs-body-container">
+
+    <div id="fixed-sidebar" class="">
+
+
+
+        <div id="docs-sidebar-popout">
+            <h3><a href="../../../index-2.html">SQLAlchemy 2.0 Documentation</a></h3>
+                <p id="sidebar-current">current release</p>
+            <p id="sidebar-topnav">
+                <a href="../../../index-2.html">Home</a>
+                | <a href="http://docs.sqlalchemy.org/20/sqlalchemy_20.zip">Download this Documentation</a>
+            </p>
+
+            <div id="sidebar-search">
+                <form class="search" action="https://docs.sqlalchemy.org/en/20/search.html" method="get">
+                  <label>
+                  Search terms:
+                  <input type="text" placeholder="search..." name="q" size="12">
+                  </label>
+                  <input type="hidden" name="check_keywords" value="yes">
+                  <input type="hidden" name="area" value="default">
+                </form>
+            </div>
+
+        </div>
+
+        <div id="docs-sidebar">
+
+        <div id="sidebar-banner">
+            
+        
+<script async="" type="text/javascript" id="_carbonads_js"></script>
+<script async="" type="text/javascript" id="_eaads_js" src="../../../../../../media.ethicalads.io/media/client/ethicalads.min.js"></script>
+
+<div data-ea-publisher="sqlalchemyorg" data-ea-type="image" class="adaptive flat horizontal"></div>
+
+<script type="text/javascript">
+
+var ea = "../../../../../../media.ethicalads.io/media/client/ethicalads.min.js";
+var carbon = "../../../../../../cdn.carbonads.com/carbon8b90.js?serve=CKYILK7Y&amp;placement=sqlalchemyorg";
+
+if (Math.floor(Math.random() * 10) < 8) {
+    ea_script = document.getElementById("_eaads_js");
+    ea_script.setAttribute('src', ea);
+}
+else {
+    carbon_script = document.getElementById("_carbonads_js");
+    carbon_script.setAttribute('src', carbon);
+}
+
+</script>
+
+    
+        </div>
+
+        <div id="docs-sidebar-inner">
+
+        
+        <h3>
+            <a href="../../index.html" title="SQLAlchemy ORM">SQLAlchemy ORM</a>
+        </h3>
+
+        <ul>
+<li><span class="link-container"><a class="reference external" href="../../quickstart.html">ORM Quick Start</a></span></li>
+<li><span class="link-container"><a class="reference external" href="../../mapper_config.html">ORM Mapped Class Configuration</a></span></li>
+<li><span class="link-container"><a class="reference external" href="../../relationships.html">Relationship Configuration</a></span></li>
+<li><span class="link-container"><a class="reference external" href="../../queryguide/index.html">ORM Querying Guide</a></span></li>
+<li><span class="link-container"><a class="reference external" href="../../session.html">Using the Session</a></span></li>
+<li><span class="link-container"><a class="reference external" href="../../extending.html">Events and Internals</a></span></li>
+<li><span class="link-container"><a class="reference external" href="../index.html">ORM Extensions</a></span><ul>
+<li><span class="link-container"><a class="reference external" href="../asyncio.html">Asynchronous I/O (asyncio)</a></span></li>
+<li><span class="link-container"><a class="reference external" href="../associationproxy.html">Association Proxy</a></span></li>
+<li><span class="link-container"><a class="reference external" href="../automap.html">Automap</a></span></li>
+<li><span class="link-container"><a class="reference external" href="../baked.html">Baked Queries</a></span></li>
+<li class="selected"><span class="link-container"><strong>Declarative Extensions</strong><a class="paramlink headerlink reference internal" href="#">¶</a></span><ul>
+<li><span class="link-container"><a class="reference external" href="#sqlalchemy.ext.declarative.AbstractConcreteBase"><code class="docutils literal notranslate"><span class="pre">AbstractConcreteBase</span></code></a></span></li>
+<li><span class="link-container"><a class="reference external" href="#sqlalchemy.ext.declarative.ConcreteBase"><code class="docutils literal notranslate"><span class="pre">ConcreteBase</span></code></a></span></li>
+<li><span class="link-container"><a class="reference external" href="#sqlalchemy.ext.declarative.DeferredReflection"><code class="docutils literal notranslate"><span class="pre">DeferredReflection</span></code></a></span><ul>
+<li><span class="link-container"><a class="reference external" href="#sqlalchemy.ext.declarative.DeferredReflection.prepare"><code class="docutils literal notranslate"><span class="pre">DeferredReflection.prepare()</span></code></a></span></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><span class="link-container"><a class="reference external" href="../mypy.html">Mypy  / Pep-484 Support for ORM Mappings</a></span></li>
+<li><span class="link-container"><a class="reference external" href="../mutable.html">Mutation Tracking</a></span></li>
+<li><span class="link-container"><a class="reference external" href="../orderinglist.html">Ordering List</a></span></li>
+<li><span class="link-container"><a class="reference external" href="../horizontal_shard.html">Horizontal Sharding</a></span></li>
+<li><span class="link-container"><a class="reference external" href="../hybrid.html">Hybrid Attributes</a></span></li>
+<li><span class="link-container"><a class="reference external" href="../indexable.html">Indexable</a></span></li>
+<li><span class="link-container"><a class="reference external" href="../instrumentation.html">Alternate Class Instrumentation</a></span></li>
+</ul>
+</li>
+<li><span class="link-container"><a class="reference external" href="../../examples.html">ORM Examples</a></span></li>
+</ul>
+
+
+        <h4>Project Versions</h4>
+        <ul class="version-listing">
+            <li><a href="../../../index-2.html">2.0.18</a></li>
+        </ul>
+
+        </div>
+
+        </div>
+
+    </div>
+
+    <div id="narrow-index-nav">
+        <form class="search" action="https://docs.sqlalchemy.org/en/20/search.html" method="get">
+            <label>
+                Search terms:
+            <input type="text" placeholder="search..." name="q" size="12">
+            </label>
+            <input type="submit" value="Search">
+            <input type="hidden" name="check_keywords" value="yes">
+            <input type="hidden" name="area" value="default">
+        </form>
+
+        <p>
+        <a href="../../../index-2.html">Home</a>
+        | <a href="http://docs.sqlalchemy.org/20/sqlalchemy_20.zip">Download this Documentation</a>
+        </p>
+
+    </div>
+
+
+        <div id="docs-narrow-top-navigation">
+            <ul>
+                <li><b>Previous:</b>
+                <a href="../baked.html" title="previous chapter">Baked Queries</a></li>
+                <li><b>Next:</b>
+                <a href="../mypy.html" title="next chapter">Mypy  / Pep-484 Support for ORM Mappings</a></li>
+
+            <li><b>Up:</b> <a href="../../../index-2.html">Home</a></li>
+                    <ul><li><a href="../../index.html" title="SQLAlchemy ORM">SQLAlchemy ORM</a></li>
+                    <ul><li><a href="../index.html" title="ORM Extensions">ORM Extensions</a></li>
+                </ul>
+                </ul>
+
+
+
+            <li><b>On this page:</b></li>
+            <ul>
+<li><a class="reference internal" href="#declarative-extensions">Declarative Extensions</a><ul>
+<li><a class="reference internal" href="#sqlalchemy.ext.declarative.AbstractConcreteBase"><code class="docutils literal notranslate"><span class="pre">AbstractConcreteBase</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.ext.declarative.ConcreteBase"><code class="docutils literal notranslate"><span class="pre">ConcreteBase</span></code></a></li>
+<li><a class="reference internal" href="#sqlalchemy.ext.declarative.DeferredReflection"><code class="docutils literal notranslate"><span class="pre">DeferredReflection</span></code></a><ul>
+<li><a class="reference internal" href="#sqlalchemy.ext.declarative.DeferredReflection.prepare"><code class="docutils literal notranslate"><span class="pre">DeferredReflection.prepare()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+            </ul>
+
+        </div>
+
+
+
+    <div id="docs-body" role="main" class=" orm-extensions-declarative-index">
+        
+<section id="declarative-extensions">
+<span id="declarative-toplevel"></span><h1>Declarative Extensions<a class="headerlink" href="#declarative-extensions" title="Permalink to this heading">¶</a></h1>
+<p>Extensions specific to the <a class="reference internal" href="../../mapping_styles.html#orm-declarative-mapping"><span class="std std-ref">Declarative</span></a>
+mapping API.</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 1.4: </span>The vast majority of the Declarative extension is now
+integrated into the SQLAlchemy ORM and is importable from the
+<code class="docutils literal notranslate"><span class="pre">sqlalchemy.orm</span></code> namespace.  See the documentation at
+<a class="reference internal" href="../../mapping_styles.html#orm-declarative-mapping"><span class="std std-ref">Declarative Mapping</span></a> for new documentation.
+For an overview of the change, see <a class="reference internal" href="../../../changelog/migration_14.html#change-5508"><span class="std std-ref">Declarative is now integrated into the ORM with new features</span></a>.</p>
+</div>
+<table class="longtable docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head">Object Name</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="autosummary-name"><p><a class="reference internal" href="#sqlalchemy.ext.declarative.AbstractConcreteBase"><span class="sig-name descname">AbstractConcreteBase</span></a></p></td>
+<td><p>A helper class for ‘concrete’ declarative mappings.</p></td>
+</tr>
+<tr class="row-odd"><td class="autosummary-name"><p><a class="reference internal" href="#sqlalchemy.ext.declarative.ConcreteBase"><span class="sig-name descname">ConcreteBase</span></a></p></td>
+<td><p>A helper class for ‘concrete’ declarative mappings.</p></td>
+</tr>
+<tr class="row-even"><td class="autosummary-name"><p><a class="reference internal" href="#sqlalchemy.ext.declarative.DeferredReflection"><span class="sig-name descname">DeferredReflection</span></a></p></td>
+<td><p>A helper class for construction of mappings based on
+a deferred reflection step.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<a class="dashAnchor" name="//apple_ref/Class/sqlalchemy.ext.declarative.AbstractConcreteBase"></a><dt class="sig sig-object py" id="sqlalchemy.ext.declarative.AbstractConcreteBase">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.ext.declarative.</span></span><span class="sig-name descname"><span class="pre">AbstractConcreteBase</span></span><a class="headerlink" href="#sqlalchemy.ext.declarative.AbstractConcreteBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>A helper class for ‘concrete’ declarative mappings.</p>
+<p><a class="reference internal" href="#sqlalchemy.ext.declarative.AbstractConcreteBase" title="sqlalchemy.ext.declarative.AbstractConcreteBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractConcreteBase</span></code></a> will use the <a class="reference internal" href="../../mapping_api.html#sqlalchemy.orm.polymorphic_union" title="sqlalchemy.orm.polymorphic_union"><code class="xref py py-func docutils literal notranslate"><span class="pre">polymorphic_union()</span></code></a>
+function automatically, against all tables mapped as a subclass
+to this class.   The function is called via the
+<code class="docutils literal notranslate"><span class="pre">__declare_first__()</span></code> function, which is essentially
+a hook for the <a class="reference internal" href="../../events.html#sqlalchemy.orm.MapperEvents.before_configured" title="sqlalchemy.orm.MapperEvents.before_configured"><code class="xref py py-meth docutils literal notranslate"><span class="pre">before_configured()</span></code></a> event.</p>
+<p><a class="reference internal" href="#sqlalchemy.ext.declarative.AbstractConcreteBase" title="sqlalchemy.ext.declarative.AbstractConcreteBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractConcreteBase</span></code></a> applies <a class="reference internal" href="../../mapping_api.html#sqlalchemy.orm.Mapper" title="sqlalchemy.orm.Mapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapper</span></code></a> for its
+immediately inheriting class, as would occur for any other
+declarative mapped class. However, the <a class="reference internal" href="../../mapping_api.html#sqlalchemy.orm.Mapper" title="sqlalchemy.orm.Mapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapper</span></code></a> is not
+mapped to any particular <a class="reference internal" href="../../../core/metadata.html#sqlalchemy.schema.Table" title="sqlalchemy.schema.Table"><code class="xref py py-class docutils literal notranslate"><span class="pre">Table</span></code></a> object.  Instead, it’s
+mapped directly to the “polymorphic” selectable produced by
+<a class="reference internal" href="../../mapping_api.html#sqlalchemy.orm.polymorphic_union" title="sqlalchemy.orm.polymorphic_union"><code class="xref py py-func docutils literal notranslate"><span class="pre">polymorphic_union()</span></code></a>, and performs no persistence operations on its
+own.  Compare to <a class="reference internal" href="#sqlalchemy.ext.declarative.ConcreteBase" title="sqlalchemy.ext.declarative.ConcreteBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConcreteBase</span></code></a>, which maps its
+immediately inheriting class to an actual
+<a class="reference internal" href="../../../core/metadata.html#sqlalchemy.schema.Table" title="sqlalchemy.schema.Table"><code class="xref py py-class docutils literal notranslate"><span class="pre">Table</span></code></a> that stores rows directly.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <a class="reference internal" href="#sqlalchemy.ext.declarative.AbstractConcreteBase" title="sqlalchemy.ext.declarative.AbstractConcreteBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractConcreteBase</span></code></a> delays the mapper creation of the
+base class until all the subclasses have been defined,
+as it needs to create a mapping against a selectable that will include
+all subclass tables.  In order to achieve this, it waits for the
+<strong>mapper configuration event</strong> to occur, at which point it scans
+through all the configured subclasses and sets up a mapping that will
+query against all subclasses at once.</p>
+<p>While this event is normally invoked automatically, in the case of
+<a class="reference internal" href="#sqlalchemy.ext.declarative.AbstractConcreteBase" title="sqlalchemy.ext.declarative.AbstractConcreteBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractConcreteBase</span></code></a>, it may be necessary to invoke it
+explicitly after <strong>all</strong> subclass mappings are defined, if the first
+operation is to be a query against this base class. To do so, once all
+the desired classes have been configured, the
+<a class="reference internal" href="../../mapping_api.html#sqlalchemy.orm.registry.configure" title="sqlalchemy.orm.registry.configure"><code class="xref py py-meth docutils literal notranslate"><span class="pre">registry.configure()</span></code></a> method on the <a class="reference internal" href="../../mapping_api.html#sqlalchemy.orm.registry" title="sqlalchemy.orm.registry"><code class="xref py py-class docutils literal notranslate"><span class="pre">registry</span></code></a>
+in use can be invoked, which is available in relation to a particular
+declarative base class:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Base</span><span class="o">.</span><span class="n">registry</span><span class="o">.</span><span class="n">configure</span><span class="p">()</span></pre></div>
+</div>
+</div>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">DeclarativeBase</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy.ext.declarative</span> <span class="kn">import</span> <span class="n">AbstractConcreteBase</span>
+
+<span class="k">class</span> <span class="nc">Base</span><span class="p">(</span><span class="n">DeclarativeBase</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+<span class="k">class</span> <span class="nc">Employee</span><span class="p">(</span><span class="n">AbstractConcreteBase</span><span class="p">,</span> <span class="n">Base</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+<span class="k">class</span> <span class="nc">Manager</span><span class="p">(</span><span class="n">Employee</span><span class="p">):</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s1">'manager'</span>
+    <span class="n">employee_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">50</span><span class="p">))</span>
+    <span class="n">manager_data</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">40</span><span class="p">))</span>
+
+    <span class="n">__mapper_args__</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">'polymorphic_identity'</span><span class="p">:</span><span class="s1">'manager'</span><span class="p">,</span>
+        <span class="s1">'concrete'</span><span class="p">:</span><span class="kc">True</span>
+    <span class="p">}</span>
+
+<span class="n">Base</span><span class="o">.</span><span class="n">registry</span><span class="o">.</span><span class="n">configure</span><span class="p">()</span></pre><div class="code-non-annotations-key"></div></div>
+</div>
+<p>The abstract base class is handled by declarative in a special way;
+at class configuration time, it behaves like a declarative mixin
+or an <code class="docutils literal notranslate"><span class="pre">__abstract__</span></code> base class.   Once classes are configured
+and mappings are produced, it then gets mapped itself, but
+after all of its descendants.  This is a very unique system of mapping
+not found in any other SQLAlchemy API feature.</p>
+<p>Using this approach, we can specify columns and properties
+that will take place on mapped subclasses, in the way that
+we normally do as in <a class="reference internal" href="mixins.html#declarative-mixins"><span class="std std-ref">Mixin and Custom Base Classes</span></a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sqlalchemy.ext.declarative</span> <span class="kn">import</span> <span class="n">AbstractConcreteBase</span>
+
+<span class="k">class</span> <span class="nc">Company</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s1">'company'</span>
+    <span class="n">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">Employee</span><span class="p">(</span><span class="n">AbstractConcreteBase</span><span class="p">,</span> <span class="n">Base</span><span class="p">):</span>
+    <span class="n">strict_attrs</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="n">employee_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="nd">@declared_attr</span>
+    <span class="k">def</span> <span class="nf">company_id</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">Column</span><span class="p">(</span><span class="n">ForeignKey</span><span class="p">(</span><span class="s1">'company.id'</span><span class="p">))</span>
+
+    <span class="nd">@declared_attr</span>
+    <span class="k">def</span> <span class="nf">company</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">relationship</span><span class="p">(</span><span class="s2">"Company"</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">Manager</span><span class="p">(</span><span class="n">Employee</span><span class="p">):</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s1">'manager'</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">50</span><span class="p">))</span>
+    <span class="n">manager_data</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">40</span><span class="p">))</span>
+
+    <span class="n">__mapper_args__</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">'polymorphic_identity'</span><span class="p">:</span><span class="s1">'manager'</span><span class="p">,</span>
+        <span class="s1">'concrete'</span><span class="p">:</span><span class="kc">True</span>
+    <span class="p">}</span>
+
+<span class="n">Base</span><span class="o">.</span><span class="n">registry</span><span class="o">.</span><span class="n">configure</span><span class="p">()</span></pre><div class="code-non-annotations-key"></div></div>
+</div>
+<p>When we make use of our mappings however, both <code class="docutils literal notranslate"><span class="pre">Manager</span></code> and
+<code class="docutils literal notranslate"><span class="pre">Employee</span></code> will have an independently usable <code class="docutils literal notranslate"><span class="pre">.company</span></code> attribute:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+    <span class="n">select</span><span class="p">(</span><span class="n">Employee</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Employee</span><span class="o">.</span><span class="n">company</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">id</span><span class="o">=</span><span class="mi">5</span><span class="p">))</span>
+<span class="p">)</span></pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="dashAnchor" name="//apple_ref/Parameter/sqlalchemy.ext.declarative.AbstractConcreteBase.params.strict_attrs"></a><span class="target" id="sqlalchemy.ext.declarative.AbstractConcreteBase.params.strict_attrs"></span><strong>strict_attrs</strong><a class="paramlink headerlink reference internal" href="#sqlalchemy.ext.declarative.AbstractConcreteBase.params.strict_attrs">¶</a> – </p><p>when specified on the base class, “strict” attribute
+mode is enabled which attempts to limit ORM mapped attributes on the
+base class to only those that are immediately present, while still
+preserving “polymorphic” loading behavior.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.0.</span></p>
+</div>
+<p></p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#sqlalchemy.ext.declarative.ConcreteBase" title="sqlalchemy.ext.declarative.ConcreteBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConcreteBase</span></code></a></p>
+<p><a class="reference internal" href="../../inheritance.html#concrete-inheritance"><span class="std std-ref">Concrete Table Inheritance</span></a></p>
+<p><a class="reference internal" href="../../inheritance.html#abstract-concrete-base"><span class="std std-ref">Abstract Concrete Classes</span></a></p>
+</div>
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#sqlalchemy.ext.declarative.AbstractConcreteBase" title="sqlalchemy.ext.declarative.AbstractConcreteBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.ext.declarative.AbstractConcreteBase</span></code></a> (<a class="reference internal" href="#sqlalchemy.ext.declarative.ConcreteBase" title="sqlalchemy.ext.declarative.extensions.ConcreteBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.ext.declarative.extensions.ConcreteBase</span></code></a>)</p>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<a class="dashAnchor" name="//apple_ref/Class/sqlalchemy.ext.declarative.ConcreteBase"></a><dt class="sig sig-object py" id="sqlalchemy.ext.declarative.ConcreteBase">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.ext.declarative.</span></span><span class="sig-name descname"><span class="pre">ConcreteBase</span></span><a class="headerlink" href="#sqlalchemy.ext.declarative.ConcreteBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>A helper class for ‘concrete’ declarative mappings.</p>
+<p><a class="reference internal" href="#sqlalchemy.ext.declarative.ConcreteBase" title="sqlalchemy.ext.declarative.ConcreteBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConcreteBase</span></code></a> will use the <a class="reference internal" href="../../mapping_api.html#sqlalchemy.orm.polymorphic_union" title="sqlalchemy.orm.polymorphic_union"><code class="xref py py-func docutils literal notranslate"><span class="pre">polymorphic_union()</span></code></a>
+function automatically, against all tables mapped as a subclass
+to this class.   The function is called via the
+<code class="docutils literal notranslate"><span class="pre">__declare_last__()</span></code> function, which is essentially
+a hook for the <a class="reference internal" href="../../events.html#sqlalchemy.orm.MapperEvents.after_configured" title="sqlalchemy.orm.MapperEvents.after_configured"><code class="xref py py-meth docutils literal notranslate"><span class="pre">after_configured()</span></code></a> event.</p>
+<p><a class="reference internal" href="#sqlalchemy.ext.declarative.ConcreteBase" title="sqlalchemy.ext.declarative.ConcreteBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConcreteBase</span></code></a> produces a mapped
+table for the class itself.  Compare to <a class="reference internal" href="#sqlalchemy.ext.declarative.AbstractConcreteBase" title="sqlalchemy.ext.declarative.AbstractConcreteBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractConcreteBase</span></code></a>,
+which does not.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sqlalchemy.ext.declarative</span> <span class="kn">import</span> <span class="n">ConcreteBase</span>
+
+<span class="k">class</span> <span class="nc">Employee</span><span class="p">(</span><span class="n">ConcreteBase</span><span class="p">,</span> <span class="n">Base</span><span class="p">):</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s1">'employee'</span>
+    <span class="n">employee_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">50</span><span class="p">))</span>
+    <span class="n">__mapper_args__</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s1">'polymorphic_identity'</span><span class="p">:</span><span class="s1">'employee'</span><span class="p">,</span>
+                    <span class="s1">'concrete'</span><span class="p">:</span><span class="kc">True</span><span class="p">}</span>
+
+<span class="k">class</span> <span class="nc">Manager</span><span class="p">(</span><span class="n">Employee</span><span class="p">):</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s1">'manager'</span>
+    <span class="n">employee_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">50</span><span class="p">))</span>
+    <span class="n">manager_data</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">40</span><span class="p">))</span>
+    <span class="n">__mapper_args__</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s1">'polymorphic_identity'</span><span class="p">:</span><span class="s1">'manager'</span><span class="p">,</span>
+                    <span class="s1">'concrete'</span><span class="p">:</span><span class="kc">True</span><span class="p">}</span></pre><div class="code-non-annotations-key"></div></div>
+</div>
+<p>The name of the discriminator column used by <a class="reference internal" href="../../mapping_api.html#sqlalchemy.orm.polymorphic_union" title="sqlalchemy.orm.polymorphic_union"><code class="xref py py-func docutils literal notranslate"><span class="pre">polymorphic_union()</span></code></a>
+defaults to the name <code class="docutils literal notranslate"><span class="pre">type</span></code>.  To suit the use case of a mapping where an
+actual column in a mapped table is already named <code class="docutils literal notranslate"><span class="pre">type</span></code>, the
+discriminator name can be configured by setting the
+<code class="docutils literal notranslate"><span class="pre">_concrete_discriminator_name</span></code> attribute:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Employee</span><span class="p">(</span><span class="n">ConcreteBase</span><span class="p">,</span> <span class="n">Base</span><span class="p">):</span>
+    <span class="n">_concrete_discriminator_name</span> <span class="o">=</span> <span class="s1">'_concrete_discriminator'</span></pre><div class="code-non-annotations-key"></div></div>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.3.19: </span>Added the <code class="docutils literal notranslate"><span class="pre">_concrete_discriminator_name</span></code>
+attribute to <a class="reference internal" href="#sqlalchemy.ext.declarative.ConcreteBase" title="sqlalchemy.ext.declarative.ConcreteBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConcreteBase</span></code></a> so that the
+virtual discriminator column name can be customized.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 1.4.2: </span>The <code class="docutils literal notranslate"><span class="pre">_concrete_discriminator_name</span></code> attribute
+need only be placed on the basemost class to take correct effect for
+all subclasses.   An explicit error message is now raised if the
+mapped column names conflict with the discriminator name, whereas
+in the 1.3.x series there would be some warnings and then a non-useful
+query would be generated.</p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#sqlalchemy.ext.declarative.AbstractConcreteBase" title="sqlalchemy.ext.declarative.AbstractConcreteBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractConcreteBase</span></code></a></p>
+<p><a class="reference internal" href="../../inheritance.html#concrete-inheritance"><span class="std std-ref">Concrete Table Inheritance</span></a></p>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<a class="dashAnchor" name="//apple_ref/Class/sqlalchemy.ext.declarative.DeferredReflection"></a><dt class="sig sig-object py" id="sqlalchemy.ext.declarative.DeferredReflection">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sqlalchemy.ext.declarative.</span></span><span class="sig-name descname"><span class="pre">DeferredReflection</span></span><a class="headerlink" href="#sqlalchemy.ext.declarative.DeferredReflection" title="Permalink to this definition">¶</a></dt>
+<dd><p>A helper class for construction of mappings based on
+a deferred reflection step.</p>
+<p>Normally, declarative can be used with reflection by
+setting a <a class="reference internal" href="../../../core/metadata.html#sqlalchemy.schema.Table" title="sqlalchemy.schema.Table"><code class="xref py py-class docutils literal notranslate"><span class="pre">Table</span></code></a> object using autoload_with=engine
+as the <code class="docutils literal notranslate"><span class="pre">__table__</span></code> attribute on a declarative class.
+The caveat is that the <a class="reference internal" href="../../../core/metadata.html#sqlalchemy.schema.Table" title="sqlalchemy.schema.Table"><code class="xref py py-class docutils literal notranslate"><span class="pre">Table</span></code></a> must be fully
+reflected, or at the very least have a primary key column,
+at the point at which a normal declarative mapping is
+constructed, meaning the <a class="reference internal" href="../../../core/connections.html#sqlalchemy.engine.Engine" title="sqlalchemy.engine.Engine"><code class="xref py py-class docutils literal notranslate"><span class="pre">Engine</span></code></a> must be available
+at class declaration time.</p>
+<p>The <a class="reference internal" href="#sqlalchemy.ext.declarative.DeferredReflection" title="sqlalchemy.ext.declarative.DeferredReflection"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeferredReflection</span></code></a> mixin moves the construction
+of mappers to be at a later point, after a specific
+method is called which first reflects all <a class="reference internal" href="../../../core/metadata.html#sqlalchemy.schema.Table" title="sqlalchemy.schema.Table"><code class="xref py py-class docutils literal notranslate"><span class="pre">Table</span></code></a>
+objects created so far.   Classes can define it as such:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sqlalchemy.ext.declarative</span> <span class="kn">import</span> <span class="n">declarative_base</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy.ext.declarative</span> <span class="kn">import</span> <span class="n">DeferredReflection</span>
+<span class="n">Base</span> <span class="o">=</span> <span class="n">declarative_base</span><span class="p">()</span>
+
+<span class="k">class</span> <span class="nc">MyClass</span><span class="p">(</span><span class="n">DeferredReflection</span><span class="p">,</span> <span class="n">Base</span><span class="p">):</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s1">'mytable'</span></pre><div class="code-non-annotations-key"></div></div>
+</div>
+<p>Above, <code class="docutils literal notranslate"><span class="pre">MyClass</span></code> is not yet mapped.   After a series of
+classes have been defined in the above fashion, all tables
+can be reflected and mappings created using
+<a class="reference internal" href="#sqlalchemy.ext.declarative.DeferredReflection.prepare" title="sqlalchemy.ext.declarative.DeferredReflection.prepare"><code class="xref py py-meth docutils literal notranslate"><span class="pre">prepare()</span></code></a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">engine</span> <span class="o">=</span> <span class="n">create_engine</span><span class="p">(</span><span class="s2">"someengine://..."</span><span class="p">)</span>
+<span class="n">DeferredReflection</span><span class="o">.</span><span class="n">prepare</span><span class="p">(</span><span class="n">engine</span><span class="p">)</span></pre></div>
+</div>
+<p>The <a class="reference internal" href="#sqlalchemy.ext.declarative.DeferredReflection" title="sqlalchemy.ext.declarative.DeferredReflection"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeferredReflection</span></code></a> mixin can be applied to individual
+classes, used as the base for the declarative base itself,
+or used in a custom abstract class.   Using an abstract base
+allows that only a subset of classes to be prepared for a
+particular prepare step, which is necessary for applications
+that use more than one engine.  For example, if an application
+has two engines, you might use two bases, and prepare each
+separately, e.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ReflectedOne</span><span class="p">(</span><span class="n">DeferredReflection</span><span class="p">,</span> <span class="n">Base</span><span class="p">):</span>
+    <span class="n">__abstract__</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="k">class</span> <span class="nc">ReflectedTwo</span><span class="p">(</span><span class="n">DeferredReflection</span><span class="p">,</span> <span class="n">Base</span><span class="p">):</span>
+    <span class="n">__abstract__</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="k">class</span> <span class="nc">MyClass</span><span class="p">(</span><span class="n">ReflectedOne</span><span class="p">):</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s1">'mytable'</span>
+
+<span class="k">class</span> <span class="nc">MyOtherClass</span><span class="p">(</span><span class="n">ReflectedOne</span><span class="p">):</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s1">'myothertable'</span>
+
+<span class="k">class</span> <span class="nc">YetAnotherClass</span><span class="p">(</span><span class="n">ReflectedTwo</span><span class="p">):</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s1">'yetanothertable'</span>
+
+<span class="c1"># ... etc.</span></pre><div class="code-non-annotations-key"></div></div>
+</div>
+<p>Above, the class hierarchies for <code class="docutils literal notranslate"><span class="pre">ReflectedOne</span></code> and
+<code class="docutils literal notranslate"><span class="pre">ReflectedTwo</span></code> can be configured separately:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ReflectedOne</span><span class="o">.</span><span class="n">prepare</span><span class="p">(</span><span class="n">engine_one</span><span class="p">)</span>
+<span class="n">ReflectedTwo</span><span class="o">.</span><span class="n">prepare</span><span class="p">(</span><span class="n">engine_two</span><span class="p">)</span></pre></div>
+</div>
+<div class="class-members docutils container">
+<p><strong>Members</strong></p>
+<p><a class="reference internal" href="#sqlalchemy.ext.declarative.DeferredReflection.prepare"><span class="sig-name descname">prepare()</span></a></p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../../declarative_tables.html#orm-declarative-reflected-deferred-reflection"><span class="std std-ref">Using DeferredReflection</span></a> - in the
+<a class="reference internal" href="../../declarative_tables.html"><span class="std std-ref">Table Configuration with Declarative</span></a> section.</p>
+</div>
+<dl class="py method">
+<a class="dashAnchor" name="//apple_ref/Method/sqlalchemy.ext.declarative.DeferredReflection.prepare"></a><dt class="sig sig-object py" id="sqlalchemy.ext.declarative.DeferredReflection.prepare">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><a class="reference internal" href="#sqlalchemy.ext.declarative.DeferredReflection"><code class="docutils literal notranslate"><span class="pre">sqlalchemy.ext.declarative.DeferredReflection.</span></code></a><span class="sig-name descname"><span class="pre">prepare</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bind</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../../core/connections.html#sqlalchemy.engine.Engine" title="sqlalchemy.engine.base.Engine"><span class="pre">Engine</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../../core/connections.html#sqlalchemy.engine.Connection" title="sqlalchemy.engine.base.Connection"><span class="pre">Connection</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">reflect_kw</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#sqlalchemy.ext.declarative.DeferredReflection.prepare" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reflect all <a class="reference internal" href="../../../core/metadata.html#sqlalchemy.schema.Table" title="sqlalchemy.schema.Table"><code class="xref py py-class docutils literal notranslate"><span class="pre">Table</span></code></a> objects for all current
+<a class="reference internal" href="#sqlalchemy.ext.declarative.DeferredReflection" title="sqlalchemy.ext.declarative.DeferredReflection"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeferredReflection</span></code></a> subclasses</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="dashAnchor" name="//apple_ref/Parameter/sqlalchemy.ext.declarative.DeferredReflection.prepare.params.bind"></a><span class="target" id="sqlalchemy.ext.declarative.DeferredReflection.prepare.params.bind"></span><strong>bind</strong><a class="paramlink headerlink reference internal" href="#sqlalchemy.ext.declarative.DeferredReflection.prepare.params.bind">¶</a> – </p><p><a class="reference internal" href="../../../core/connections.html#sqlalchemy.engine.Engine" title="sqlalchemy.engine.Engine"><code class="xref py py-class docutils literal notranslate"><span class="pre">Engine</span></code></a> or <a class="reference internal" href="../../../core/connections.html#sqlalchemy.engine.Connection" title="sqlalchemy.engine.Connection"><code class="xref py py-class docutils literal notranslate"><span class="pre">Connection</span></code></a>
+instance</p>
+<p>..versionchanged:: 2.0.16 a <a class="reference internal" href="../../../core/connections.html#sqlalchemy.engine.Connection" title="sqlalchemy.engine.Connection"><code class="xref py py-class docutils literal notranslate"><span class="pre">Connection</span></code></a> is also
+accepted.</p>
+<p></p></li>
+<li><p><a class="dashAnchor" name="//apple_ref/Parameter/sqlalchemy.ext.declarative.DeferredReflection.prepare.params.**reflect_kw"></a><span class="target" id="sqlalchemy.ext.declarative.DeferredReflection.prepare.params.**reflect_kw"></span><strong>**reflect_kw</strong><a class="paramlink headerlink reference internal" href="#sqlalchemy.ext.declarative.DeferredReflection.prepare.params.**reflect_kw">¶</a> – </p><p>additional keyword arguments passed to
+<a class="reference internal" href="../../../core/metadata.html#sqlalchemy.schema.MetaData.reflect" title="sqlalchemy.schema.MetaData.reflect"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MetaData.reflect()</span></code></a>, such as
+<a class="reference internal" href="../../../core/metadata.html#sqlalchemy.schema.MetaData.reflect.params.views" title="sqlalchemy.schema.MetaData.reflect"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">MetaData.reflect.views</span></code></a>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.0.16.</span></p>
+</div>
+<p></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+    </div>
+
+</div>
+
+<div id="docs-bottom-navigation" class="docs-navigation-links, ">
+        Previous:
+        <a href="../baked.html" title="previous chapter">Baked Queries</a>
+        Next:
+        <a href="../mypy.html" title="next chapter">Mypy  / Pep-484 Support for ORM Mappings</a>
+
+    <div id="docs-copyright">
+        © <a href="../../../copyright.html">Copyright</a> 2007-2023, the SQLAlchemy authors and contributors.
+
+
+    <p><b>flambé!</b> the dragon and <b><i>The Alchemist</i></b> image designs created and generously donated by <a href="https://github.com/vmalloc">Rotem Yaari</a>.</p>
+
+        Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 7.0.1.
+
+    Documentation last generated: Wed 05 Jul 2023 03:33:49 PM 
+
+    </div>
+</div>
+
+</div>
+
+
+
+
+</main></div>
+
+</div> <!-- end #main-body -->
+
+
+    
+
+    
+
+<div id="footer" class="footer">
+    <div class="snd-ad">
+    </div>
+    <div class="pypowered">
+        <a href="http://www.python.org/" title="The Python Language Site">
+            <img src="../../../../../../www.sqlalchemy.org/img/python-logo.gif" width="88" height="30" alt="Python" class="pypowered">
+        </a>
+    </div>
+
+    <div class="copyright">
+        <p>Website content copyright © by SQLAlchemy authors and contributors.
+            SQLAlchemy and its documentation are licensed under the MIT license.</p>
+        <p>SQLAlchemy is a trademark of Michael Bayer.  mike(&amp;)zzzcomputing.com
+        All rights reserved. </p>
+        <p>Website generation by
+        <a href="https://github.com/sqlalchemyorg/zeekofile/">zeekofile</a>, with
+        huge thanks to the <a href="https://github.com/EnigmaCurry/blogofile">Blogofile</a>
+        project.</p>
+
+        <a rel="me" href="https://fosstodon.org/@zzzeek">Mastodon</a>
+
+    </div>
+
+    <br clear="all">
+
+</div>
+
+
+
+     <!-- End original user content -->
+
+    
+
+
+
+
+ <!-- end #wrap -->
+
+
+    
+
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+          URL_ROOT:    '../../../',
+          VERSION:     '2.0.18',
+          COLLAPSE_MODINDEX: false,
+          FILE_SUFFIX: '.html'
+      };
+    </script>
+
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+
+    <!-- begin iterate through sphinx environment script_files -->
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script type="text/javascript" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/sphinx_highlight.js"></script>
+        <script type="text/javascript" src="../../../_static/clipboard.min.js"></script>
+        <script type="text/javascript" src="../../../_static/copybutton.js"></script>
+    <!-- end iterate through sphinx environment script_files -->
+
+    <script type="text/javascript" src="../../../_static/init.js"></script>
+
+
+
+
+<script type="text/javascript" src="../../../../../../www.sqlalchemy.org/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript" src="../../../../../../www.sqlalchemy.org/js/doc_versions.js"></script>
+
+<!-- Google tag (gtag.js) -->
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-KWWK46V0YX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-KWWK46V0YX');
+</script>
+
+
+
+
+<!-- Mirrored from docs.sqlalchemy.org/en/20/orm/extensions/declarative/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 06 Jul 2023 08:05:30 GMT -->
+
+
+</body></html>

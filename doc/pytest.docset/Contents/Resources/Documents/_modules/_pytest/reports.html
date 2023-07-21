@@ -3,35 +3,33 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>_pytest.reports &#8212; pytest documentation</title>
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/pygments_pytest.css" />
-    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <link rel="shortcut icon" href="../../_static/favicon.png"/>
-    <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-  <script>DOCUMENTATION_OPTIONS.URL_ROOT = '../../';</script>
+  <script>DOCUMENTATION_OPTIONS.URL_ROOT = '';</script>
    
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
-          <a href="../../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../contents.html">pytest-6.2</a> &#187;</li>
+             >modules</a></li>
+        <li class="nav-item nav-item-0"><a href="../../contents.html">pytest-7.3</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">_pytest.reports</a></li> 
       </ul>
@@ -42,8 +40,9 @@
           <div class="body" role="main">
             
   <h1>Source code for _pytest.reports</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">StringIO</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span></span><span class="kn">import</span> <span class="nn">dataclasses</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">StringIO</span>
 <span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">cast</span>
@@ -51,15 +50,14 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Iterable</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Iterator</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Mapping</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">NoReturn</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Type</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TypeVar</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
-
-<span class="kn">import</span> <span class="nn">attr</span>
-<span class="kn">import</span> <span class="nn">py</span>
 
 <span class="kn">from</span> <span class="nn">_pytest._code.code</span> <span class="kn">import</span> <span class="n">ExceptionChainRepr</span>
 <span class="kn">from</span> <span class="nn">_pytest._code.code</span> <span class="kn">import</span> <span class="n">ExceptionInfo</span>
@@ -80,7 +78,6 @@
 <span class="kn">from</span> <span class="nn">_pytest.outcomes</span> <span class="kn">import</span> <span class="n">skip</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">NoReturn</span>
     <span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Literal</span>
 
     <span class="kn">from</span> <span class="nn">_pytest.runner</span> <span class="kn">import</span> <span class="n">CallInfo</span>
@@ -109,6 +106,7 @@
     <span class="p">]</span>
     <span class="n">sections</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span>
     <span class="n">nodeid</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">outcome</span><span class="p">:</span> <span class="s2">&quot;Literal[&#39;passed&#39;, &#39;failed&#39;, &#39;skipped&#39;]&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kw</span><span class="p">)</span>
@@ -120,7 +118,9 @@
 
     <span class="k">def</span> <span class="nf">toterminal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">out</span><span class="p">:</span> <span class="n">TerminalWriter</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;node&quot;</span><span class="p">):</span>
-            <span class="n">out</span><span class="o">.</span><span class="n">line</span><span class="p">(</span><span class="n">getworkerinfoline</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="p">))</span>
+            <span class="n">worker_info</span> <span class="o">=</span> <span class="n">getworkerinfoline</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">worker_info</span><span class="p">:</span>
+                <span class="n">out</span><span class="o">.</span><span class="n">line</span><span class="p">(</span><span class="n">worker_info</span><span class="p">)</span>
 
         <span class="n">longrepr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">longrepr</span>
         <span class="k">if</span> <span class="n">longrepr</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -143,7 +143,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">longreprtext</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Read-only property that returns the full string representation of</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Read-only property that returns the full string representation of</span>
 <span class="sd">        ``longrepr``.</span>
 
 <span class="sd">        .. versionadded:: 3.0</span>
@@ -157,7 +157,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">caplog</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return captured log lines, if log capturing is enabled.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return captured log lines, if log capturing is enabled.</span>
 
 <span class="sd">        .. versionadded:: 3.5</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -167,7 +167,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">capstdout</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return captured text from stdout, if capturing is enabled.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return captured text from stdout, if capturing is enabled.</span>
 
 <span class="sd">        .. versionadded:: 3.0</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -177,7 +177,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">capstderr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return captured text from stderr, if capturing is enabled.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return captured text from stderr, if capturing is enabled.</span>
 
 <span class="sd">        .. versionadded:: 3.0</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -185,17 +185,29 @@
             <span class="n">content</span> <span class="k">for</span> <span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">content</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="s2">&quot;Captured stderr&quot;</span><span class="p">)</span>
         <span class="p">)</span>
 
-    <span class="n">passed</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">outcome</span> <span class="o">==</span> <span class="s2">&quot;passed&quot;</span><span class="p">)</span>
-    <span class="n">failed</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">outcome</span> <span class="o">==</span> <span class="s2">&quot;failed&quot;</span><span class="p">)</span>
-    <span class="n">skipped</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">outcome</span> <span class="o">==</span> <span class="s2">&quot;skipped&quot;</span><span class="p">)</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">passed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Whether the outcome is passed.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">outcome</span> <span class="o">==</span> <span class="s2">&quot;passed&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">failed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Whether the outcome is failed.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">outcome</span> <span class="o">==</span> <span class="s2">&quot;failed&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">skipped</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Whether the outcome is skipped.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">outcome</span> <span class="o">==</span> <span class="s2">&quot;skipped&quot;</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">fspath</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The path portion of the reported node, as a string.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodeid</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;::&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">count_towards_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;**Experimental** Whether this report should be counted towards the</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;**Experimental** Whether this report should be counted towards the</span>
 <span class="sd">        totals shown at the end of the test session: &quot;1 passed, 1 failure, etc&quot;.</span>
 
 <span class="sd">        .. note::</span>
@@ -207,7 +219,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">head_line</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;**Experimental** The head line shown with longrepr output for this</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;**Experimental** The head line shown with longrepr output for this</span>
 <span class="sd">        report, more commonly during traceback representation during</span>
 <span class="sd">        failures::</span>
 
@@ -233,7 +245,7 @@
         <span class="k">return</span> <span class="n">verbose</span>
 
     <span class="k">def</span> <span class="nf">_to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Return the contents of this report as a dict of builtin entries,</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the contents of this report as a dict of builtin entries,</span>
 <span class="sd">        suitable for serialization.</span>
 
 <span class="sd">        This was originally the serialize_report() function from xdist (ca03269).</span>
@@ -244,7 +256,7 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_from_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">_R</span><span class="p">],</span> <span class="n">reportdict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">_R</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Create either a TestReport or CollectReport, depending on the calling class.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create either a TestReport or CollectReport, depending on the calling class.</span>
 
 <span class="sd">        It is the callers responsibility to know which class to pass here.</span>
 
@@ -258,7 +270,7 @@
 
 <span class="k">def</span> <span class="nf">_report_unserialization_failure</span><span class="p">(</span>
     <span class="n">type_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">report_class</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">BaseReport</span><span class="p">],</span> <span class="n">reportdict</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;NoReturn&quot;</span><span class="p">:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NoReturn</span><span class="p">:</span>
     <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://github.com/pytest-dev/pytest/issues&quot;</span>
     <span class="n">stream</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
     <span class="n">pprint</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">100</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="n">stream</span><span class="p">)</span>
@@ -270,10 +282,13 @@
     <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">stream</span><span class="o">.</span><span class="n">getvalue</span><span class="p">())</span>
 
 
-<div class="viewcode-block" id="TestReport"><a class="viewcode-back" href="../../reference.html#_pytest.reports.TestReport">[docs]</a><span class="nd">@final</span>
+<div class="viewcode-block" id="TestReport"><a class="viewcode-back" href="../../reference/reference.html#pytest.TestReport">[docs]</a><span class="nd">@final</span>
 <span class="k">class</span> <span class="nc">TestReport</span><span class="p">(</span><span class="n">BaseReport</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Basic test report object (also used for setup and teardown calls if</span>
-<span class="sd">    they fail).&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Basic test report object (also used for setup and teardown calls if</span>
+<span class="sd">    they fail).</span>
+
+<span class="sd">    Reports can contain arbitrary extra attributes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">__test__</span> <span class="o">=</span> <span class="kc">False</span>
 
@@ -281,7 +296,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">nodeid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">location</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">str</span><span class="p">],</span>
-        <span class="n">keywords</span><span class="p">,</span>
+        <span class="n">keywords</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
         <span class="n">outcome</span><span class="p">:</span> <span class="s2">&quot;Literal[&#39;passed&#39;, &#39;failed&#39;, &#39;skipped&#39;]&quot;</span><span class="p">,</span>
         <span class="n">longrepr</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span>
             <span class="kc">None</span><span class="p">,</span> <span class="n">ExceptionInfo</span><span class="p">[</span><span class="ne">BaseException</span><span class="p">],</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">,</span> <span class="n">TerminalRepr</span>
@@ -289,6 +304,8 @@
         <span class="n">when</span><span class="p">:</span> <span class="s2">&quot;Literal[&#39;setup&#39;, &#39;call&#39;, &#39;teardown&#39;]&quot;</span><span class="p">,</span>
         <span class="n">sections</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(),</span>
         <span class="n">duration</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">start</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">stop</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
         <span class="n">user_properties</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Iterable</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">extra</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -298,11 +315,13 @@
         <span class="c1">#: A (filesystempath, lineno, domaininfo) tuple indicating the</span>
         <span class="c1">#: actual location of a test item - it might be different from the</span>
         <span class="c1">#: collected one e.g. if a method is inherited from a different module.</span>
+        <span class="c1">#: The filesystempath may be relative to ``config.rootdir``.</span>
+        <span class="c1">#: The line number is 0-based.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">location</span>
 
         <span class="c1">#: A name -&gt; value dictionary containing all keywords and</span>
         <span class="c1">#: markers associated with a test invocation.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">keywords</span> <span class="o">=</span> <span class="n">keywords</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">keywords</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">keywords</span>
 
         <span class="c1">#: Test outcome, always one of &quot;passed&quot;, &quot;failed&quot;, &quot;skipped&quot;.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">outcome</span> <span class="o">=</span> <span class="n">outcome</span>
@@ -317,14 +336,19 @@
         <span class="c1">#: defined properties of the test.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">user_properties</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">user_properties</span> <span class="ow">or</span> <span class="p">[])</span>
 
-        <span class="c1">#: List of pairs ``(str, str)`` of extra information which needs to</span>
-        <span class="c1">#: marshallable. Used by pytest to add captured text</span>
-        <span class="c1">#: from ``stdout`` and ``stderr``, but may be used by other plugins</span>
-        <span class="c1">#: to add arbitrary information to reports.</span>
+        <span class="c1">#: Tuples of str ``(heading, content)`` with extra information</span>
+        <span class="c1">#: for the test report. Used by pytest to add text captured</span>
+        <span class="c1">#: from ``stdout``, ``stderr``, and intercepted logging events. May</span>
+        <span class="c1">#: be used by other plugins to add arbitrary information to reports.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sections</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sections</span><span class="p">)</span>
 
         <span class="c1">#: Time it took to run just the test.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="n">duration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">duration</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">duration</span>
+
+        <span class="c1">#: The system time when the call started, in seconds since the epoch.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">start</span>
+        <span class="c1">#: The system time when the call ended, in seconds since the epoch.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">stop</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extra</span><span class="p">)</span>
 
@@ -333,13 +357,19 @@
             <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodeid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">when</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">outcome</span>
         <span class="p">)</span>
 
-<div class="viewcode-block" id="TestReport.from_item_and_call"><a class="viewcode-back" href="../../reference.html#_pytest.reports.TestReport.from_item_and_call">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="TestReport.from_item_and_call"><a class="viewcode-back" href="../../reference/reference.html#pytest.TestReport.from_item_and_call">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_item_and_call</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">Item</span><span class="p">,</span> <span class="n">call</span><span class="p">:</span> <span class="s2">&quot;CallInfo[None]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TestReport&quot;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Create and fill a TestReport with standard item and call info.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create and fill a TestReport with standard item and call info.</span>
+
+<span class="sd">        :param item: The item.</span>
+<span class="sd">        :param call: The call info.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">when</span> <span class="o">=</span> <span class="n">call</span><span class="o">.</span><span class="n">when</span>
         <span class="c1"># Remove &quot;collect&quot; from the Literal type -- only for collection calls.</span>
         <span class="k">assert</span> <span class="n">when</span> <span class="o">!=</span> <span class="s2">&quot;collect&quot;</span>
         <span class="n">duration</span> <span class="o">=</span> <span class="n">call</span><span class="o">.</span><span class="n">duration</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">call</span><span class="o">.</span><span class="n">start</span>
+        <span class="n">stop</span> <span class="o">=</span> <span class="n">call</span><span class="o">.</span><span class="n">stop</span>
         <span class="n">keywords</span> <span class="o">=</span> <span class="p">{</span><span class="n">x</span><span class="p">:</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">keywords</span><span class="p">}</span>
         <span class="n">excinfo</span> <span class="o">=</span> <span class="n">call</span><span class="o">.</span><span class="n">excinfo</span>
         <span class="n">sections</span> <span class="o">=</span> <span class="p">[]</span>
@@ -351,7 +381,7 @@
                 <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
                 <span class="nb">str</span><span class="p">,</span>
                 <span class="n">TerminalRepr</span><span class="p">,</span>
-            <span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+            <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">excinfo</span><span class="p">,</span> <span class="n">ExceptionInfo</span><span class="p">):</span>
                 <span class="n">outcome</span> <span class="o">=</span> <span class="s2">&quot;failed&quot;</span>
@@ -359,7 +389,16 @@
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">excinfo</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">skip</span><span class="o">.</span><span class="n">Exception</span><span class="p">):</span>
                 <span class="n">outcome</span> <span class="o">=</span> <span class="s2">&quot;skipped&quot;</span>
                 <span class="n">r</span> <span class="o">=</span> <span class="n">excinfo</span><span class="o">.</span><span class="n">_getreprcrash</span><span class="p">()</span>
-                <span class="n">longrepr</span> <span class="o">=</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">path</span><span class="p">),</span> <span class="n">r</span><span class="o">.</span><span class="n">lineno</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">r</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="s2">&quot;There should always be a traceback entry for skipping a test.&quot;</span>
+                    <span class="p">)</span>
+                <span class="k">if</span> <span class="n">excinfo</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">_use_item_location</span><span class="p">:</span>
+                    <span class="n">path</span><span class="p">,</span> <span class="n">line</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">reportinfo</span><span class="p">()[:</span><span class="mi">2</span><span class="p">]</span>
+                    <span class="k">assert</span> <span class="n">line</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                    <span class="n">longrepr</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">fspath</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="n">line</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">message</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">longrepr</span> <span class="o">=</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">path</span><span class="p">),</span> <span class="n">r</span><span class="o">.</span><span class="n">lineno</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">outcome</span> <span class="o">=</span> <span class="s2">&quot;failed&quot;</span>
                 <span class="k">if</span> <span class="n">call</span><span class="o">.</span><span class="n">when</span> <span class="o">==</span> <span class="s2">&quot;call&quot;</span><span class="p">:</span>
@@ -379,21 +418,28 @@
             <span class="n">when</span><span class="p">,</span>
             <span class="n">sections</span><span class="p">,</span>
             <span class="n">duration</span><span class="p">,</span>
+            <span class="n">start</span><span class="p">,</span>
+            <span class="n">stop</span><span class="p">,</span>
             <span class="n">user_properties</span><span class="o">=</span><span class="n">item</span><span class="o">.</span><span class="n">user_properties</span><span class="p">,</span>
         <span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CollectReport"><a class="viewcode-back" href="../../reference.html#_pytest.reports.CollectReport">[docs]</a><span class="nd">@final</span>
+<div class="viewcode-block" id="CollectReport"><a class="viewcode-back" href="../../reference/reference.html#pytest.CollectReport">[docs]</a><span class="nd">@final</span>
 <span class="k">class</span> <span class="nc">CollectReport</span><span class="p">(</span><span class="n">BaseReport</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Collection report object.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Collection report object.</span>
+
+<span class="sd">    Reports can contain arbitrary extra attributes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">when</span> <span class="o">=</span> <span class="s2">&quot;collect&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">nodeid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">outcome</span><span class="p">:</span> <span class="s2">&quot;Literal[&#39;passed&#39;, &#39;skipped&#39;, &#39;failed&#39;]&quot;</span><span class="p">,</span>
-        <span class="n">longrepr</span><span class="p">,</span>
+        <span class="n">outcome</span><span class="p">:</span> <span class="s2">&quot;Literal[&#39;passed&#39;, &#39;failed&#39;, &#39;skipped&#39;]&quot;</span><span class="p">,</span>
+        <span class="n">longrepr</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span>
+            <span class="kc">None</span><span class="p">,</span> <span class="n">ExceptionInfo</span><span class="p">[</span><span class="ne">BaseException</span><span class="p">],</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">,</span> <span class="n">TerminalRepr</span>
+        <span class="p">],</span>
         <span class="n">result</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Item</span><span class="p">,</span> <span class="n">Collector</span><span class="p">]]],</span>
         <span class="n">sections</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(),</span>
         <span class="o">**</span><span class="n">extra</span><span class="p">,</span>
@@ -410,17 +456,18 @@
         <span class="c1">#: The collected items and collection nodes.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="ow">or</span> <span class="p">[]</span>
 
-        <span class="c1">#: List of pairs ``(str, str)`` of extra information which needs to</span>
-        <span class="c1">#: marshallable.</span>
-        <span class="c1"># Used by pytest to add captured text : from ``stdout`` and ``stderr``,</span>
-        <span class="c1"># but may be used by other plugins : to add arbitrary information to</span>
-        <span class="c1"># reports.</span>
+        <span class="c1">#: Tuples of str ``(heading, content)`` with extra information</span>
+        <span class="c1">#: for the test report. Used by pytest to add text captured</span>
+        <span class="c1">#: from ``stdout``, ``stderr``, and intercepted logging events. May</span>
+        <span class="c1">#: be used by other plugins to add arbitrary information to reports.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sections</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sections</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extra</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">location</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">location</span><span class="p">(</span>  <span class="c1"># type:ignore[override]</span>
+        <span class="bp">self</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">str</span><span class="p">]]:</span>
         <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fspath</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fspath</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -463,7 +510,7 @@
 
 
 <span class="k">def</span> <span class="nf">_report_to_json</span><span class="p">(</span><span class="n">report</span><span class="p">:</span> <span class="n">BaseReport</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Return the contents of this report as a dict of builtin entries,</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the contents of this report as a dict of builtin entries,</span>
 <span class="sd">    suitable for serialization.</span>
 
 <span class="sd">    This was originally the serialize_report() function from xdist (ca03269).</span>
@@ -472,15 +519,15 @@
     <span class="k">def</span> <span class="nf">serialize_repr_entry</span><span class="p">(</span>
         <span class="n">entry</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ReprEntry</span><span class="p">,</span> <span class="n">ReprEntryNative</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">asdict</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">asdict</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s2">&quot;__dict__&quot;</span><span class="p">):</span>
-                <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">asdict</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">asdict</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
         <span class="n">entry_data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">type</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">data</span><span class="p">}</span>
         <span class="k">return</span> <span class="n">entry_data</span>
 
     <span class="k">def</span> <span class="nf">serialize_repr_traceback</span><span class="p">(</span><span class="n">reprtraceback</span><span class="p">:</span> <span class="n">ReprTraceback</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">asdict</span><span class="p">(</span><span class="n">reprtraceback</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">asdict</span><span class="p">(</span><span class="n">reprtraceback</span><span class="p">)</span>
         <span class="n">result</span><span class="p">[</span><span class="s2">&quot;reprentries&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">serialize_repr_entry</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">reprtraceback</span><span class="o">.</span><span class="n">reprentries</span>
         <span class="p">]</span>
@@ -490,7 +537,7 @@
         <span class="n">reprcrash</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ReprFileLocation</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
         <span class="k">if</span> <span class="n">reprcrash</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">attr</span><span class="o">.</span><span class="n">asdict</span><span class="p">(</span><span class="n">reprcrash</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">asdict</span><span class="p">(</span><span class="n">reprcrash</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
 
@@ -528,15 +575,15 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">d</span><span class="p">[</span><span class="s2">&quot;longrepr&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">longrepr</span>
     <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">name</span><span class="p">],</span> <span class="p">(</span><span class="n">py</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">local</span><span class="p">,</span> <span class="n">Path</span><span class="p">)):</span>
-            <span class="n">d</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">name</span><span class="p">])</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">name</span><span class="p">],</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">):</span>
+            <span class="n">d</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">fspath</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">name</span><span class="p">])</span>
         <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;result&quot;</span><span class="p">:</span>
             <span class="n">d</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># for now</span>
     <span class="k">return</span> <span class="n">d</span>
 
 
 <span class="k">def</span> <span class="nf">_report_kwargs_from_json</span><span class="p">(</span><span class="n">reportdict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Return **kwargs that can be used to construct a TestReport or</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return **kwargs that can be used to construct a TestReport or</span>
 <span class="sd">    CollectReport instance.</span>
 
 <span class="sd">    This was originally the serialize_report() function from xdist (ca03269).</span>
@@ -586,7 +633,6 @@
         <span class="ow">and</span> <span class="s2">&quot;reprcrash&quot;</span> <span class="ow">in</span> <span class="n">reportdict</span><span class="p">[</span><span class="s2">&quot;longrepr&quot;</span><span class="p">]</span>
         <span class="ow">and</span> <span class="s2">&quot;reprtraceback&quot;</span> <span class="ow">in</span> <span class="n">reportdict</span><span class="p">[</span><span class="s2">&quot;longrepr&quot;</span><span class="p">]</span>
     <span class="p">):</span>
-
         <span class="n">reprtraceback</span> <span class="o">=</span> <span class="n">deserialize_repr_traceback</span><span class="p">(</span>
             <span class="n">reportdict</span><span class="p">[</span><span class="s2">&quot;longrepr&quot;</span><span class="p">][</span><span class="s2">&quot;reprtraceback&quot;</span><span class="p">]</span>
         <span class="p">)</span>
@@ -607,7 +653,10 @@
                 <span class="n">ExceptionChainRepr</span><span class="p">,</span> <span class="n">ReprExceptionInfo</span>
             <span class="p">]</span> <span class="o">=</span> <span class="n">ExceptionChainRepr</span><span class="p">(</span><span class="n">chain</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">exception_info</span> <span class="o">=</span> <span class="n">ReprExceptionInfo</span><span class="p">(</span><span class="n">reprtraceback</span><span class="p">,</span> <span class="n">reprcrash</span><span class="p">)</span>
+            <span class="n">exception_info</span> <span class="o">=</span> <span class="n">ReprExceptionInfo</span><span class="p">(</span>
+                <span class="n">reprtraceback</span><span class="o">=</span><span class="n">reprtraceback</span><span class="p">,</span>
+                <span class="n">reprcrash</span><span class="o">=</span><span class="n">reprcrash</span><span class="p">,</span>
+            <span class="p">)</span>
 
         <span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="n">reportdict</span><span class="p">[</span><span class="s2">&quot;longrepr&quot;</span><span class="p">][</span><span class="s2">&quot;sections&quot;</span><span class="p">]:</span>
             <span class="n">exception_info</span><span class="o">.</span><span class="n">addsection</span><span class="p">(</span><span class="o">*</span><span class="n">section</span><span class="p">)</span>
@@ -624,8 +673,8 @@
     </div>
   
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2015–2020, holger krekel and pytest-dev team.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
+        &#169; Copyright 2015, holger krekel and pytest-dev team.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
     </div>
   <script src="../../_static/version_warning_offset.js"></script>
 

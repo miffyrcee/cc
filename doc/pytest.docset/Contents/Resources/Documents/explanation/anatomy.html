@@ -1,0 +1,91 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Anatomy of a test — pytest documentation</title>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/basic.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/pygments_pytest.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../_static/doctools.js"></script>
+<script src="../_static/sphinx_highlight.js"></script>
+<link href="../_static/favicon.png" rel="shortcut icon"/>
+<link href="../search.html" rel="search" title="Search"/>
+<link href="fixtures.html" rel="next" title="About fixtures"/>
+<link href="../reference/reference.html" rel="prev" title="API Reference"/>
+<script>DOCUMENTATION_OPTIONS.URL_ROOT = '';</script>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../py-modindex.html" title="Python Module Index">modules</a></li>
+<li class="right">
+<a accesskey="N" href="fixtures.html" title="About fixtures">next</a> |</li>
+<li class="right">
+<a accesskey="P" href="../reference/reference.html" title="API Reference">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../contents.html">pytest-7.3</a> »</li>
+<li class="nav-item nav-item-this"><a href="">Anatomy of a test</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="body" role="main">
+<section id="anatomy-of-a-test">
+<a class="dashAnchor" name="//apple_ref/cpp/Section/Anatomy of a test"></a><span id="test-anatomy"></span><h1>Anatomy of a test<a class="headerlink" href="#anatomy-of-a-test" title="Permalink to this heading">¶</a></h1>
+<p>In the simplest terms, a test is meant to look at the result of a particular
+behavior, and make sure that result aligns with what you would expect.
+Behavior is not something that can be empirically measured, which is why writing
+tests can be challenging.</p>
+<p>“Behavior” is the way in which some system <strong>acts in response</strong> to a particular
+situation and/or stimuli. But exactly <em>how</em> or <em>why</em> something is done is not
+quite as important as <em>what</em> was done.</p>
+<p>You can think of a test as being broken down into four steps:</p>
+<ol class="arabic simple">
+<li><p><strong>Arrange</strong></p></li>
+<li><p><strong>Act</strong></p></li>
+<li><p><strong>Assert</strong></p></li>
+<li><p><strong>Cleanup</strong></p></li>
+</ol>
+<p><strong>Arrange</strong> is where we prepare everything for our test. This means pretty
+much everything except for the “<strong>act</strong>”. It’s lining up the dominoes so that
+the <strong>act</strong> can do its thing in one, state-changing step. This can mean
+preparing objects, starting/killing services, entering records into a database,
+or even things like defining a URL to query, generating some credentials for a
+user that doesn’t exist yet, or just waiting for some process to finish.</p>
+<p><strong>Act</strong> is the singular, state-changing action that kicks off the <strong>behavior</strong>
+we want to test. This behavior is what carries out the changing of the state of
+the system under test (SUT), and it’s the resulting changed state that we can
+look at to make a judgement about the behavior. This typically takes the form of
+a function/method call.</p>
+<p><strong>Assert</strong> is where we look at that resulting state and check if it looks how
+we’d expect after the dust has settled. It’s where we gather evidence to say the
+behavior does or does not aligns with what we expect. The <code class="docutils literal notranslate"><span class="pre">assert</span></code> in our test
+is where we take that measurement/observation and apply our judgement to it. If
+something should be green, we’d say <code class="docutils literal notranslate"><span class="pre">assert</span> <span class="pre">thing</span> <span class="pre">==</span> <span class="pre">"green"</span></code>.</p>
+<p><strong>Cleanup</strong> is where the test picks up after itself, so other tests aren’t being
+accidentally influenced by it.</p>
+<p>At its core, the test is ultimately the <strong>act</strong> and <strong>assert</strong> steps, with the
+<strong>arrange</strong> step only providing the context. <strong>Behavior</strong> exists between <strong>act</strong>
+and <strong>assert</strong>.</p>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+<span id="sidebar-top"></span>
+<div class="clearer"></div>
+</div>
+<div class="footer" role="contentinfo">
+        © Copyright 2015, holger krekel and pytest-dev team.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    </div>
+<script src="../_static/version_warning_offset.js"></script>
+</body>
+</html>

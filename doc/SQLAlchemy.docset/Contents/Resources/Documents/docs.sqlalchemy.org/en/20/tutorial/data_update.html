@@ -1,0 +1,857 @@
+<html><!-- Mirrored from docs.sqlalchemy.org/en/20/tutorial/data_update.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 06 Jul 2023 08:05:53 GMT --><!-- Added by HTTrack --><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><!-- /Added by HTTrack -->
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>
+        
+        
+    
+    Using UPDATE and DELETE Statements
+ </title>
+
+    
+
+    
+
+    <link href="../../../../fonts.googleapis.com/cssa2b2.css?family=Lato:400,700|Roboto+Slab:400,700" rel="stylesheet" type="text/css">
+
+    
+        <!-- begin iterate through SQLA css_files -->
+            <link rel="stylesheet" href="../_static/pygments.css" type="text/css">
+        <!-- end iterate through SQLA css_files -->
+
+        <!-- begin iterate through sphinx environment local css_files -->
+            <link rel="stylesheet" href="../_static/pygments.css" type="text/css">
+            <link rel="stylesheet" href="../_static/default.css" type="text/css">
+            <link rel="stylesheet" href="../_static/copybutton.css" type="text/css">
+            <link rel="stylesheet" href="../_static/docs.css" type="text/css">
+            <link rel="stylesheet" href="../_static/changelog.css" type="text/css">
+            <link rel="stylesheet" href="../_static/sphinx_paramlinks.css" type="text/css">
+        <!-- end iterate through sphinx environment local css_files -->
+
+        <link rel="stylesheet" type="text/css" media="all" href="../../../../www.sqlalchemy.org/css/bootstrap.min.css">
+	    <link rel="stylesheet" type="text/css" media="all" href="../../../../www.sqlalchemy.org/css/site.css">
+        <link rel="stylesheet" type="text/css" media="all" href="../../../../www.sqlalchemy.org/css/sidebar_extra.css">
+        <link rel="stylesheet" type="text/css" media="print" href="../../../../www.sqlalchemy.org/css/print.css">
+
+        <!-- begin iterate through sphinx environment remote css_files -->
+        <!-- end iterate through sphinx environment remote css_files -->
+    
+
+    
+
+    
+
+    
+
+
+    
+        <link rel="canonical" href="http://docs.sqlalchemy.org/en/latest/tutorial/data_update.html">
+
+    <script type="text/javascript">
+        var doc_version = "latest";
+        var doc_slug = "sqlalchemy";
+        var static_root = "../_static"
+
+        // copied from:
+        // https://github.com/rtfd/readthedocs.org/commit/edbbb4c753454cf20c128d4eb2fef60d740debaa#diff-2f70e8d9361202bfe3f378d2ff2c510bR8
+        var READTHEDOCS_DATA = {
+            project: "sqlalchemy",
+            version: "latest",
+            page: "tutorial/data_update",
+            theme: ""
+          };
+
+
+    </script>
+    <!-- end RTD <head> via SQLAlchemy adapter -->
+
+    
+
+    <!-- begin layout.mako headers -->
+
+    <link rel="index" title="Index" href="../genindex.html">
+    <link rel="search" title="Search" href="../search.html">
+        <link rel="copyright" title="Copyright" href="../copyright.html">
+    <link rel="top" title="SQLAlchemy 2.0 Documentation" href="../index-2.html">
+        <link rel="up" title="Working with Data" href="data.html">
+        <link rel="next" title="Data Manipulation with the ORM" href="orm_data_manipulation.html">
+        <link rel="prev" title="Using SELECT Statements" href="data_select.html">
+    <!-- end layout.mako headers -->
+
+
+
+
+    
+
+    <!-- sqlalchemy.org docs base head -->
+    
+<link rel="shortcut icon" href="../../../../www.sqlalchemy.org/favicon.ico" type="image/x-icon">
+<link href="../../../../fonts.googleapis.com/css118a.css?family=Source+Sans+Pro:400,600,400italic" rel="stylesheet" type="text/css">
+
+<script type="text/javascript">
+var site_base='//www.sqlalchemy.org';
+var docs_base='//docs.sqlalchemy.org';
+</script>
+
+
+    <!-- end sqlalchemy.org docs base head -->
+
+</head>
+
+<body>
+
+<div id="wrap" class="container-xxl wrap px-0">
+
+
+
+
+
+<nav class="navbar navbar-light logo">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="http://www.sqlalchemy.org/">
+            <img src="../../../../www.sqlalchemy.org/img/sqla_logo.png" width="240" alt="SQLAlchemy">
+        </a>
+        <div class="navbar-brand align-self-end dbtoolkit">
+            <img src="../../../../www.sqlalchemy.org/img/dbtoolkit6.gif" width="180" height="12" alt="The Database Toolkit for Python">
+        </div>
+    </div>
+</nav>
+<nav class="navbar navbar-expand-md navbar-dark bg-sa-green py-0 navigation">
+    <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavigation" aria-controls="navbarNavigation" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <span class="navbar-brand d-md-block d-md-none" href="#">The Database Toolkit for Python</span>
+        <div class="collapse navbar-collapse" id="navbarNavigation">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link " href="http://www.sqlalchemy.org/">home</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle " href="#" id="feature-dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        features
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark bg-sa-green" aria-labelledby="feature-dropdown">
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/philosophy.html">Philosophy Statement</a></li>
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/features.html">Feature Overview</a></li>
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/quotes.html">Testimonials</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link " href="http://www.sqlalchemy.org/blog/">news</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle active" aria-current="page" href="#" id="docs-dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        documentation
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark bg-sa-green" aria-labelledby="docs-dropdown">
+                        <li><a class="dropdown-item" href="http://docs.sqlalchemy.org/">Current Documentation (version 2.0)</a></li>
+
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/library.html#reference">Documentation by Version</a></li>
+                        
+        <li>
+            <a class="dropdown-item" href="../index.html">
+                <span class="ps-2">Version 2.0</span>
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="http://docs.sqlalchemy.org/en/14/">
+                <span class="ps-2">Version 1.4</span>
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="http://docs.sqlalchemy.org/en/13/">
+                <span class="ps-2">Version 1.3</span>
+            </a>
+        </li>
+
+                        <li><hr class="dropdown-divider"></li>
+
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/library.html#talks">Talks and Tutorials</a></li>
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/library.html">Published content overview</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle " href="#" id="community-dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        community
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark bg-sa-green" aria-labelledby="community-dropdown">
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/support.html">Get Support</a></li>
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/participate.html">Participate</a></li>
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/develop.html">Develop</a></li>
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/codeofconduct.html">Code of Conduct</a></li>
+                        <li><a class="dropdown-item" href="https://github.com/sqlalchemy/sqlalchemy">Github</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle " href="#" id="download-dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        download
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark bg-sa-green" aria-labelledby="download-dropdown">
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/download.html">Download</a>
+                        
+
+
+
+
+
+
+    </li><li><a class="dropdown-item" href="http://www.sqlalchemy.org/download.html#current">Current Release Series (2.0)</a></li>
+
+    <li><a class="dropdown-item" href="http://www.sqlalchemy.org/download.html#maintenance">Maintenance Release (1.4)</a></li>
+
+    <li><a class="dropdown-item" href="http://www.sqlalchemy.org/download.html#development">Development Access</a></li>
+    <li><a class="dropdown-item" href="http://www.sqlalchemy.org/download.html#license">License</a></li>
+    <li><a class="dropdown-item" href="http://www.sqlalchemy.org/download.html#versions">Version Numbering</a></li>
+    <li><a class="dropdown-item" href="http://www.sqlalchemy.org/download.html#relstatus">Release Status</a></li>
+
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<div id="main-body" class="docs main-body row m-0">
+
+<main id="docs" class="docs">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div id="docs-container">
+
+
+
+
+
+<div id="docs-top-navigation-container" class="body-background">
+<div id="docs-header">
+    <div id="docs-version-header">
+        Release: <span class="version-num">2.0.18</span>
+
+            <span id="sidebar-current">current release</span>
+
+        | Release Date: July 5, 2023
+
+    </div>
+
+    <h1><a href="../index-2.html">SQLAlchemy 2.0 Documentation</a></h1>
+
+</div>
+</div>
+
+<div id="docs-body-container">
+
+    <div id="fixed-sidebar" class="">
+
+
+
+        <div id="docs-sidebar-popout">
+            <h3><a href="../index-2.html">SQLAlchemy 2.0 Documentation</a></h3>
+                <p id="sidebar-current">current release</p>
+            <p id="sidebar-topnav">
+                <a href="../index-2.html">Home</a>
+                | <a href="http://docs.sqlalchemy.org/20/sqlalchemy_20.zip">Download this Documentation</a>
+            </p>
+
+            <div id="sidebar-search">
+                <form class="search" action="https://docs.sqlalchemy.org/en/20/search.html" method="get">
+                  <label>
+                  Search terms:
+                  <input type="text" placeholder="search..." name="q" size="12">
+                  </label>
+                  <input type="hidden" name="check_keywords" value="yes">
+                  <input type="hidden" name="area" value="default">
+                </form>
+            </div>
+
+        </div>
+
+        <div id="docs-sidebar">
+
+        <div id="sidebar-banner">
+            
+        
+<script async="" type="text/javascript" id="_carbonads_js" src="../../../../cdn.carbonads.com/carbon8b90.js?serve=CKYILK7Y&amp;amp;placement=sqlalchemyorg"></script>
+<script async="" type="text/javascript" id="_eaads_js" src="../../../../media.ethicalads.io/media/client/ethicalads.min.js"></script>
+
+<div data-ea-publisher="sqlalchemyorg" data-ea-type="image" class="adaptive flat horizontal"></div>
+
+<script type="text/javascript">
+
+var ea = "../../../../media.ethicalads.io/media/client/ethicalads.min.js";
+var carbon = "../../../../cdn.carbonads.com/carbon8b90.js?serve=CKYILK7Y&amp;placement=sqlalchemyorg";
+
+if (Math.floor(Math.random() * 10) < 8) {
+    ea_script = document.getElementById("_eaads_js");
+    ea_script.setAttribute('src', ea);
+}
+else {
+    carbon_script = document.getElementById("_carbonads_js");
+    carbon_script.setAttribute('src', carbon);
+}
+
+</script>
+
+    
+        </div>
+
+        <div id="docs-sidebar-inner">
+
+        
+        <h3>
+            <a href="index.html" title="SQLAlchemy Unified Tutorial">SQLAlchemy Unified Tutorial</a>
+        </h3>
+
+        <ul>
+<li><span class="link-container"><a class="reference external" href="engine.html">Establishing Connectivity - the Engine</a></span></li>
+<li><span class="link-container"><a class="reference external" href="dbapi_transactions.html">Working with Transactions and the DBAPI</a></span></li>
+<li><span class="link-container"><a class="reference external" href="metadata.html">Working with Database Metadata</a></span></li>
+<li><span class="link-container"><a class="reference external" href="data.html">Working with Data</a></span><ul>
+<li><span class="link-container"><a class="reference external" href="data_insert.html">Using INSERT Statements</a></span></li>
+<li><span class="link-container"><a class="reference external" href="data_select.html">Using SELECT Statements</a></span></li>
+<li class="selected"><span class="link-container"><strong>Using UPDATE and DELETE Statements</strong><a class="paramlink headerlink reference internal" href="#">¶</a></span><ul>
+<li><span class="link-container"><a class="reference external" href="#the-update-sql-expression-construct">The update() SQL Expression Construct</a></span><ul>
+<li><span class="link-container"><a class="reference external" href="#correlated-updates">Correlated Updates</a></span></li>
+<li><span class="link-container"><a class="reference external" href="#update-from">UPDATE..FROM</a></span></li>
+<li><span class="link-container"><a class="reference external" href="#parameter-ordered-updates">Parameter Ordered Updates</a></span></li>
+</ul>
+</li>
+<li><span class="link-container"><a class="reference external" href="#the-delete-sql-expression-construct">The delete() SQL Expression Construct</a></span><ul>
+<li><span class="link-container"><a class="reference external" href="#multiple-table-deletes">Multiple Table Deletes</a></span></li>
+</ul>
+</li>
+<li><span class="link-container"><a class="reference external" href="#getting-affected-row-count-from-update-delete">Getting Affected Row Count from UPDATE, DELETE</a></span></li>
+<li><span class="link-container"><a class="reference external" href="#using-returning-with-update-delete">Using RETURNING with UPDATE, DELETE</a></span></li>
+<li><span class="link-container"><a class="reference external" href="#further-reading-for-update-delete">Further Reading for UPDATE, DELETE</a></span></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><span class="link-container"><a class="reference external" href="orm_data_manipulation.html">Data Manipulation with the ORM</a></span></li>
+<li><span class="link-container"><a class="reference external" href="orm_related_objects.html">Working with ORM Related Objects</a></span></li>
+<li><span class="link-container"><a class="reference external" href="further_reading.html">Further Reading</a></span></li>
+</ul>
+
+
+        <h4>Project Versions</h4>
+        <ul class="version-listing">
+            <li><a href="../index-2.html">2.0.18</a></li>
+        </ul>
+
+        </div>
+
+        </div>
+
+    </div>
+
+    <div id="narrow-index-nav">
+        <form class="search" action="https://docs.sqlalchemy.org/en/20/search.html" method="get">
+            <label>
+                Search terms:
+            <input type="text" placeholder="search..." name="q" size="12">
+            </label>
+            <input type="submit" value="Search">
+            <input type="hidden" name="check_keywords" value="yes">
+            <input type="hidden" name="area" value="default">
+        </form>
+
+        <p>
+        <a href="../index-2.html">Home</a>
+        | <a href="http://docs.sqlalchemy.org/20/sqlalchemy_20.zip">Download this Documentation</a>
+        </p>
+
+    </div>
+
+
+        <div id="docs-narrow-top-navigation">
+            <ul>
+                <li><b>Previous:</b>
+                <a href="data_select.html" title="previous chapter">Using SELECT Statements</a></li>
+                <li><b>Next:</b>
+                <a href="orm_data_manipulation.html" title="next chapter">Data Manipulation with the ORM</a></li>
+
+            <li><b>Up:</b> <a href="../index-2.html">Home</a></li>
+                    <ul><li><a href="index.html" title="SQLAlchemy Unified Tutorial">SQLAlchemy Unified Tutorial</a></li>
+                    <ul><li><a href="data.html" title="Working with Data">Working with Data</a></li>
+                </ul>
+                </ul>
+
+
+
+            <li><b>On this page:</b></li>
+            <ul>
+<li><a class="reference internal" href="#using-update-and-delete-statements">Using UPDATE and DELETE Statements</a><ul>
+<li><a class="reference internal" href="#the-update-sql-expression-construct">The update() SQL Expression Construct</a><ul>
+<li><a class="reference internal" href="#correlated-updates">Correlated Updates</a></li>
+<li><a class="reference internal" href="#update-from">UPDATE..FROM</a></li>
+<li><a class="reference internal" href="#parameter-ordered-updates">Parameter Ordered Updates</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#the-delete-sql-expression-construct">The delete() SQL Expression Construct</a><ul>
+<li><a class="reference internal" href="#multiple-table-deletes">Multiple Table Deletes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#getting-affected-row-count-from-update-delete">Getting Affected Row Count from UPDATE, DELETE</a></li>
+<li><a class="reference internal" href="#using-returning-with-update-delete">Using RETURNING with UPDATE, DELETE</a></li>
+<li><a class="reference internal" href="#further-reading-for-update-delete">Further Reading for UPDATE, DELETE</a></li>
+</ul>
+</li>
+</ul>
+
+
+            </ul>
+
+        </div>
+
+
+
+    <div id="docs-body" role="main" class=" tutorial-data_update">
+        
+<aside class="topic">
+<p class="topic-title">SQLAlchemy 1.4 / 2.0 Tutorial</p>
+<p>This page is part of the <a class="reference internal" href="index.html"><span class="doc">SQLAlchemy Unified Tutorial</span></a>.</p>
+<p>Previous: <a class="reference internal" href="data_select.html"><span class="doc">Using SELECT Statements</span></a>   |   Next: <a class="reference internal" href="orm_data_manipulation.html"><span class="doc">Data Manipulation with the ORM</span></a></p>
+</aside>
+<section class="core-header orm-addin" id="using-update-and-delete-statements">
+<span id="tutorial-core-update-delete"></span><h1>Using UPDATE and DELETE Statements<a class="headerlink" href="#using-update-and-delete-statements" title="Permalink to this heading">¶</a></h1>
+<p>So far we’ve covered <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Insert" title="sqlalchemy.sql.expression.Insert"><code class="xref py py-class docutils literal notranslate"><span class="pre">Insert</span></code></a>, so that we can get some data into
+our database, and then spent a lot of time on <a class="reference internal" href="../core/selectable.html#sqlalchemy.sql.expression.Select" title="sqlalchemy.sql.expression.Select"><code class="xref py py-class docutils literal notranslate"><span class="pre">Select</span></code></a> which
+handles the broad range of usage patterns used for retrieving data from the
+database.   In this section we will cover the <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Update" title="sqlalchemy.sql.expression.Update"><code class="xref py py-class docutils literal notranslate"><span class="pre">Update</span></code></a> and
+<a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Delete" title="sqlalchemy.sql.expression.Delete"><code class="xref py py-class docutils literal notranslate"><span class="pre">Delete</span></code></a> constructs, which are used to modify existing rows
+as well as delete existing rows.    This section will cover these constructs
+from a Core-centric perspective.</p>
+<div class="orm-header docutils container">
+<p><strong>ORM Readers</strong> - As was the case mentioned at <a class="reference internal" href="data_insert.html#tutorial-core-insert"><span class="std std-ref">Using INSERT Statements</span></a>,
+the <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Update" title="sqlalchemy.sql.expression.Update"><code class="xref py py-class docutils literal notranslate"><span class="pre">Update</span></code></a> and <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Delete" title="sqlalchemy.sql.expression.Delete"><code class="xref py py-class docutils literal notranslate"><span class="pre">Delete</span></code></a> operations when used with
+the ORM are usually invoked internally from the <a class="reference internal" href="../orm/session_api.html#sqlalchemy.orm.Session" title="sqlalchemy.orm.Session"><code class="xref py py-class docutils literal notranslate"><span class="pre">Session</span></code></a>
+object as part of the <a class="reference internal" href="../glossary.html#term-unit-of-work"><span class="xref std std-term">unit of work</span></a> process.</p>
+<p>However, unlike <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Insert" title="sqlalchemy.sql.expression.Insert"><code class="xref py py-class docutils literal notranslate"><span class="pre">Insert</span></code></a>, the <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Update" title="sqlalchemy.sql.expression.Update"><code class="xref py py-class docutils literal notranslate"><span class="pre">Update</span></code></a> and
+<a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Delete" title="sqlalchemy.sql.expression.Delete"><code class="xref py py-class docutils literal notranslate"><span class="pre">Delete</span></code></a> constructs can also be used directly with the ORM,
+using a pattern known as “ORM-enabled update and delete”; for this reason,
+familiarity with these constructs is useful for ORM use.  Both styles of
+use are discussed in the sections <a class="reference internal" href="orm_data_manipulation.html#tutorial-orm-updating"><span class="std std-ref">Updating ORM Objects using the Unit of Work pattern</span></a> and
+<a class="reference internal" href="orm_data_manipulation.html#tutorial-orm-deleting"><span class="std std-ref">Deleting ORM Objects using the Unit of Work pattern</span></a>.</p>
+</div>
+<section id="the-update-sql-expression-construct">
+<a class="dashAnchor" name="//apple_ref/Section/The%20update()%20SQL%20Expression%20Construct"></a><span id="tutorial-core-update"></span><h2>The update() SQL Expression Construct<a class="headerlink" href="#the-update-sql-expression-construct" title="Permalink to this heading">¶</a></h2>
+<p>The <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.update" title="sqlalchemy.sql.expression.update"><code class="xref py py-func docutils literal notranslate"><span class="pre">update()</span></code></a> function generates a new instance of
+<a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Update" title="sqlalchemy.sql.expression.Update"><code class="xref py py-class docutils literal notranslate"><span class="pre">Update</span></code></a> which represents an UPDATE statement in SQL, that will
+update existing data in a table.</p>
+<p>Like the <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.insert" title="sqlalchemy.sql.expression.insert"><code class="xref py py-func docutils literal notranslate"><span class="pre">insert()</span></code></a> construct, there is a “traditional” form of
+<a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.update" title="sqlalchemy.sql.expression.update"><code class="xref py py-func docutils literal notranslate"><span class="pre">update()</span></code></a>, which emits UPDATE against a single table at a time and
+does not return any rows.   However some backends support an UPDATE statement
+that may modify multiple tables at once, and the UPDATE statement also
+supports RETURNING such that columns contained in matched rows may be returned
+in the result set.</p>
+<p>A basic UPDATE looks like:</p>
+<div class="highlight-pycon+sql notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">update</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stmt</span> <span class="o">=</span> <span class="p">(</span>
+<span class="go">...     update(user_table)</span>
+<span class="go">...     .where(user_table.c.name == "patrick")</span>
+<span class="go">...     .values(fullname="Patrick the Star")</span>
+<span class="go">... )</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">print</span><span class="p">(</span><span class="n">stmt</span><span class="p">)</span>
+<div class="show_sql_print"><span class="k">UPDATE</span><span class="w"> </span><span class="n">user_account</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="n">fullname</span><span class="o">=</span><span class="p">:</span><span class="n">fullname</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">user_account</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">:</span><span class="n">name_1</span>
+</div></pre></div>
+</div>
+<p>The <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Update.values" title="sqlalchemy.sql.expression.Update.values"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Update.values()</span></code></a> method controls the contents of the SET elements
+of the UPDATE statement.  This is the same method shared by the <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Insert" title="sqlalchemy.sql.expression.Insert"><code class="xref py py-class docutils literal notranslate"><span class="pre">Insert</span></code></a>
+construct.   Parameters can normally be passed using the column names as
+keyword arguments.</p>
+<p>UPDATE supports all the major SQL forms of UPDATE, including updates against expressions,
+where we can make use of <a class="reference internal" href="../core/metadata.html#sqlalchemy.schema.Column" title="sqlalchemy.schema.Column"><code class="xref py py-class docutils literal notranslate"><span class="pre">Column</span></code></a> expressions:</p>
+<div class="highlight-pycon+sql notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">stmt</span> <span class="o">=</span> <span class="n">update</span><span class="p">(</span><span class="n">user_table</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="n">fullname</span><span class="o">=</span><span class="s2">"Username: "</span> <span class="o">+</span> <span class="n">user_table</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">print</span><span class="p">(</span><span class="n">stmt</span><span class="p">)</span>
+<div class="show_sql_print"><span class="k">UPDATE</span><span class="w"> </span><span class="n">user_account</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="n">fullname</span><span class="o">=</span><span class="p">(:</span><span class="n">name_1</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">user_account</span><span class="p">.</span><span class="n">name</span><span class="p">)</span>
+</div></pre></div>
+</div>
+<p>To support UPDATE in an “executemany” context, where many parameter sets will
+be invoked against the same statement, the <a class="reference internal" href="../core/sqlelement.html#sqlalchemy.sql.expression.bindparam" title="sqlalchemy.sql.expression.bindparam"><code class="xref py py-func docutils literal notranslate"><span class="pre">bindparam()</span></code></a>
+construct may be used to set up bound parameters; these replace the places
+that literal values would normally go:</p>
+<div class="highlight-pycon+sql notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">bindparam</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stmt</span> <span class="o">=</span> <span class="p">(</span>
+<span class="go">...     update(user_table)</span>
+<span class="go">...     .where(user_table.c.name == bindparam("oldname"))</span>
+<span class="go">...     .values(name=bindparam("newname"))</span>
+<span class="go">... )</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">engine</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+<span class="go">...     conn.execute(</span>
+<span class="go">...         stmt,</span>
+<span class="go">...         [</span>
+<span class="go">...             {"oldname": "jack", "newname": "ed"},</span>
+<span class="go">...             {"oldname": "wendy", "newname": "mary"},</span>
+<span class="go">...             {"oldname": "jim", "newname": "jake"},</span>
+<span class="go">...         ],</span>
+<span class="go">...     )</span>
+<div class="show_sql"><span class="k">BEGIN</span><span class="w"> </span><span class="p">(</span><span class="k">implicit</span><span class="p">)</span>
+<span class="k">UPDATE</span><span class="w"> </span><span class="n">user_account</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="n">name</span><span class="o">=?</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">user_account</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">?</span>
+<span class="p">[...]</span><span class="w"> </span><span class="p">[(</span><span class="s1">'ed'</span><span class="p">,</span><span class="w"> </span><span class="s1">'jack'</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="s1">'mary'</span><span class="p">,</span><span class="w"> </span><span class="s1">'wendy'</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="s1">'jake'</span><span class="p">,</span><span class="w"> </span><span class="s1">'jim'</span><span class="p">)]</span>
+<span class="o">&lt;</span><span class="n">sqlalchemy</span><span class="p">.</span><span class="n">engine</span><span class="p">.</span><span class="k">cursor</span><span class="p">.</span><span class="n">CursorResult</span><span class="w"> </span><span class="k">object</span><span class="w"> </span><span class="k">at</span><span class="w"> </span><span class="mi">0</span><span class="n">x</span><span class="p">...</span><span class="o">&gt;</span>
+<span class="k">COMMIT</span>
+</div></pre></div>
+</div>
+<p>Other techniques which may be applied to UPDATE include:</p>
+<section id="correlated-updates">
+<a class="dashAnchor" name="//apple_ref/Section/Correlated%20Updates"></a><span id="tutorial-correlated-updates"></span><h3>Correlated Updates<a class="headerlink" href="#correlated-updates" title="Permalink to this heading">¶</a></h3>
+<p>An UPDATE statement can make use of rows in other tables by using a
+<a class="reference internal" href="data_select.html#tutorial-scalar-subquery"><span class="std std-ref">correlated subquery</span></a>.  A subquery may be used
+anywhere a column expression might be placed:</p>
+<div class="highlight-pycon+sql notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">scalar_subq</span> <span class="o">=</span> <span class="p">(</span>
+<span class="go">...     select(address_table.c.email_address)</span>
+<span class="go">...     .where(address_table.c.user_id == user_table.c.id)</span>
+<span class="go">...     .order_by(address_table.c.id)</span>
+<span class="go">...     .limit(1)</span>
+<span class="go">...     .scalar_subquery()</span>
+<span class="go">... )</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">update_stmt</span> <span class="o">=</span> <span class="n">update</span><span class="p">(</span><span class="n">user_table</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="n">fullname</span><span class="o">=</span><span class="n">scalar_subq</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">print</span><span class="p">(</span><span class="n">update_stmt</span><span class="p">)</span>
+<div class="show_sql_print"><span class="k">UPDATE</span><span class="w"> </span><span class="n">user_account</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="n">fullname</span><span class="o">=</span><span class="p">(</span><span class="k">SELECT</span><span class="w"> </span><span class="n">address</span><span class="p">.</span><span class="n">email_address</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">address</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">address</span><span class="p">.</span><span class="n">user_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">user_account</span><span class="p">.</span><span class="n">id</span><span class="w"> </span><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">address</span><span class="p">.</span><span class="n">id</span>
+<span class="k">LIMIT</span><span class="w"> </span><span class="p">:</span><span class="n">param_1</span><span class="p">)</span>
+</div></pre></div>
+</div>
+</section>
+<section id="update-from">
+<a class="dashAnchor" name="//apple_ref/Section/UPDATE..FROM"></a><span id="tutorial-update-from"></span><h3>UPDATE..FROM<a class="headerlink" href="#update-from" title="Permalink to this heading">¶</a></h3>
+<p>Some databases such as PostgreSQL and MySQL support a syntax “UPDATE FROM”
+where additional tables may be stated directly in a special FROM clause. This
+syntax will be generated implicitly when additional tables are located in the
+WHERE clause of the statement:</p>
+<div class="highlight-pycon+sql notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">update_stmt</span> <span class="o">=</span> <span class="p">(</span>
+<span class="go">...     update(user_table)</span>
+<span class="go">...     .where(user_table.c.id == address_table.c.user_id)</span>
+<span class="go">...     .where(address_table.c.email_address == "patrick@aol.com")</span>
+<span class="go">...     .values(fullname="Pat")</span>
+<span class="go">... )</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">print</span><span class="p">(</span><span class="n">update_stmt</span><span class="p">)</span>
+<div class="show_sql_print"><span class="k">UPDATE</span><span class="w"> </span><span class="n">user_account</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="n">fullname</span><span class="o">=</span><span class="p">:</span><span class="n">fullname</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">address</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">user_account</span><span class="p">.</span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">address</span><span class="p">.</span><span class="n">user_id</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">address</span><span class="p">.</span><span class="n">email_address</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">:</span><span class="n">email_address_1</span>
+</div></pre></div>
+</div>
+<p>There is also a MySQL specific syntax that can UPDATE multiple tables. This
+requires we refer to <a class="reference internal" href="../core/metadata.html#sqlalchemy.schema.Table" title="sqlalchemy.schema.Table"><code class="xref py py-class docutils literal notranslate"><span class="pre">Table</span></code></a> objects in the VALUES clause in
+order to refer to additional tables:</p>
+<div class="highlight-pycon+sql notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">update_stmt</span> <span class="o">=</span> <span class="p">(</span>
+<span class="go">...     update(user_table)</span>
+<span class="go">...     .where(user_table.c.id == address_table.c.user_id)</span>
+<span class="go">...     .where(address_table.c.email_address == "patrick@aol.com")</span>
+<span class="go">...     .values(</span>
+<span class="go">...         {</span>
+<span class="go">...             user_table.c.fullname: "Pat",</span>
+<span class="go">...             address_table.c.email_address: "pat@aol.com",</span>
+<span class="go">...         }</span>
+<span class="go">...     )</span>
+<span class="go">... )</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sqlalchemy.dialects</span> <span class="kn">import</span> <span class="n">mysql</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">print</span><span class="p">(</span><span class="n">update_stmt</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">dialect</span><span class="o">=</span><span class="n">mysql</span><span class="o">.</span><span class="n">dialect</span><span class="p">()))</span>
+<div class="show_sql_print"><span class="k">UPDATE</span><span class="w"> </span><span class="n">user_account</span><span class="p">,</span><span class="w"> </span><span class="n">address</span>
+<span class="k">SET</span><span class="w"> </span><span class="n">address</span><span class="p">.</span><span class="n">email_address</span><span class="o">=%</span><span class="n">s</span><span class="p">,</span><span class="w"> </span><span class="n">user_account</span><span class="p">.</span><span class="n">fullname</span><span class="o">=%</span><span class="n">s</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">user_account</span><span class="p">.</span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">address</span><span class="p">.</span><span class="n">user_id</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">address</span><span class="p">.</span><span class="n">email_address</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">%</span><span class="n">s</span>
+</div></pre></div>
+</div>
+</section>
+<section id="parameter-ordered-updates">
+<a class="dashAnchor" name="//apple_ref/Section/Parameter%20Ordered%20Updates"></a><span id="tutorial-parameter-ordered-updates"></span><h3>Parameter Ordered Updates<a class="headerlink" href="#parameter-ordered-updates" title="Permalink to this heading">¶</a></h3>
+<p>Another MySQL-only behavior is that the order of parameters in the SET clause
+of an UPDATE actually impacts the evaluation of each expression.   For this use
+case, the <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Update.ordered_values" title="sqlalchemy.sql.expression.Update.ordered_values"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Update.ordered_values()</span></code></a> method accepts a sequence of
+tuples so that this order may be controlled <a class="footnote-reference brackets" href="#id2" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>:</p>
+<div class="highlight-pycon+sql notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">update_stmt</span> <span class="o">=</span> <span class="n">update</span><span class="p">(</span><span class="n">some_table</span><span class="p">)</span><span class="o">.</span><span class="n">ordered_values</span><span class="p">(</span>
+<span class="go">...     (some_table.c.y, 20), (some_table.c.x, some_table.c.y + 10)</span>
+<span class="go">... )</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">print</span><span class="p">(</span><span class="n">update_stmt</span><span class="p">)</span>
+<div class="show_sql_print"><span class="k">UPDATE</span><span class="w"> </span><span class="n">some_table</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="n">y</span><span class="o">=</span><span class="p">:</span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="o">=</span><span class="p">(</span><span class="n">some_table</span><span class="p">.</span><span class="n">y</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">:</span><span class="n">y_1</span><span class="p">)</span>
+</div></pre></div>
+</div>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="id2" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">2</a><span class="fn-bracket">]</span></span>
+<p>While Python dictionaries are
+<a class="reference external" href="https://mail.python.org/pipermail/python-dev/2017-December/151283.html">guaranteed to be insert ordered</a>
+as of Python 3.7, the
+<a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Update.ordered_values" title="sqlalchemy.sql.expression.Update.ordered_values"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Update.ordered_values()</span></code></a> method still provides an additional
+measure of clarity of intent when it is essential that the SET clause
+of a MySQL UPDATE statement proceed in a specific way.</p>
+</aside>
+</aside>
+</section>
+</section>
+<section id="the-delete-sql-expression-construct">
+<a class="dashAnchor" name="//apple_ref/Section/The%20delete()%20SQL%20Expression%20Construct"></a><span id="tutorial-deletes"></span><h2>The delete() SQL Expression Construct<a class="headerlink" href="#the-delete-sql-expression-construct" title="Permalink to this heading">¶</a></h2>
+<p>The <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.delete" title="sqlalchemy.sql.expression.delete"><code class="xref py py-func docutils literal notranslate"><span class="pre">delete()</span></code></a> function generates a new instance of
+<a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Delete" title="sqlalchemy.sql.expression.Delete"><code class="xref py py-class docutils literal notranslate"><span class="pre">Delete</span></code></a> which represents a DELETE statement in SQL, that will
+delete rows from a table.</p>
+<p>The <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.delete" title="sqlalchemy.sql.expression.delete"><code class="xref py py-func docutils literal notranslate"><span class="pre">delete()</span></code></a> statement from an API perspective is very similar to
+that of the <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.update" title="sqlalchemy.sql.expression.update"><code class="xref py py-func docutils literal notranslate"><span class="pre">update()</span></code></a> construct, traditionally returning no rows but
+allowing for a RETURNING variant on some database backends.</p>
+<div class="highlight-pycon+sql notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">delete</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stmt</span> <span class="o">=</span> <span class="n">delete</span><span class="p">(</span><span class="n">user_table</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">user_table</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">"patrick"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">print</span><span class="p">(</span><span class="n">stmt</span><span class="p">)</span>
+<div class="show_sql_print"><span class="k">DELETE</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">user_account</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">user_account</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">:</span><span class="n">name_1</span>
+</div></pre></div>
+</div>
+<section id="multiple-table-deletes">
+<a class="dashAnchor" name="//apple_ref/Section/Multiple%20Table%20Deletes"></a><span id="tutorial-multi-table-deletes"></span><h3>Multiple Table Deletes<a class="headerlink" href="#multiple-table-deletes" title="Permalink to this heading">¶</a></h3>
+<p>Like <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Update" title="sqlalchemy.sql.expression.Update"><code class="xref py py-class docutils literal notranslate"><span class="pre">Update</span></code></a>, <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Delete" title="sqlalchemy.sql.expression.Delete"><code class="xref py py-class docutils literal notranslate"><span class="pre">Delete</span></code></a> supports the use of correlated
+subqueries in the WHERE clause as well as backend-specific multiple table
+syntaxes, such as <code class="docutils literal notranslate"><span class="pre">DELETE</span> <span class="pre">FROM..USING</span></code> on MySQL:</p>
+<div class="highlight-pycon+sql notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">delete_stmt</span> <span class="o">=</span> <span class="p">(</span>
+<span class="go">...     delete(user_table)</span>
+<span class="go">...     .where(user_table.c.id == address_table.c.user_id)</span>
+<span class="go">...     .where(address_table.c.email_address == "patrick@aol.com")</span>
+<span class="go">... )</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sqlalchemy.dialects</span> <span class="kn">import</span> <span class="n">mysql</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">print</span><span class="p">(</span><span class="n">delete_stmt</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">dialect</span><span class="o">=</span><span class="n">mysql</span><span class="o">.</span><span class="n">dialect</span><span class="p">()))</span>
+<div class="show_sql_print"><span class="k">DELETE</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">user_account</span><span class="w"> </span><span class="k">USING</span><span class="w"> </span><span class="n">user_account</span><span class="p">,</span><span class="w"> </span><span class="n">address</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">user_account</span><span class="p">.</span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">address</span><span class="p">.</span><span class="n">user_id</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">address</span><span class="p">.</span><span class="n">email_address</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">%</span><span class="n">s</span>
+</div></pre></div>
+</div>
+</section>
+</section>
+<section id="getting-affected-row-count-from-update-delete">
+<a class="dashAnchor" name="//apple_ref/Section/Getting%20Affected%20Row%20Count%20from%20UPDATE,%20DELETE"></a><span id="tutorial-update-delete-rowcount"></span><h2>Getting Affected Row Count from UPDATE, DELETE<a class="headerlink" href="#getting-affected-row-count-from-update-delete" title="Permalink to this heading">¶</a></h2>
+<p>Both <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Update" title="sqlalchemy.sql.expression.Update"><code class="xref py py-class docutils literal notranslate"><span class="pre">Update</span></code></a> and <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Delete" title="sqlalchemy.sql.expression.Delete"><code class="xref py py-class docutils literal notranslate"><span class="pre">Delete</span></code></a> support the ability to
+return the number of rows matched after the statement proceeds, for statements
+that are invoked using Core <a class="reference internal" href="../core/connections.html#sqlalchemy.engine.Connection" title="sqlalchemy.engine.Connection"><code class="xref py py-class docutils literal notranslate"><span class="pre">Connection</span></code></a>, i.e.
+<a class="reference internal" href="../core/connections.html#sqlalchemy.engine.Connection.execute" title="sqlalchemy.engine.Connection.execute"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Connection.execute()</span></code></a>. Per the caveats mentioned below, this value
+is available from the <a class="reference internal" href="../core/connections.html#sqlalchemy.engine.CursorResult.rowcount" title="sqlalchemy.engine.CursorResult.rowcount"><code class="xref py py-attr docutils literal notranslate"><span class="pre">CursorResult.rowcount</span></code></a> attribute:</p>
+<div class="highlight-pycon+sql notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">engine</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+<span class="go">...     result = conn.execute(</span>
+<span class="go">...         update(user_table)</span>
+<span class="go">...         .values(fullname="Patrick McStar")</span>
+<span class="go">...         .where(user_table.c.name == "patrick")</span>
+<span class="go">...     )</span>
+<span class="go">...     print(result.rowcount)</span>
+<div class="show_sql"><span class="k">BEGIN</span><span class="w"> </span><span class="p">(</span><span class="k">implicit</span><span class="p">)</span>
+<span class="k">UPDATE</span><span class="w"> </span><span class="n">user_account</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="n">fullname</span><span class="o">=?</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">user_account</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">?</span>
+<span class="p">[...]</span><span class="w"> </span><span class="p">(</span><span class="s1">'Patrick McStar'</span><span class="p">,</span><span class="w"> </span><span class="s1">'patrick'</span><span class="p">)</span>
+</div><span class="go">1</span>
+<div class="show_sql"><span class="k">COMMIT</span>
+</div></pre></div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>The <a class="reference internal" href="../core/connections.html#sqlalchemy.engine.CursorResult" title="sqlalchemy.engine.CursorResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">CursorResult</span></code></a> class is a subclass of
+<a class="reference internal" href="../core/connections.html#sqlalchemy.engine.Result" title="sqlalchemy.engine.Result"><code class="xref py py-class docutils literal notranslate"><span class="pre">Result</span></code></a> which contains additional attributes that are
+specific to the DBAPI <code class="docutils literal notranslate"><span class="pre">cursor</span></code> object.  An instance of this subclass is
+returned when a statement is invoked via the
+<a class="reference internal" href="../core/connections.html#sqlalchemy.engine.Connection.execute" title="sqlalchemy.engine.Connection.execute"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Connection.execute()</span></code></a> method. When using the ORM, the
+<a class="reference internal" href="../orm/session_api.html#sqlalchemy.orm.Session.execute" title="sqlalchemy.orm.Session.execute"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Session.execute()</span></code></a> method returns an object of this type for
+all INSERT, UPDATE, and DELETE statements.</p>
+</div>
+<p>Facts about <a class="reference internal" href="../core/connections.html#sqlalchemy.engine.CursorResult.rowcount" title="sqlalchemy.engine.CursorResult.rowcount"><code class="xref py py-attr docutils literal notranslate"><span class="pre">CursorResult.rowcount</span></code></a>:</p>
+<ul class="simple">
+<li><p>The value returned is the number of rows <strong>matched</strong> by the WHERE clause of
+the statement.   It does not matter if the row were actually modified or not.</p></li>
+<li><p><a class="reference internal" href="../core/connections.html#sqlalchemy.engine.CursorResult.rowcount" title="sqlalchemy.engine.CursorResult.rowcount"><code class="xref py py-attr docutils literal notranslate"><span class="pre">CursorResult.rowcount</span></code></a> is not necessarily available for an UPDATE
+or DELETE statement that uses RETURNING.</p></li>
+<li><p>For an <a class="reference internal" href="dbapi_transactions.html#tutorial-multiple-parameters"><span class="std std-ref">executemany</span></a> execution,
+<a class="reference internal" href="../core/connections.html#sqlalchemy.engine.CursorResult.rowcount" title="sqlalchemy.engine.CursorResult.rowcount"><code class="xref py py-attr docutils literal notranslate"><span class="pre">CursorResult.rowcount</span></code></a> may not be available either, which depends
+highly on the DBAPI module in use as well as configured options.  The
+attribute <a class="reference internal" href="../core/connections.html#sqlalchemy.engine.CursorResult.supports_sane_multi_rowcount" title="sqlalchemy.engine.CursorResult.supports_sane_multi_rowcount"><code class="xref py py-attr docutils literal notranslate"><span class="pre">CursorResult.supports_sane_multi_rowcount</span></code></a> indicates
+if this value will be available for the current backend in use.</p></li>
+<li><p>Some drivers, particularly third party dialects for non-relational databases,
+may not support <a class="reference internal" href="../core/connections.html#sqlalchemy.engine.CursorResult.rowcount" title="sqlalchemy.engine.CursorResult.rowcount"><code class="xref py py-attr docutils literal notranslate"><span class="pre">CursorResult.rowcount</span></code></a> at all.   The
+<a class="reference internal" href="../core/connections.html#sqlalchemy.engine.CursorResult.supports_sane_rowcount" title="sqlalchemy.engine.CursorResult.supports_sane_rowcount"><code class="xref py py-attr docutils literal notranslate"><span class="pre">CursorResult.supports_sane_rowcount</span></code></a> will indicate this.</p></li>
+<li><p>“rowcount” is used by the ORM <a class="reference internal" href="../glossary.html#term-unit-of-work"><span class="xref std std-term">unit of work</span></a> process to validate that
+an UPDATE or DELETE statement matched the expected number of rows, and is
+also essential for the ORM versioning feature documented at
+<a class="reference internal" href="../orm/versioning.html#mapper-version-counter"><span class="std std-ref">Configuring a Version Counter</span></a>.</p></li>
+</ul>
+</section>
+<section id="using-returning-with-update-delete">
+<h2>Using RETURNING with UPDATE, DELETE<a class="headerlink" href="#using-returning-with-update-delete" title="Permalink to this heading">¶</a></h2>
+<p>Like the <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Insert" title="sqlalchemy.sql.expression.Insert"><code class="xref py py-class docutils literal notranslate"><span class="pre">Insert</span></code></a> construct, <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Update" title="sqlalchemy.sql.expression.Update"><code class="xref py py-class docutils literal notranslate"><span class="pre">Update</span></code></a> and <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Delete" title="sqlalchemy.sql.expression.Delete"><code class="xref py py-class docutils literal notranslate"><span class="pre">Delete</span></code></a>
+also support the RETURNING clause which is added by using the
+<a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Update.returning" title="sqlalchemy.sql.expression.Update.returning"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Update.returning()</span></code></a> and <a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Delete.returning" title="sqlalchemy.sql.expression.Delete.returning"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Delete.returning()</span></code></a> methods.
+When these methods are used on a backend that supports RETURNING, selected
+columns from all rows that match the WHERE criteria of the statement
+will be returned in the <a class="reference internal" href="../core/connections.html#sqlalchemy.engine.Result" title="sqlalchemy.engine.Result"><code class="xref py py-class docutils literal notranslate"><span class="pre">Result</span></code></a> object as rows that can
+be iterated:</p>
+<div class="highlight-pycon+sql notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">update_stmt</span> <span class="o">=</span> <span class="p">(</span>
+<span class="go">...     update(user_table)</span>
+<span class="go">...     .where(user_table.c.name == "patrick")</span>
+<span class="go">...     .values(fullname="Patrick the Star")</span>
+<span class="go">...     .returning(user_table.c.id, user_table.c.name)</span>
+<span class="go">... )</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">print</span><span class="p">(</span><span class="n">update_stmt</span><span class="p">)</span>
+<div class="show_sql_print"><span class="k">UPDATE</span><span class="w"> </span><span class="n">user_account</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="n">fullname</span><span class="o">=</span><span class="p">:</span><span class="n">fullname</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">user_account</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">:</span><span class="n">name_1</span>
+<span class="k">RETURNING</span><span class="w"> </span><span class="n">user_account</span><span class="p">.</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">user_account</span><span class="p">.</span><span class="n">name</span>
+</div><span class="gp">&gt;&gt;&gt; </span><span class="n">delete_stmt</span> <span class="o">=</span> <span class="p">(</span>
+<span class="go">...     delete(user_table)</span>
+<span class="go">...     .where(user_table.c.name == "patrick")</span>
+<span class="go">...     .returning(user_table.c.id, user_table.c.name)</span>
+<span class="go">... )</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">print</span><span class="p">(</span><span class="n">delete_stmt</span><span class="p">)</span>
+<div class="show_sql_print"><span class="k">DELETE</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">user_account</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">user_account</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">:</span><span class="n">name_1</span>
+<span class="k">RETURNING</span><span class="w"> </span><span class="n">user_account</span><span class="p">.</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">user_account</span><span class="p">.</span><span class="n">name</span>
+</div></pre></div>
+</div>
+</section>
+<section id="further-reading-for-update-delete">
+<h2>Further Reading for UPDATE, DELETE<a class="headerlink" href="#further-reading-for-update-delete" title="Permalink to this heading">¶</a></h2>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>API documentation for UPDATE / DELETE:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Update" title="sqlalchemy.sql.expression.Update"><code class="xref py py-class docutils literal notranslate"><span class="pre">Update</span></code></a></p></li>
+<li><p><a class="reference internal" href="../core/dml.html#sqlalchemy.sql.expression.Delete" title="sqlalchemy.sql.expression.Delete"><code class="xref py py-class docutils literal notranslate"><span class="pre">Delete</span></code></a></p></li>
+</ul>
+<p>ORM-enabled UPDATE and DELETE:</p>
+<p><a class="reference internal" href="../orm/queryguide/dml.html#orm-expression-update-delete"><span class="std std-ref">ORM-Enabled INSERT, UPDATE, and DELETE statements</span></a> - in the <a class="reference internal" href="../orm/queryguide/index.html"><span class="std std-ref">ORM Querying Guide</span></a></p>
+</div>
+</section>
+</section>
+<aside class="topic">
+<p class="topic-title">SQLAlchemy 1.4 / 2.0 Tutorial</p>
+<p>Next Tutorial Section: <a class="reference internal" href="orm_data_manipulation.html"><span class="doc">Data Manipulation with the ORM</span></a></p>
+</aside>
+
+    </div>
+
+</div>
+
+<div id="docs-bottom-navigation" class="docs-navigation-links, ">
+        Previous:
+        <a href="data_select.html" title="previous chapter">Using SELECT Statements</a>
+        Next:
+        <a href="orm_data_manipulation.html" title="next chapter">Data Manipulation with the ORM</a>
+
+    <div id="docs-copyright">
+        © <a href="../copyright.html">Copyright</a> 2007-2023, the SQLAlchemy authors and contributors.
+
+
+    <p><b>flambé!</b> the dragon and <b><i>The Alchemist</i></b> image designs created and generously donated by <a href="https://github.com/vmalloc">Rotem Yaari</a>.</p>
+
+        Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 7.0.1.
+
+    Documentation last generated: Wed 05 Jul 2023 03:34:10 PM 
+
+    </div>
+</div>
+
+</div>
+
+
+
+
+</main></div>
+
+</div> <!-- end #main-body -->
+
+
+    
+
+    
+
+<div id="footer" class="footer">
+    <div class="snd-ad">
+    </div>
+    <div class="pypowered">
+        <a href="http://www.python.org/" title="The Python Language Site">
+            <img src="../../../../www.sqlalchemy.org/img/python-logo.gif" width="88" height="30" alt="Python" class="pypowered">
+        </a>
+    </div>
+
+    <div class="copyright">
+        <p>Website content copyright © by SQLAlchemy authors and contributors.
+            SQLAlchemy and its documentation are licensed under the MIT license.</p>
+        <p>SQLAlchemy is a trademark of Michael Bayer.  mike(&amp;)zzzcomputing.com
+        All rights reserved. </p>
+        <p>Website generation by
+        <a href="https://github.com/sqlalchemyorg/zeekofile/">zeekofile</a>, with
+        huge thanks to the <a href="https://github.com/EnigmaCurry/blogofile">Blogofile</a>
+        project.</p>
+
+        <a rel="me" href="https://fosstodon.org/@zzzeek">Mastodon</a>
+
+    </div>
+
+    <br clear="all">
+
+</div>
+
+
+
+     <!-- End original user content -->
+
+    
+
+
+
+
+ <!-- end #wrap -->
+
+
+    
+
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+          URL_ROOT:    '../',
+          VERSION:     '2.0.18',
+          COLLAPSE_MODINDEX: false,
+          FILE_SUFFIX: '.html'
+      };
+    </script>
+
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+
+    <!-- begin iterate through sphinx environment script_files -->
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script type="text/javascript" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/sphinx_highlight.js"></script>
+        <script type="text/javascript" src="../_static/clipboard.min.js"></script>
+        <script type="text/javascript" src="../_static/copybutton.js"></script>
+    <!-- end iterate through sphinx environment script_files -->
+
+    <script type="text/javascript" src="../_static/init.js"></script>
+
+
+
+
+<script type="text/javascript" src="../../../../www.sqlalchemy.org/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript" src="../../../../www.sqlalchemy.org/js/doc_versions.js"></script>
+
+<!-- Google tag (gtag.js) -->
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-KWWK46V0YX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-KWWK46V0YX');
+</script>
+
+
+
+
+<!-- Mirrored from docs.sqlalchemy.org/en/20/tutorial/data_update.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 06 Jul 2023 08:05:53 GMT -->
+
+
+</body></html>

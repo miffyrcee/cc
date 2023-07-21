@@ -9,5 +9,5 @@
         "https://london.kapeli.com/feeds/zzz/user_contributed/build/pytest/pytest.tgz",
         "https://frankfurt.kapeli.com/feeds/zzz/user_contributed/build/pytest/pytest.tgz"
     ],
-    "version": "6.2.5"
+    "version": "7.3.0"
 }

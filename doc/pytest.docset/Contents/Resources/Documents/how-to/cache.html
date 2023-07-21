@@ -1,0 +1,338 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>How to re-run failed tests and maintain state between test runs — pytest documentation</title>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/basic.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/pygments_pytest.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../_static/doctools.js"></script>
+<script src="../_static/sphinx_highlight.js"></script>
+<link href="../_static/favicon.png" rel="shortcut icon"/>
+<link href="../search.html" rel="search" title="Search"/>
+<link href="logging.html" rel="next" title="How to manage logging"/>
+<link href="doctest.html" rel="prev" title="How to run doctests"/>
+<script>DOCUMENTATION_OPTIONS.URL_ROOT = '';</script>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../py-modindex.html" title="Python Module Index">modules</a></li>
+<li class="right">
+<a accesskey="N" href="logging.html" title="How to manage logging">next</a> |</li>
+<li class="right">
+<a accesskey="P" href="doctest.html" title="How to run doctests">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../contents.html">pytest-7.3</a> »</li>
+<li class="nav-item nav-item-this"><a href="">How to re-run failed tests and maintain state between test runs</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="body" role="main">
+<section id="how-to-re-run-failed-tests-and-maintain-state-between-test-runs">
+<a class="dashAnchor" name="//apple_ref/cpp/Section/How to re-run failed tests and maintain state between test runs"></a><span id="cache"></span><a class="dashAnchor" name="//apple_ref/cpp/Section/How to re-run failed tests and maintain state between test runs"></a><span id="cache-provider"></span><h1>How to re-run failed tests and maintain state between test runs<a class="headerlink" href="#how-to-re-run-failed-tests-and-maintain-state-between-test-runs" title="Permalink to this heading">¶</a></h1>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this heading">¶</a></h2>
+<p>The plugin provides two command line options to rerun failures from the
+last <code class="docutils literal notranslate"><span class="pre">pytest</span></code> invocation:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">--lf</span></code>, <code class="docutils literal notranslate"><span class="pre">--last-failed</span></code> - to only re-run the failures.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--ff</span></code>, <code class="docutils literal notranslate"><span class="pre">--failed-first</span></code> - to run the failures first and then the rest of
+the tests.</p></li>
+</ul>
+<p>For cleanup (usually not needed), a <code class="docutils literal notranslate"><span class="pre">--cache-clear</span></code> option allows to remove
+all cross-session cache contents ahead of a test run.</p>
+<p>Other plugins may access the <a class="reference internal" href="#config-cache">config.cache</a> object to set/get
+<strong>json encodable</strong> values between <code class="docutils literal notranslate"><span class="pre">pytest</span></code> invocations.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This plugin is enabled by default, but can be disabled if needed: see
+<a class="reference internal" href="plugins.html#cmdunregister"><span class="std std-ref">Deactivating / unregistering a plugin by name</span></a> (the internal name for this plugin is
+<code class="docutils literal notranslate"><span class="pre">cacheprovider</span></code>).</p>
+</div>
+</section>
+<section id="rerunning-only-failures-or-failures-first">
+<h2>Rerunning only failures or failures first<a class="headerlink" href="#rerunning-only-failures-or-failures-first" title="Permalink to this heading">¶</a></h2>
+<p>First, let’s create 50 test invocation of which only 2 fail:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># content of test_50.py</span>
+<span class="kn">import</span> <span class="nn">pytest</span>
+
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">"i"</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="mi">50</span><span class="p">))</span>
+<span class="k">def</span> <span class="nf">test_num</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">17</span><span class="p">,</span> <span class="mi">25</span><span class="p">):</span>
+        <span class="n">pytest</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span><span class="s2">"bad luck"</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you run this for the first time you will see two failures:</p>
+<div class="highlight-pytest notranslate"><div class="highlight"><pre><span></span>$ pytest -q
+<span class="-Color -Color-Green">.................</span><span class="-Color -Color-Red">F</span><span class="-Color -Color-Green">.......</span><span class="-Color -Color-Red">F</span><span class="-Color -Color-Green">........................</span>                   <span class="-Color -Color-Red">[100%]</span>
+================================= FAILURES =================================
+<span class="-Color -Color-Bold -Color-Bold-Red">_______________________________ test_num[17] _______________________________</span>
+
+i = 17
+
+    @pytest.mark.parametrize("i", range(50))
+    def test_num(i):
+        if i in (17, 25):
+&gt;           pytest.fail("bad luck")
+<span class="-Color -Color-Bold -Color-Bold-Red">E           Failed: bad luck</span>
+
+<span class="-Color -Color-Bold -Color-Bold-Red">test_50.py</span>:7: Failed
+<span class="-Color -Color-Bold -Color-Bold-Red">_______________________________ test_num[25] _______________________________</span>
+
+i = 25
+
+    @pytest.mark.parametrize("i", range(50))
+    def test_num(i):
+        if i in (17, 25):
+&gt;           pytest.fail("bad luck")
+<span class="-Color -Color-Bold -Color-Bold-Red">E           Failed: bad luck</span>
+
+<span class="-Color -Color-Bold -Color-Bold-Red">test_50.py</span>:7: Failed
+<span class="-Color -Color-Bold -Color-Bold-Cyan">========================= short test summary info ==========================</span>
+<span class="-Color -Color-Red">FAILED</span> test_50.py::<span class="-Color -Color-Bold">test_num[17]</span> - Failed: bad luck
+<span class="-Color -Color-Red">FAILED</span> test_50.py::<span class="-Color -Color-Bold">test_num[25]</span> - Failed: bad luck
+<span class="-Color -Color-Bold -Color-Bold-Red">2 failed</span>, <span class="-Color -Color-Green">48 passed</span><span class="-Color -Color-Red"> in 0.12s</span>
+</pre></div>
+</div>
+<p>If you then run it with <code class="docutils literal notranslate"><span class="pre">--lf</span></code>:</p>
+<div class="highlight-pytest notranslate"><div class="highlight"><pre><span></span>$ pytest --lf
+<span class="-Color -Color-Bold">=========================== test session starts ============================</span>
+platform linux -- Python 3.x.y, pytest-7.x.y, pluggy-1.x.y
+rootdir: /home/sweet/project
+collected 2 items
+run-last-failure: rerun previous 2 failures
+
+test_50.py <span class="-Color -Color-Red">FF</span>                                                        <span class="-Color -Color-Red">[100%]</span>
+
+================================= FAILURES =================================
+<span class="-Color -Color-Bold -Color-Bold-Red">_______________________________ test_num[17] _______________________________</span>
+
+i = 17
+
+    @pytest.mark.parametrize("i", range(50))
+    def test_num(i):
+        if i in (17, 25):
+&gt;           pytest.fail("bad luck")
+<span class="-Color -Color-Bold -Color-Bold-Red">E           Failed: bad luck</span>
+
+<span class="-Color -Color-Bold -Color-Bold-Red">test_50.py</span>:7: Failed
+<span class="-Color -Color-Bold -Color-Bold-Red">_______________________________ test_num[25] _______________________________</span>
+
+i = 25
+
+    @pytest.mark.parametrize("i", range(50))
+    def test_num(i):
+        if i in (17, 25):
+&gt;           pytest.fail("bad luck")
+<span class="-Color -Color-Bold -Color-Bold-Red">E           Failed: bad luck</span>
+
+<span class="-Color -Color-Bold -Color-Bold-Red">test_50.py</span>:7: Failed
+<span class="-Color -Color-Bold -Color-Bold-Cyan">========================= short test summary info ==========================</span>
+<span class="-Color -Color-Red">FAILED</span> test_50.py::<span class="-Color -Color-Bold">test_num[17]</span> - Failed: bad luck
+<span class="-Color -Color-Red">FAILED</span> test_50.py::<span class="-Color -Color-Bold">test_num[25]</span> - Failed: bad luck
+<span class="-Color -Color-Red">============================ </span><span class="-Color -Color-Bold -Color-Bold-Red">2 failed</span><span class="-Color -Color-Red"> in 0.12s =============================</span>
+</pre></div>
+</div>
+<p>You have run only the two failing tests from the last run, while the 48 passing
+tests have not been run (“deselected”).</p>
+<p>Now, if you run with the <code class="docutils literal notranslate"><span class="pre">--ff</span></code> option, all tests will be run but the first
+previous failures will be executed first (as can be seen from the series
+of <code class="docutils literal notranslate"><span class="pre">FF</span></code> and dots):</p>
+<div class="highlight-pytest notranslate"><div class="highlight"><pre><span></span>$ pytest --ff
+<span class="-Color -Color-Bold">=========================== test session starts ============================</span>
+platform linux -- Python 3.x.y, pytest-7.x.y, pluggy-1.x.y
+rootdir: /home/sweet/project
+collected 50 items
+run-last-failure: rerun previous 2 failures first
+
+test_50.py <span class="-Color -Color-Red">FF</span><span class="-Color -Color-Green">................................................</span>        <span class="-Color -Color-Red">[100%]</span>
+
+================================= FAILURES =================================
+<span class="-Color -Color-Bold -Color-Bold-Red">_______________________________ test_num[17] _______________________________</span>
+
+i = 17
+
+    @pytest.mark.parametrize("i", range(50))
+    def test_num(i):
+        if i in (17, 25):
+&gt;           pytest.fail("bad luck")
+<span class="-Color -Color-Bold -Color-Bold-Red">E           Failed: bad luck</span>
+
+<span class="-Color -Color-Bold -Color-Bold-Red">test_50.py</span>:7: Failed
+<span class="-Color -Color-Bold -Color-Bold-Red">_______________________________ test_num[25] _______________________________</span>
+
+i = 25
+
+    @pytest.mark.parametrize("i", range(50))
+    def test_num(i):
+        if i in (17, 25):
+&gt;           pytest.fail("bad luck")
+<span class="-Color -Color-Bold -Color-Bold-Red">E           Failed: bad luck</span>
+
+<span class="-Color -Color-Bold -Color-Bold-Red">test_50.py</span>:7: Failed
+<span class="-Color -Color-Bold -Color-Bold-Cyan">========================= short test summary info ==========================</span>
+<span class="-Color -Color-Red">FAILED</span> test_50.py::<span class="-Color -Color-Bold">test_num[17]</span> - Failed: bad luck
+<span class="-Color -Color-Red">FAILED</span> test_50.py::<span class="-Color -Color-Bold">test_num[25]</span> - Failed: bad luck
+<span class="-Color -Color-Red">======================= </span><span class="-Color -Color-Bold -Color-Bold-Red">2 failed</span>, <span class="-Color -Color-Green">48 passed</span><span class="-Color -Color-Red"> in 0.12s =======================</span>
+</pre></div>
+</div>
+<a class="dashAnchor" name="//apple_ref/cpp/Section/config.cache"></a><p id="config-cache">New <code class="docutils literal notranslate"><span class="pre">--nf</span></code>, <code class="docutils literal notranslate"><span class="pre">--new-first</span></code> options: run new tests first followed by the rest
+of the tests, in both cases tests are also sorted by the file modified time,
+with more recent files coming first.</p>
+</section>
+<section id="behavior-when-no-tests-failed-in-the-last-run">
+<h2>Behavior when no tests failed in the last run<a class="headerlink" href="#behavior-when-no-tests-failed-in-the-last-run" title="Permalink to this heading">¶</a></h2>
+<p>When no tests failed in the last run, or when no cached <code class="docutils literal notranslate"><span class="pre">lastfailed</span></code> data was
+found, <code class="docutils literal notranslate"><span class="pre">pytest</span></code> can be configured either to run all of the tests or no tests,
+using the <code class="docutils literal notranslate"><span class="pre">--last-failed-no-failures</span></code> option, which takes one of the following values:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>--last-failed<span class="w"> </span>--last-failed-no-failures<span class="w"> </span>all<span class="w">    </span><span class="c1"># run all tests (default behavior)</span>
+pytest<span class="w"> </span>--last-failed<span class="w"> </span>--last-failed-no-failures<span class="w"> </span>none<span class="w">   </span><span class="c1"># run no tests and exit</span>
+</pre></div>
+</div>
+</section>
+<section id="the-new-config-cache-object">
+<h2>The new config.cache object<a class="headerlink" href="#the-new-config-cache-object" title="Permalink to this heading">¶</a></h2>
+<p>Plugins or conftest.py support code can get a cached value using the
+pytest <code class="docutils literal notranslate"><span class="pre">config</span></code> object.  Here is a basic example plugin which
+implements a <a class="reference internal" href="../reference/fixtures.html#fixture"><span class="std std-ref">fixture</span></a> which re-uses previously created state
+across pytest invocations:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># content of test_caching.py</span>
+<span class="kn">import</span> <span class="nn">pytest</span>
+
+
+<span class="k">def</span> <span class="nf">expensive_computation</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"running expensive computation..."</span><span class="p">)</span>
+
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+<span class="k">def</span> <span class="nf">mydata</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">val</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"example/value"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">expensive_computation</span><span class="p">()</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="mi">42</span>
+        <span class="n">request</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"example/value"</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">val</span>
+
+
+<span class="k">def</span> <span class="nf">test_function</span><span class="p">(</span><span class="n">mydata</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">mydata</span> <span class="o">==</span> <span class="mi">23</span>
+</pre></div>
+</div>
+<p>If you run this command for the first time, you can see the print statement:</p>
+<div class="highlight-pytest notranslate"><div class="highlight"><pre><span></span>$ pytest -q
+<span class="-Color -Color-Red">F</span>                                                                    <span class="-Color -Color-Red">[100%]</span>
+================================= FAILURES =================================
+<span class="-Color -Color-Bold -Color-Bold-Red">______________________________ test_function _______________________________</span>
+
+mydata = 42
+
+    def test_function(mydata):
+&gt;       assert mydata == 23
+<span class="-Color -Color-Bold -Color-Bold-Red">E       assert 42 == 23</span>
+
+<span class="-Color -Color-Bold -Color-Bold-Red">test_caching.py</span>:19: AssertionError
+-------------------------- Captured stdout setup ---------------------------
+running expensive computation...
+<span class="-Color -Color-Bold -Color-Bold-Cyan">========================= short test summary info ==========================</span>
+<span class="-Color -Color-Red">FAILED</span> test_caching.py::<span class="-Color -Color-Bold">test_function</span> - assert 42 == 23
+<span class="-Color -Color-Bold -Color-Bold-Red">1 failed</span><span class="-Color -Color-Red"> in 0.12s</span>
+</pre></div>
+</div>
+<p>If you run it a second time, the value will be retrieved from
+the cache and nothing will be printed:</p>
+<div class="highlight-pytest notranslate"><div class="highlight"><pre><span></span>$ pytest -q
+<span class="-Color -Color-Red">F</span>                                                                    <span class="-Color -Color-Red">[100%]</span>
+================================= FAILURES =================================
+<span class="-Color -Color-Bold -Color-Bold-Red">______________________________ test_function _______________________________</span>
+
+mydata = 42
+
+    def test_function(mydata):
+&gt;       assert mydata == 23
+<span class="-Color -Color-Bold -Color-Bold-Red">E       assert 42 == 23</span>
+
+<span class="-Color -Color-Bold -Color-Bold-Red">test_caching.py</span>:19: AssertionError
+<span class="-Color -Color-Bold -Color-Bold-Cyan">========================= short test summary info ==========================</span>
+<span class="-Color -Color-Red">FAILED</span> test_caching.py::<span class="-Color -Color-Bold">test_function</span> - assert 42 == 23
+<span class="-Color -Color-Bold -Color-Bold-Red">1 failed</span><span class="-Color -Color-Red"> in 0.12s</span>
+</pre></div>
+</div>
+<p>See the <a class="reference internal" href="../reference/reference.html#std-fixture-cache"><code class="xref std std-fixture docutils literal notranslate"><span class="pre">config.cache</span> <span class="pre">fixture</span></code></a> for more details.</p>
+</section>
+<section id="inspecting-cache-content">
+<h2>Inspecting Cache content<a class="headerlink" href="#inspecting-cache-content" title="Permalink to this heading">¶</a></h2>
+<p>You can always peek at the content of the cache using the
+<code class="docutils literal notranslate"><span class="pre">--cache-show</span></code> command line option:</p>
+<div class="highlight-pytest notranslate"><div class="highlight"><pre><span></span>$ pytest --cache-show
+<span class="-Color -Color-Bold">=========================== test session starts ============================</span>
+platform linux -- Python 3.x.y, pytest-7.x.y, pluggy-1.x.y
+rootdir: /home/sweet/project
+cachedir: /home/sweet/project/.pytest_cache
+--------------------------- cache values for '*' ---------------------------
+cache/lastfailed contains:
+  {'test_caching.py::test_function': True}
+cache/nodeids contains:
+  ['test_caching.py::test_function']
+cache/stepwise contains:
+  []
+example/value contains:
+  42
+
+<span class="-Color -Color-Yellow">========================== no tests ran in 0.12s ===========================</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">--cache-show</span></code> takes an optional argument to specify a glob pattern for
+filtering:</p>
+<div class="highlight-pytest notranslate"><div class="highlight"><pre><span></span>$ pytest --cache-show example/*
+<span class="-Color -Color-Bold">=========================== test session starts ============================</span>
+platform linux -- Python 3.x.y, pytest-7.x.y, pluggy-1.x.y
+rootdir: /home/sweet/project
+cachedir: /home/sweet/project/.pytest_cache
+----------------------- cache values for 'example/*' -----------------------
+example/value contains:
+  42
+
+<span class="-Color -Color-Yellow">========================== no tests ran in 0.12s ===========================</span>
+</pre></div>
+</div>
+</section>
+<section id="clearing-cache-content">
+<h2>Clearing Cache content<a class="headerlink" href="#clearing-cache-content" title="Permalink to this heading">¶</a></h2>
+<p>You can instruct pytest to clear all cache files and values
+by adding the <code class="docutils literal notranslate"><span class="pre">--cache-clear</span></code> option like this:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>--cache-clear
+</pre></div>
+</div>
+<p>This is recommended for invocations from Continuous Integration
+servers where isolation and correctness is more important
+than speed.</p>
+</section>
+<section id="stepwise">
+<a class="dashAnchor" name="//apple_ref/cpp/Section/Stepwise"></a><span id="cache-stepwise"></span><h2>Stepwise<a class="headerlink" href="#stepwise" title="Permalink to this heading">¶</a></h2>
+<p>As an alternative to <code class="docutils literal notranslate"><span class="pre">--lf</span> <span class="pre">-x</span></code>, especially for cases where you expect a large part of the test suite will fail, <code class="docutils literal notranslate"><span class="pre">--sw</span></code>, <code class="docutils literal notranslate"><span class="pre">--stepwise</span></code> allows you to fix them one at a time. The test suite will run until the first failure and then stop. At the next invocation, tests will continue from the last failing test and then run until the next failing test. You may use the <code class="docutils literal notranslate"><span class="pre">--stepwise-skip</span></code> option to ignore one failing test and stop the test execution on the second failing test instead. This is useful if you get stuck on a failing test and just want to ignore it until later.  Providing <code class="docutils literal notranslate"><span class="pre">--stepwise-skip</span></code> will also enable <code class="docutils literal notranslate"><span class="pre">--stepwise</span></code> implicitly.</p>
+</section>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+<span id="sidebar-top"></span>
+<div class="clearer"></div>
+</div>
+<div class="footer" role="contentinfo">
+        © Copyright 2015, holger krekel and pytest-dev team.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    </div>
+<script src="../_static/version_warning_offset.js"></script>
+</body>
+</html>

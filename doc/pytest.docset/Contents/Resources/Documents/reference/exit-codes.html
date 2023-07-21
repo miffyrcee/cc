@@ -1,0 +1,82 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Exit codes — pytest documentation</title>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/basic.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/pygments_pytest.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../_static/doctools.js"></script>
+<script src="../_static/sphinx_highlight.js"></script>
+<link href="../_static/favicon.png" rel="shortcut icon"/>
+<link href="../search.html" rel="search" title="Search"/>
+<script>DOCUMENTATION_OPTIONS.URL_ROOT = '';</script>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../py-modindex.html" title="Python Module Index">modules</a></li>
+<li class="nav-item nav-item-0"><a href="../contents.html">pytest-7.3</a> »</li>
+<li class="nav-item nav-item-this"><a href="">Exit codes</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="body" role="main">
+<a class="dashAnchor" name="//apple_ref/cpp/Section/Exit codes"></a><section id="exit-codes">
+<span id="id1"></span><h1>Exit codes<a class="headerlink" href="#exit-codes" title="Permalink to this heading">¶</a></h1>
+<p>Running <code class="docutils literal notranslate"><span class="pre">pytest</span></code> can result in six different exit codes:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Exit code 0<span class="colon">:</span></dt>
+<dd class="field-odd"><p>All tests were collected and passed successfully</p>
+</dd>
+<dt class="field-even">Exit code 1<span class="colon">:</span></dt>
+<dd class="field-even"><p>Tests were collected and run but some of the tests failed</p>
+</dd>
+<dt class="field-odd">Exit code 2<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Test execution was interrupted by the user</p>
+</dd>
+<dt class="field-even">Exit code 3<span class="colon">:</span></dt>
+<dd class="field-even"><p>Internal error happened while executing tests</p>
+</dd>
+<dt class="field-odd">Exit code 4<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pytest command line usage error</p>
+</dd>
+<dt class="field-even">Exit code 5<span class="colon">:</span></dt>
+<dd class="field-even"><p>No tests were collected</p>
+</dd>
+</dl>
+<p>They are represented by the <a class="reference internal" href="reference.html#pytest.ExitCode" title="pytest.ExitCode"><code class="xref py py-class docutils literal notranslate"><span class="pre">pytest.ExitCode</span></code></a> enum. The exit codes being a part of the public API can be imported and accessed directly using:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pytest</span> <span class="kn">import</span> <span class="n">ExitCode</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you would like to customize the exit code in some scenarios, specially when
+no tests are collected, consider using the
+<a class="reference external" href="https://github.com/yashtodi94/pytest-custom_exit_code">pytest-custom_exit_code</a>
+plugin.</p>
+</div>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+<span id="sidebar-top"></span>
+<div class="clearer"></div>
+</div>
+<div class="footer" role="contentinfo">
+        © Copyright 2015, holger krekel and pytest-dev team.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    </div>
+<script src="../_static/version_warning_offset.js"></script>
+</body>
+</html>

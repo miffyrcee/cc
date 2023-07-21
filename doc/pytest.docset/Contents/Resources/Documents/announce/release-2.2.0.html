@@ -3,43 +3,41 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>py.test 2.2.0: test marking++, parametrization++ and duration profiling &#8212; pytest documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments_pytest.css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <link rel="shortcut icon" href="../_static/favicon.png"/>
-    <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="py.test 2.1.3: just some more fixes" href="release-2.1.3.html" />
     <link rel="prev" title="pytest-2.2.1: bug fixes, perfect teardowns" href="release-2.2.1.html" />
-  <script>DOCUMENTATION_OPTIONS.URL_ROOT = '../';</script>
+  <script>DOCUMENTATION_OPTIONS.URL_ROOT = '';</script>
    
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
+             >modules</a></li>
         <li class="right" >
           <a href="release-2.1.3.html" title="py.test 2.1.3: just some more fixes"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="release-2.2.1.html" title="pytest-2.2.1: bug fixes, perfect teardowns"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../contents.html">pytest-6.2</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../contents.html">pytest-7.3</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Release announcements</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">py.test 2.2.0: test marking++, parametrization++ and duration profiling</a></li> 
       </ul>
@@ -49,8 +47,8 @@
       <div class="documentwrapper">
           <div class="body" role="main">
             
-  <div class="section" id="py-test-2-2-0-test-marking-parametrization-and-duration-profiling">
-<h1>py.test 2.2.0: test marking++, parametrization++ and duration profiling<a class="headerlink" href="#py-test-2-2-0-test-marking-parametrization-and-duration-profiling" title="Permalink to this headline">¶</a></h1>
+  <section id="py-test-2-2-0-test-marking-parametrization-and-duration-profiling">
+<h1>py.test 2.2.0: test marking++, parametrization++ and duration profiling<a class="headerlink" href="#py-test-2-2-0-test-marking-parametrization-and-duration-profiling" title="Permalink to this heading">¶</a></h1>
 <p>pytest-2.2.0 is a test-suite compatible release of the popular
 py.test testing tool.  Plugins might need upgrades. It comes
 with these improvements:</p>
@@ -59,7 +57,7 @@ with these improvements:</p>
 <ul>
 <li><p>new &#64;pytest.mark.parametrize decorator to run tests with different arguments</p></li>
 <li><p>new metafunc.parametrize() API for parametrizing arguments independently</p></li>
-<li><p>see examples at <a class="reference external" href="http://pytest.org/en/stable/example/parametrize.html">http://pytest.org/en/stable/example/parametrize.html</a></p></li>
+<li><p>see examples at <a class="reference external" href="http://pytest.org/en/stable/example/how-to/parametrize.html">http://pytest.org/en/stable/example/how-to/parametrize.html</a></p></li>
 <li><p>NOTE that parametrize() related APIs are still a bit experimental
 and might change in future releases.</p></li>
 </ul>
@@ -92,8 +90,8 @@ pytest’s own test suite allowing it to run on a wider range of environments.</
 <p>Thanks to Ronny Pfannschmidt, David Burns, Jeff Donner, Daniel Nouri, Alfredo Deza and all who gave feedback or sent bug reports.</p>
 <p>best,
 holger krekel</p>
-<div class="section" id="notes-on-incompatibility">
-<h2>notes on incompatibility<a class="headerlink" href="#notes-on-incompatibility" title="Permalink to this headline">¶</a></h2>
+<section id="notes-on-incompatibility">
+<h2>notes on incompatibility<a class="headerlink" href="#notes-on-incompatibility" title="Permalink to this heading">¶</a></h2>
 <p>While test suites should work unchanged you might need to upgrade plugins:</p>
 <ul class="simple">
 <li><p>You need a new version of the pytest-xdist plugin (1.7) for distributing
@@ -106,9 +104,9 @@ or something similar. Note that most code probably “just” works because
 the hook was already called for failing setup/teardown phases of a test
 so a plugin should have been ready to grok such reports already.</p></li>
 </ul>
-</div>
-<div class="section" id="changes-between-2-1-3-and-2-2-0">
-<h2>Changes between 2.1.3 and 2.2.0<a class="headerlink" href="#changes-between-2-1-3-and-2-2-0" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="changes-between-2-1-3-and-2-2-0">
+<h2>Changes between 2.1.3 and 2.2.0<a class="headerlink" href="#changes-between-2-1-3-and-2-2-0" title="Permalink to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>fix issue90: introduce eager tearing down of test items so that
 teardown function are called earlier.</p></li>
@@ -123,7 +121,7 @@ of Test scenarios and the new parametrize function and decorator.</p></li>
 or through plugin hooks.  Also introduce a “–strict” option which
 will treat unregistered markers as errors
 allowing to avoid typos and maintain a well described set of markers
-for your test suite.  See examples at <a class="reference external" href="http://pytest.org/en/stable/mark.html">http://pytest.org/en/stable/mark.html</a>
+for your test suite.  See examples at <a class="reference external" href="http://pytest.org/en/stable/how-to/mark.html">http://pytest.org/en/stable/how-to/mark.html</a>
 and its links.</p></li>
 <li><p>issue50: introduce “-m marker” option to select tests based on markers
 (this is a stricter and more predictable version of “-k” in that “-m”
@@ -139,8 +137,8 @@ and setup/teardown methods.</p></li>
 <li><p>fix issue74: pyarg module names are now checked against imp.find_module false positives</p></li>
 <li><p>fix compatibility with twisted/trial-11.1.0 use cases</p></li>
 </ul>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -151,8 +149,8 @@ and setup/teardown methods.</p></li>
     </div>
   
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2015–2020, holger krekel and pytest-dev team.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
+        &#169; Copyright 2015, holger krekel and pytest-dev team.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
     </div>
   <script src="../_static/version_warning_offset.js"></script>
 

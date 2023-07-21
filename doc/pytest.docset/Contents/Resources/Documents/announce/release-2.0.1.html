@@ -3,43 +3,41 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>py.test 2.0.1: bug fixes &#8212; pytest documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments_pytest.css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <link rel="shortcut icon" href="../_static/favicon.png"/>
-    <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="py.test 2.0.0: asserts++, unittest++, reporting++, config++, docs++" href="release-2.0.0.html" />
     <link rel="prev" title="py.test 2.0.2: bug fixes, improved xfail/skip expressions, speed ups" href="release-2.0.2.html" />
-  <script>DOCUMENTATION_OPTIONS.URL_ROOT = '../';</script>
+  <script>DOCUMENTATION_OPTIONS.URL_ROOT = '';</script>
    
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
+             >modules</a></li>
         <li class="right" >
           <a href="release-2.0.0.html" title="py.test 2.0.0: asserts++, unittest++, reporting++, config++, docs++"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="release-2.0.2.html" title="py.test 2.0.2: bug fixes, improved xfail/skip expressions, speed ups"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../contents.html">pytest-6.2</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../contents.html">pytest-7.3</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Release announcements</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">py.test 2.0.1: bug fixes</a></li> 
       </ul>
@@ -49,8 +47,8 @@
       <div class="documentwrapper">
           <div class="body" role="main">
             
-  <div class="section" id="py-test-2-0-1-bug-fixes">
-<h1>py.test 2.0.1: bug fixes<a class="headerlink" href="#py-test-2-0-1-bug-fixes" title="Permalink to this headline">¶</a></h1>
+  <section id="py-test-2-0-1-bug-fixes">
+<h1>py.test 2.0.1: bug fixes<a class="headerlink" href="#py-test-2-0-1-bug-fixes" title="Permalink to this heading">¶</a></h1>
 <p>Welcome to pytest-2.0.1, a maintenance and bug fix release of pytest,
 a mature testing tool for Python, supporting CPython 2.4-3.2, Jython
 and latest PyPy interpreters.  See extensive docs with tested examples here:</p>
@@ -67,8 +65,8 @@ complaining.  Particular thanks to Floris Bruynooghe and Ronny Pfannschmidt
 for their great coding contributions and many others for feedback and help.</p>
 <p>best,
 holger krekel</p>
-<div class="section" id="changes-between-2-0-0-and-2-0-1">
-<h2>Changes between 2.0.0 and 2.0.1<a class="headerlink" href="#changes-between-2-0-0-and-2-0-1" title="Permalink to this headline">¶</a></h2>
+<section id="changes-between-2-0-0-and-2-0-1">
+<h2>Changes between 2.0.0 and 2.0.1<a class="headerlink" href="#changes-between-2-0-0-and-2-0-1" title="Permalink to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>refine and unify initial capturing so that it works nicely
 even if the logging module is used on an early-loaded conftest.py
@@ -105,7 +103,7 @@ teardown_module cannot closely relate to a single test.</p></li>
 <li><p>refinements to “collecting” output on non-ttys</p></li>
 <li><p>refine internal plugin registration and –traceconfig output</p></li>
 <li><p>introduce a mechanism to prevent/unregister plugins from the
-command line, see <a class="reference external" href="http://pytest.org/en/stable/plugins.html#cmdunregister">http://pytest.org/en/stable/plugins.html#cmdunregister</a></p></li>
+command line, see <a class="reference external" href="http://pytest.org/en/stable/how-to/plugins.html#cmdunregister">http://pytest.org/en/stable/how-to/plugins.html#cmdunregister</a></p></li>
 <li><p>activate resultlog plugin by default</p></li>
 <li><p>fix regression wrt yielded tests which due to the
 collection-before-running semantics were not
@@ -114,8 +112,8 @@ the recommended and much cleaner way to do test
 parametrization remains the “pytest_generate_tests”
 mechanism, see the docs.</p></li>
 </ul>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -126,8 +124,8 @@ mechanism, see the docs.</p></li>
     </div>
   
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2015–2020, holger krekel and pytest-dev team.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
+        &#169; Copyright 2015, holger krekel and pytest-dev team.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
     </div>
   <script src="../_static/version_warning_offset.js"></script>
 

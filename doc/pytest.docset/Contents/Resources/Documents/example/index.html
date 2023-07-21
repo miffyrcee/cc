@@ -1,55 +1,45 @@
 
-
-
 <!DOCTYPE html>
 
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Examples and customization tricks &#8212; pytest documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/pygments_pytest.css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <link rel="shortcut icon" href="../_static/favicon.png"/>
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Demo of Python failure reports with pytest" href="reportingdemo.html" />
-    <link rel="prev" title="Configuration" href="../customize.html" />
-  <script>DOCUMENTATION_OPTIONS.URL_ROOT = '../';</script>
-   
-  </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
-          <a href="reportingdemo.html" title="Demo of Python failure reports with pytest"
-             accesskey="N">next</a> |</li>
-        <li class="right" >
-          <a href="../customize.html" title="Configuration"
-             accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../contents.html">pytest-6.2</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Examples and customization tricks</a></li> 
-      </ul>
-    </div>  
-
-    <div class="document">
-      <div class="documentwrapper">
-          <div class="body" role="main">
-            
-  <div class="section" id="examples-and-customization-tricks">
-<span id="examples"></span><h1>Examples and customization tricks<a class="headerlink" href="#examples-and-customization-tricks" title="Permalink to this headline">¶</a></h1>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Examples and customization tricks — pytest documentation</title>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/basic.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/pygments_pytest.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../_static/doctools.js"></script>
+<script src="../_static/sphinx_highlight.js"></script>
+<link href="../_static/favicon.png" rel="shortcut icon"/>
+<link href="../search.html" rel="search" title="Search"/>
+<link href="reportingdemo.html" rel="next" title="Demo of Python failure reports with pytest"/>
+<link href="../explanation/pythonpath.html" rel="prev" title="pytest import mechanisms and sys.path/PYTHONPATH"/>
+<script>DOCUMENTATION_OPTIONS.URL_ROOT = '';</script>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../py-modindex.html" title="Python Module Index">modules</a></li>
+<li class="right">
+<a accesskey="N" href="reportingdemo.html" title="Demo of Python failure reports with pytest">next</a> |</li>
+<li class="right">
+<a accesskey="P" href="../explanation/pythonpath.html" title="pytest import mechanisms and sys.path/PYTHONPATH">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../contents.html">pytest-7.3</a> »</li>
+<li class="nav-item nav-item-this"><a href="">Examples and customization tricks</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="body" role="main">
+<section id="examples-and-customization-tricks">
+<a class="dashAnchor" name="//apple_ref/cpp/Section/Examples and customization tricks"></a><span id="examples"></span><h1>Examples and customization tricks<a class="headerlink" href="#examples-and-customization-tricks" title="Permalink to this heading">¶</a></h1>
 <p>Here is a (growing) list of examples. <a class="reference internal" href="../contact.html#contact"><span class="std std-ref">Contact</span></a> us if you
 need more examples or have questions. Also take a look at the
 <a class="reference internal" href="../contents.html#toc"><span class="std std-ref">comprehensive documentation</span></a> which contains many example
@@ -57,12 +47,12 @@ snippets as well.  Also, <a class="reference external" href="http://stackoverflo
 answers.</p>
 <p>For basic examples, see</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="../getting-started.html"><span class="doc">Installation and Getting Started</span></a> for basic introductory examples</p></li>
-<li><p><a class="reference internal" href="../assert.html#assert"><span class="std std-ref">Asserting with the assert statement</span></a> for basic assertion examples</p></li>
-<li><p><a class="reference internal" href="../fixture.html#fixtures"><span class="std std-ref">Fixtures</span></a> for basic fixture/setup examples</p></li>
-<li><p><a class="reference internal" href="../parametrize.html#parametrize"><span class="std std-ref">Parametrizing fixtures and test functions</span></a> for basic test function parametrization</p></li>
-<li><p><a class="reference internal" href="../unittest.html"><span class="doc">unittest.TestCase Support</span></a> for basic unittest integration</p></li>
-<li><p><a class="reference internal" href="../nose.html"><span class="doc">Running tests written for nose</span></a> for basic nosetests integration</p></li>
+<li><p><a class="reference internal" href="../getting-started.html#get-started"><span class="std std-ref">Get Started</span></a> for basic introductory examples</p></li>
+<li><p><a class="reference internal" href="../how-to/assert.html#assert"><span class="std std-ref">How to write and report assertions in tests</span></a> for basic assertion examples</p></li>
+<li><p><a class="reference internal" href="../reference/fixtures.html#fixtures"><span class="std std-ref">Fixtures</span></a> for basic fixture/setup examples</p></li>
+<li><p><a class="reference internal" href="../how-to/parametrize.html#parametrize"><span class="std std-ref">How to parametrize fixtures and test functions</span></a> for basic test function parametrization</p></li>
+<li><p><a class="reference internal" href="../how-to/unittest.html#unittest"><span class="std std-ref">How to use unittest-based tests with pytest</span></a> for basic unittest integration</p></li>
+<li><p><a class="reference internal" href="../how-to/nose.html#noseintegration"><span class="std std-ref">How to run tests written for nose</span></a> for basic nosetests integration</p></li>
 </ul>
 <p>The following examples aim at various use cases you might encounter.</p>
 <div class="toctree-wrapper compound">
@@ -131,21 +121,17 @@ answers.</p>
 </li>
 </ul>
 </div>
+</section>
+<div class="clearer"></div>
 </div>
-
-
-            <div class="clearer"></div>
-          </div>
-      </div>
-  <span id="sidebar-top"></span>
-      <div class="clearer"></div>
+</div>
+<span id="sidebar-top"></span>
+<div class="clearer"></div>
+</div>
+<div class="footer" role="contentinfo">
+        © Copyright 2015, holger krekel and pytest-dev team.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
     </div>
-  
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2015–2020, holger krekel and pytest-dev team.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
-    </div>
-  <script src="../_static/version_warning_offset.js"></script>
-
-  </body>
+<script src="../_static/version_warning_offset.js"></script>
+</body>
 </html>

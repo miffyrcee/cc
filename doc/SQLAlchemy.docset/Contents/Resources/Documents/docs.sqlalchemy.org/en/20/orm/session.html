@@ -1,0 +1,725 @@
+<html><!-- Mirrored from docs.sqlalchemy.org/en/20/orm/session.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 06 Jul 2023 08:05:08 GMT --><!-- Added by HTTrack --><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><!-- /Added by HTTrack -->
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>
+        
+        
+    
+    Using the Session
+ </title>
+
+    
+
+    
+
+    <link href="../../../../fonts.googleapis.com/cssa2b2.css?family=Lato:400,700|Roboto+Slab:400,700" rel="stylesheet" type="text/css">
+
+    
+        <!-- begin iterate through SQLA css_files -->
+            <link rel="stylesheet" href="../_static/pygments.css" type="text/css">
+        <!-- end iterate through SQLA css_files -->
+
+        <!-- begin iterate through sphinx environment local css_files -->
+            <link rel="stylesheet" href="../_static/pygments.css" type="text/css">
+            <link rel="stylesheet" href="../_static/default.css" type="text/css">
+            <link rel="stylesheet" href="../_static/copybutton.css" type="text/css">
+            <link rel="stylesheet" href="../_static/docs.css" type="text/css">
+            <link rel="stylesheet" href="../_static/changelog.css" type="text/css">
+            <link rel="stylesheet" href="../_static/sphinx_paramlinks.css" type="text/css">
+        <!-- end iterate through sphinx environment local css_files -->
+
+        <link rel="stylesheet" type="text/css" media="all" href="../../../../www.sqlalchemy.org/css/bootstrap.min.css">
+	    <link rel="stylesheet" type="text/css" media="all" href="../../../../www.sqlalchemy.org/css/site.css">
+        <link rel="stylesheet" type="text/css" media="all" href="../../../../www.sqlalchemy.org/css/sidebar_extra.css">
+        <link rel="stylesheet" type="text/css" media="print" href="../../../../www.sqlalchemy.org/css/print.css">
+
+        <!-- begin iterate through sphinx environment remote css_files -->
+        <!-- end iterate through sphinx environment remote css_files -->
+    
+
+    
+
+    
+
+    
+
+
+    
+        <link rel="canonical" href="http://docs.sqlalchemy.org/en/latest/orm/session.html">
+
+    <script type="text/javascript">
+        var doc_version = "latest";
+        var doc_slug = "sqlalchemy";
+        var static_root = "../_static"
+
+        // copied from:
+        // https://github.com/rtfd/readthedocs.org/commit/edbbb4c753454cf20c128d4eb2fef60d740debaa#diff-2f70e8d9361202bfe3f378d2ff2c510bR8
+        var READTHEDOCS_DATA = {
+            project: "sqlalchemy",
+            version: "latest",
+            page: "orm/session",
+            theme: ""
+          };
+
+
+    </script>
+    <!-- end RTD <head> via SQLAlchemy adapter -->
+
+    
+
+    <!-- begin layout.mako headers -->
+
+    <link rel="index" title="Index" href="../genindex.html">
+    <link rel="search" title="Search" href="../search.html">
+        <link rel="copyright" title="Copyright" href="../copyright.html">
+    <link rel="top" title="SQLAlchemy 2.0 Documentation" href="../index-2.html">
+        <link rel="up" title="SQLAlchemy ORM" href="index.html">
+        <link rel="next" title="Session Basics" href="session_basics.html">
+        <link rel="prev" title="Legacy Query API" href="queryguide/query.html">
+    <!-- end layout.mako headers -->
+
+
+
+
+    
+
+    <!-- sqlalchemy.org docs base head -->
+    
+<link rel="shortcut icon" href="../../../../www.sqlalchemy.org/favicon.ico" type="image/x-icon">
+<link href="../../../../fonts.googleapis.com/css118a.css?family=Source+Sans+Pro:400,600,400italic" rel="stylesheet" type="text/css">
+
+<script type="text/javascript">
+var site_base='//www.sqlalchemy.org';
+var docs_base='//docs.sqlalchemy.org';
+</script>
+
+
+    <!-- end sqlalchemy.org docs base head -->
+
+</head>
+
+<body>
+
+<div id="wrap" class="container-xxl wrap px-0">
+
+
+
+
+
+<nav class="navbar navbar-light logo">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="http://www.sqlalchemy.org/">
+            <img src="../../../../www.sqlalchemy.org/img/sqla_logo.png" width="240" alt="SQLAlchemy">
+        </a>
+        <div class="navbar-brand align-self-end dbtoolkit">
+            <img src="../../../../www.sqlalchemy.org/img/dbtoolkit6.gif" width="180" height="12" alt="The Database Toolkit for Python">
+        </div>
+    </div>
+</nav>
+<nav class="navbar navbar-expand-md navbar-dark bg-sa-green py-0 navigation">
+    <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavigation" aria-controls="navbarNavigation" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <span class="navbar-brand d-md-block d-md-none" href="#">The Database Toolkit for Python</span>
+        <div class="collapse navbar-collapse" id="navbarNavigation">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link " href="http://www.sqlalchemy.org/">home</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle " href="#" id="feature-dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        features
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark bg-sa-green" aria-labelledby="feature-dropdown">
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/philosophy.html">Philosophy Statement</a></li>
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/features.html">Feature Overview</a></li>
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/quotes.html">Testimonials</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link " href="http://www.sqlalchemy.org/blog/">news</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle active" aria-current="page" href="#" id="docs-dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        documentation
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark bg-sa-green" aria-labelledby="docs-dropdown">
+                        <li><a class="dropdown-item" href="http://docs.sqlalchemy.org/">Current Documentation (version 2.0)</a></li>
+
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/library.html#reference">Documentation by Version</a></li>
+                        
+        <li>
+            <a class="dropdown-item" href="../index.html">
+                <span class="ps-2">Version 2.0</span>
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="http://docs.sqlalchemy.org/en/14/">
+                <span class="ps-2">Version 1.4</span>
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="http://docs.sqlalchemy.org/en/13/">
+                <span class="ps-2">Version 1.3</span>
+            </a>
+        </li>
+
+                        <li><hr class="dropdown-divider"></li>
+
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/library.html#talks">Talks and Tutorials</a></li>
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/library.html">Published content overview</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle " href="#" id="community-dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        community
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark bg-sa-green" aria-labelledby="community-dropdown">
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/support.html">Get Support</a></li>
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/participate.html">Participate</a></li>
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/develop.html">Develop</a></li>
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/codeofconduct.html">Code of Conduct</a></li>
+                        <li><a class="dropdown-item" href="https://github.com/sqlalchemy/sqlalchemy">Github</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle " href="#" id="download-dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        download
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark bg-sa-green" aria-labelledby="download-dropdown">
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/download.html">Download</a>
+                        
+
+
+
+
+
+
+    </li><li><a class="dropdown-item" href="http://www.sqlalchemy.org/download.html#current">Current Release Series (2.0)</a></li>
+
+    <li><a class="dropdown-item" href="http://www.sqlalchemy.org/download.html#maintenance">Maintenance Release (1.4)</a></li>
+
+    <li><a class="dropdown-item" href="http://www.sqlalchemy.org/download.html#development">Development Access</a></li>
+    <li><a class="dropdown-item" href="http://www.sqlalchemy.org/download.html#license">License</a></li>
+    <li><a class="dropdown-item" href="http://www.sqlalchemy.org/download.html#versions">Version Numbering</a></li>
+    <li><a class="dropdown-item" href="http://www.sqlalchemy.org/download.html#relstatus">Release Status</a></li>
+
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<div id="main-body" class="docs main-body row m-0">
+
+<main id="docs" class="docs">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div id="docs-container">
+
+
+
+
+
+<div id="docs-top-navigation-container" class="body-background">
+<div id="docs-header">
+    <div id="docs-version-header">
+        Release: <span class="version-num">2.0.18</span>
+
+            <span id="sidebar-current">current release</span>
+
+        | Release Date: July 5, 2023
+
+    </div>
+
+    <h1><a href="../index-2.html">SQLAlchemy 2.0 Documentation</a></h1>
+
+</div>
+</div>
+
+<div id="docs-body-container">
+
+    <div id="fixed-sidebar" class="">
+
+
+
+        <div id="docs-sidebar-popout">
+            <h3><a href="../index-2.html">SQLAlchemy 2.0 Documentation</a></h3>
+                <p id="sidebar-current">current release</p>
+            <p id="sidebar-topnav">
+                <a href="../index-2.html">Home</a>
+                | <a href="http://docs.sqlalchemy.org/20/sqlalchemy_20.zip">Download this Documentation</a>
+            </p>
+
+            <div id="sidebar-search">
+                <form class="search" action="https://docs.sqlalchemy.org/en/20/search.html" method="get">
+                  <label>
+                  Search terms:
+                  <input type="text" placeholder="search..." name="q" size="12">
+                  </label>
+                  <input type="hidden" name="check_keywords" value="yes">
+                  <input type="hidden" name="area" value="default">
+                </form>
+            </div>
+
+        </div>
+
+        <div id="docs-sidebar">
+
+        <div id="sidebar-banner">
+            
+        
+<script async="" type="text/javascript" id="_carbonads_js" src="../../../../cdn.carbonads.com/carbon8b90.js?serve=CKYILK7Y&amp;amp;placement=sqlalchemyorg"></script>
+<script async="" type="text/javascript" id="_eaads_js" src="../../../../media.ethicalads.io/media/client/ethicalads.min.js"></script>
+
+<div data-ea-publisher="sqlalchemyorg" data-ea-type="image" class="adaptive flat horizontal"></div>
+
+<script type="text/javascript">
+
+var ea = "../../../../media.ethicalads.io/media/client/ethicalads.min.js";
+var carbon = "../../../../cdn.carbonads.com/carbon8b90.js?serve=CKYILK7Y&amp;placement=sqlalchemyorg";
+
+if (Math.floor(Math.random() * 10) < 8) {
+    ea_script = document.getElementById("_eaads_js");
+    ea_script.setAttribute('src', ea);
+}
+else {
+    carbon_script = document.getElementById("_carbonads_js");
+    carbon_script.setAttribute('src', carbon);
+}
+
+</script>
+
+    
+        </div>
+
+        <div id="docs-sidebar-inner">
+
+        
+        <h3>
+            <a href="index.html" title="SQLAlchemy ORM">SQLAlchemy ORM</a>
+        </h3>
+
+        <ul>
+<li><span class="link-container"><a class="reference external" href="quickstart.html">ORM Quick Start</a></span></li>
+<li><span class="link-container"><a class="reference external" href="mapper_config.html">ORM Mapped Class Configuration</a></span></li>
+<li><span class="link-container"><a class="reference external" href="relationships.html">Relationship Configuration</a></span></li>
+<li><span class="link-container"><a class="reference external" href="queryguide/index.html">ORM Querying Guide</a></span></li>
+<li class="selected"><span class="link-container"><strong>Using the Session</strong><a class="paramlink headerlink reference internal" href="#">¶</a></span><ul>
+<li><span class="link-container"><a class="reference external" href="session_basics.html">Session Basics</a></span></li>
+<li><span class="link-container"><a class="reference external" href="session_state_management.html">State Management</a></span></li>
+<li><span class="link-container"><a class="reference external" href="cascades.html">Cascades</a></span></li>
+<li><span class="link-container"><a class="reference external" href="session_transaction.html">Transactions and Connection Management</a></span></li>
+<li><span class="link-container"><a class="reference external" href="persistence_techniques.html">Additional Persistence Techniques</a></span></li>
+<li><span class="link-container"><a class="reference external" href="contextual.html">Contextual/Thread-local Sessions</a></span></li>
+<li><span class="link-container"><a class="reference external" href="session_events.html">Tracking queries, object and Session Changes with Events</a></span></li>
+<li><span class="link-container"><a class="reference external" href="session_api.html">Session API</a></span></li>
+</ul>
+</li>
+<li><span class="link-container"><a class="reference external" href="extending.html">Events and Internals</a></span></li>
+<li><span class="link-container"><a class="reference external" href="extensions/index.html">ORM Extensions</a></span></li>
+<li><span class="link-container"><a class="reference external" href="examples.html">ORM Examples</a></span></li>
+</ul>
+
+
+        <h4>Project Versions</h4>
+        <ul class="version-listing">
+            <li><a href="../index-2.html">2.0.18</a></li>
+        </ul>
+
+        </div>
+
+        </div>
+
+    </div>
+
+    <div id="narrow-index-nav">
+        <form class="search" action="https://docs.sqlalchemy.org/en/20/search.html" method="get">
+            <label>
+                Search terms:
+            <input type="text" placeholder="search..." name="q" size="12">
+            </label>
+            <input type="submit" value="Search">
+            <input type="hidden" name="check_keywords" value="yes">
+            <input type="hidden" name="area" value="default">
+        </form>
+
+        <p>
+        <a href="../index-2.html">Home</a>
+        | <a href="http://docs.sqlalchemy.org/20/sqlalchemy_20.zip">Download this Documentation</a>
+        </p>
+
+    </div>
+
+
+        <div id="docs-narrow-top-navigation">
+            <ul>
+                <li><b>Previous:</b>
+                <a href="queryguide/query.html" title="previous chapter">Legacy Query API</a></li>
+                <li><b>Next:</b>
+                <a href="session_basics.html" title="next chapter">Session Basics</a></li>
+
+            <li><b>Up:</b> <a href="../index-2.html">Home</a></li>
+                    <ul><li><a href="index.html" title="SQLAlchemy ORM">SQLAlchemy ORM</a></li>
+                </ul>
+
+
+
+            <li><b>On this page:</b></li>
+            <ul>
+<li><a class="reference internal" href="#module-sqlalchemy.orm.session">Using the Session</a></li>
+</ul>
+
+
+            </ul>
+
+        </div>
+
+
+
+    <div id="docs-body" role="main" class=" orm-session">
+        
+<a class="dashAnchor" name="//apple_ref/Module/sqlalchemy.orm.session"></a><section id="module-sqlalchemy.orm.session">
+<span id="using-the-session"></span><a class="dashAnchor" name="//apple_ref/Section/Using%20the%20Session"></a><span id="session-toplevel"></span><h1>Using the Session<a class="headerlink" href="#module-sqlalchemy.orm.session" title="Permalink to this heading">¶</a></h1>
+<p>The declarative base and ORM mapping functions described at
+<a class="reference internal" href="mapper_config.html"><span class="std std-ref">ORM Mapped Class Configuration</span></a> are the primary configurational interface for the
+ORM. Once mappings are configured, the primary usage interface for
+persistence operations is the
+<a class="reference internal" href="session_api.html#sqlalchemy.orm.Session" title="sqlalchemy.orm.session.Session"><code class="xref py py-class docutils literal notranslate"><span class="pre">Session</span></code></a>.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="session_basics.html">Session Basics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="session_basics.html#what-does-the-session-do">What does the Session do ?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="session_basics.html#basics-of-using-a-session">Basics of Using a Session</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="session_basics.html#opening-and-closing-a-session">Opening and Closing a Session</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_basics.html#framing-out-a-begin-commit-rollback-block">Framing out a begin / commit / rollback block</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_basics.html#using-a-sessionmaker">Using a sessionmaker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_basics.html#querying">Querying</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_basics.html#adding-new-or-existing-items">Adding New or Existing Items</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_basics.html#deleting">Deleting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_basics.html#flushing">Flushing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_basics.html#get-by-primary-key">Get by Primary Key</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_basics.html#expiring-refreshing">Expiring / Refreshing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_basics.html#update-and-delete-with-arbitrary-where-clause">UPDATE and DELETE with arbitrary WHERE clause</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_basics.html#auto-begin">Auto Begin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_basics.html#committing">Committing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_basics.html#rolling-back">Rolling Back</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_basics.html#closing">Closing</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="session_basics.html#session-frequently-asked-questions">Session Frequently Asked Questions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="session_basics.html#when-do-i-make-a-sessionmaker">When do I make a <code class="xref py py-class docutils literal notranslate"><span class="pre">sessionmaker</span></code>?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_basics.html#when-do-i-construct-a-session-when-do-i-commit-it-and-when-do-i-close-it">When do I construct a <code class="xref py py-class docutils literal notranslate"><span class="pre">Session</span></code>, when do I commit it, and when do I close it?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_basics.html#is-the-session-a-cache">Is the Session a cache?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_basics.html#how-can-i-get-the-session-for-a-certain-object">How can I get the <code class="xref py py-class docutils literal notranslate"><span class="pre">Session</span></code> for a certain object?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_basics.html#is-the-session-thread-safe-is-asyncsession-safe-to-share-in-concurrent-tasks">Is the Session thread-safe?  Is AsyncSession safe to share in concurrent tasks?</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="session_state_management.html">State Management</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="session_state_management.html#quickie-intro-to-object-states">Quickie Intro to Object States</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="session_state_management.html#getting-the-current-state-of-an-object">Getting the Current State of an Object</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="session_state_management.html#session-attributes">Session Attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="session_state_management.html#session-referencing-behavior">Session Referencing Behavior</a></li>
+<li class="toctree-l2"><a class="reference internal" href="session_state_management.html#merging">Merging</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="session_state_management.html#merge-tips">Merge Tips</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="session_state_management.html#expunging">Expunging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="session_state_management.html#refreshing-expiring">Refreshing / Expiring</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="session_state_management.html#what-actually-loads">What Actually Loads</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_state_management.html#when-to-expire-or-refresh">When to Expire or Refresh</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cascades.html">Cascades</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cascades.html#save-update">save-update</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cascades.html#behavior-of-save-update-cascade-with-bi-directional-relationships">Behavior of save-update cascade with bi-directional relationships</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cascades.html#delete">delete</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cascades.html#using-delete-cascade-with-many-to-many-relationships">Using delete cascade with many-to-many relationships</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cascades.html#using-foreign-key-on-delete-cascade-with-orm-relationships">Using foreign key ON DELETE cascade with ORM relationships</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cascades.html#using-foreign-key-on-delete-with-many-to-many-relationships">Using foreign key ON DELETE with many-to-many relationships</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cascades.html#delete-orphan">delete-orphan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cascades.html#merge">merge</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cascades.html#refresh-expire">refresh-expire</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cascades.html#expunge">expunge</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cascades.html#notes-on-delete-deleting-objects-referenced-from-collections-and-scalar-relationships">Notes on Delete - Deleting Objects Referenced from Collections and Scalar Relationships</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="session_transaction.html">Transactions and Connection Management</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="session_transaction.html#managing-transactions">Managing Transactions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="session_transaction.html#using-savepoint">Using SAVEPOINT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_transaction.html#session-level-vs-engine-level-transaction-control">Session-level vs. Engine level transaction control</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_transaction.html#explicit-begin">Explicit Begin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_transaction.html#enabling-two-phase-commit">Enabling Two-Phase Commit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_transaction.html#setting-transaction-isolation-levels-dbapi-autocommit">Setting Transaction Isolation Levels / DBAPI AUTOCOMMIT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_transaction.html#tracking-transaction-state-with-events">Tracking Transaction State with Events</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="session_transaction.html#joining-a-session-into-an-external-transaction-such-as-for-test-suites">Joining a Session into an External Transaction (such as for test suites)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="persistence_techniques.html">Additional Persistence Techniques</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="persistence_techniques.html#embedding-sql-insert-update-expressions-into-a-flush">Embedding SQL Insert/Update Expressions into a Flush</a></li>
+<li class="toctree-l2"><a class="reference internal" href="persistence_techniques.html#using-sql-expressions-with-sessions">Using SQL Expressions with Sessions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="persistence_techniques.html#forcing-null-on-a-column-with-a-default">Forcing NULL on a column with a default</a></li>
+<li class="toctree-l2"><a class="reference internal" href="persistence_techniques.html#fetching-server-generated-defaults">Fetching Server-Generated Defaults</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="persistence_techniques.html#case-1-non-primary-key-returning-or-equivalent-is-supported">Case 1: non primary key, RETURNING or equivalent is supported</a></li>
+<li class="toctree-l3"><a class="reference internal" href="persistence_techniques.html#case-2-table-includes-trigger-generated-values-which-are-not-compatible-with-returning">Case 2: Table includes trigger-generated values which are not compatible with RETURNING</a></li>
+<li class="toctree-l3"><a class="reference internal" href="persistence_techniques.html#case-3-non-primary-key-returning-or-equivalent-is-not-supported-or-not-needed">Case 3: non primary key, RETURNING or equivalent is not supported or not needed</a></li>
+<li class="toctree-l3"><a class="reference internal" href="persistence_techniques.html#case-4-primary-key-returning-or-equivalent-is-supported">Case 4: primary key, RETURNING or equivalent is supported</a></li>
+<li class="toctree-l3"><a class="reference internal" href="persistence_techniques.html#case-5-primary-key-returning-or-equivalent-is-not-supported">Case 5: primary key, RETURNING or equivalent is not supported</a></li>
+<li class="toctree-l3"><a class="reference internal" href="persistence_techniques.html#notes-on-eagerly-fetching-client-invoked-sql-expressions-used-for-insert-or-update">Notes on eagerly fetching client invoked SQL expressions used for INSERT or UPDATE</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="persistence_techniques.html#using-insert-update-and-on-conflict-i-e-upsert-to-return-orm-objects">Using INSERT, UPDATE and ON CONFLICT (i.e. upsert) to return ORM Objects</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="persistence_techniques.html#using-postgresql-on-conflict-with-returning-to-return-upserted-orm-objects">Using PostgreSQL ON CONFLICT with RETURNING to return upserted ORM objects</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="persistence_techniques.html#partitioning-strategies-e-g-multiple-database-backends-per-session">Partitioning Strategies (e.g. multiple database backends per Session)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="persistence_techniques.html#simple-vertical-partitioning">Simple Vertical Partitioning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="persistence_techniques.html#coordination-of-transactions-for-a-multiple-engine-session">Coordination of Transactions for a multiple-engine Session</a></li>
+<li class="toctree-l3"><a class="reference internal" href="persistence_techniques.html#custom-vertical-partitioning">Custom Vertical Partitioning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="persistence_techniques.html#horizontal-partitioning">Horizontal Partitioning</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="persistence_techniques.html#bulk-operations">Bulk Operations</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contextual.html">Contextual/Thread-local Sessions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="contextual.html#implicit-method-access">Implicit Method Access</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contextual.html#thread-local-scope">Thread-Local Scope</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contextual.html#using-thread-local-scope-with-web-applications">Using Thread-Local Scope with Web Applications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contextual.html#using-custom-created-scopes">Using Custom Created Scopes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contextual.html#contextual-session-api">Contextual Session API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="contextual.html#sqlalchemy.orm.scoped_session"><code class="docutils literal notranslate"><span class="pre">scoped_session</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="contextual.html#sqlalchemy.util.ScopedRegistry"><code class="docutils literal notranslate"><span class="pre">ScopedRegistry</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="contextual.html#sqlalchemy.util.ThreadLocalRegistry"><code class="docutils literal notranslate"><span class="pre">ThreadLocalRegistry</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="contextual.html#sqlalchemy.orm.QueryPropertyDescriptor"><code class="docutils literal notranslate"><span class="pre">QueryPropertyDescriptor</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="session_events.html">Tracking queries, object and Session Changes with Events</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="session_events.html#execute-events">Execute Events</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="session_events.html#basic-query-interception">Basic Query Interception</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_events.html#adding-global-where-on-criteria">Adding global WHERE / ON criteria</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_events.html#re-executing-statements">Re-Executing Statements</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="session_events.html#persistence-events">Persistence Events</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="session_events.html#before-flush"><code class="docutils literal notranslate"><span class="pre">before_flush()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_events.html#after-flush"><code class="docutils literal notranslate"><span class="pre">after_flush()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_events.html#after-flush-postexec"><code class="docutils literal notranslate"><span class="pre">after_flush_postexec()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_events.html#mapper-level-flush-events">Mapper-level Flush Events</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="session_events.html#object-lifecycle-events">Object Lifecycle Events</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="session_events.html#transient">Transient</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_events.html#transient-to-pending">Transient to Pending</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_events.html#pending-to-persistent">Pending to Persistent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_events.html#pending-to-transient">Pending to Transient</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_events.html#loaded-as-persistent">Loaded as Persistent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_events.html#persistent-to-transient">Persistent to Transient</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_events.html#persistent-to-deleted">Persistent to Deleted</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_events.html#deleted-to-detached">Deleted to Detached</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_events.html#persistent-to-detached">Persistent to Detached</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_events.html#detached-to-persistent">Detached to Persistent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_events.html#deleted-to-persistent">Deleted to Persistent</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="session_events.html#transaction-events">Transaction Events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="session_events.html#attribute-change-events">Attribute Change Events</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="session_api.html">Session API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="session_api.html#session-and-sessionmaker">Session and sessionmaker()</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="session_api.html#sqlalchemy.orm.sessionmaker"><code class="docutils literal notranslate"><span class="pre">sessionmaker</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_api.html#sqlalchemy.orm.ORMExecuteState"><code class="docutils literal notranslate"><span class="pre">ORMExecuteState</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_api.html#sqlalchemy.orm.Session"><code class="docutils literal notranslate"><span class="pre">Session</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_api.html#sqlalchemy.orm.SessionTransaction"><code class="docutils literal notranslate"><span class="pre">SessionTransaction</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_api.html#sqlalchemy.orm.SessionTransactionOrigin"><code class="docutils literal notranslate"><span class="pre">SessionTransactionOrigin</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="session_api.html#session-utilities">Session Utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="session_api.html#sqlalchemy.orm.close_all_sessions"><code class="docutils literal notranslate"><span class="pre">close_all_sessions()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_api.html#sqlalchemy.orm.make_transient"><code class="docutils literal notranslate"><span class="pre">make_transient()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_api.html#sqlalchemy.orm.make_transient_to_detached"><code class="docutils literal notranslate"><span class="pre">make_transient_to_detached()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_api.html#sqlalchemy.orm.object_session"><code class="docutils literal notranslate"><span class="pre">object_session()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_api.html#sqlalchemy.orm.util.was_deleted"><code class="docutils literal notranslate"><span class="pre">was_deleted()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="session_api.html#attribute-and-state-management-utilities">Attribute and State Management Utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="session_api.html#sqlalchemy.orm.util.object_state"><code class="docutils literal notranslate"><span class="pre">object_state()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_api.html#sqlalchemy.orm.attributes.del_attribute"><code class="docutils literal notranslate"><span class="pre">del_attribute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_api.html#sqlalchemy.orm.attributes.get_attribute"><code class="docutils literal notranslate"><span class="pre">get_attribute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_api.html#sqlalchemy.orm.attributes.get_history"><code class="docutils literal notranslate"><span class="pre">get_history()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_api.html#sqlalchemy.orm.attributes.init_collection"><code class="docutils literal notranslate"><span class="pre">init_collection()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_api.html#sqlalchemy.orm.attributes.flag_modified"><code class="docutils literal notranslate"><span class="pre">flag_modified()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_api.html#sqlalchemy.orm.attributes.flag_dirty"><code class="docutils literal notranslate"><span class="pre">flag_dirty()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_api.html#sqlalchemy.orm.attributes.instance_state"><code class="docutils literal notranslate"><span class="pre">instance_state()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_api.html#sqlalchemy.orm.instrumentation.is_instrumented"><code class="docutils literal notranslate"><span class="pre">is_instrumented()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_api.html#sqlalchemy.orm.attributes.set_attribute"><code class="docutils literal notranslate"><span class="pre">set_attribute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_api.html#sqlalchemy.orm.attributes.set_committed_value"><code class="docutils literal notranslate"><span class="pre">set_committed_value()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_api.html#sqlalchemy.orm.attributes.History"><code class="docutils literal notranslate"><span class="pre">History</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+    </div>
+
+</div>
+
+<div id="docs-bottom-navigation" class="docs-navigation-links, ">
+        Previous:
+        <a href="queryguide/query.html" title="previous chapter">Legacy Query API</a>
+        Next:
+        <a href="session_basics.html" title="next chapter">Session Basics</a>
+
+    <div id="docs-copyright">
+        © <a href="../copyright.html">Copyright</a> 2007-2023, the SQLAlchemy authors and contributors.
+
+
+    <p><b>flambé!</b> the dragon and <b><i>The Alchemist</i></b> image designs created and generously donated by <a href="https://github.com/vmalloc">Rotem Yaari</a>.</p>
+
+        Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 7.0.1.
+
+    Documentation last generated: Wed 05 Jul 2023 03:34:07 PM 
+
+    </div>
+</div>
+
+</div>
+
+
+
+
+</main></div>
+
+</div> <!-- end #main-body -->
+
+
+    
+
+    
+
+<div id="footer" class="footer">
+    <div class="snd-ad">
+    </div>
+    <div class="pypowered">
+        <a href="http://www.python.org/" title="The Python Language Site">
+            <img src="../../../../www.sqlalchemy.org/img/python-logo.gif" width="88" height="30" alt="Python" class="pypowered">
+        </a>
+    </div>
+
+    <div class="copyright">
+        <p>Website content copyright © by SQLAlchemy authors and contributors.
+            SQLAlchemy and its documentation are licensed under the MIT license.</p>
+        <p>SQLAlchemy is a trademark of Michael Bayer.  mike(&amp;)zzzcomputing.com
+        All rights reserved. </p>
+        <p>Website generation by
+        <a href="https://github.com/sqlalchemyorg/zeekofile/">zeekofile</a>, with
+        huge thanks to the <a href="https://github.com/EnigmaCurry/blogofile">Blogofile</a>
+        project.</p>
+
+        <a rel="me" href="https://fosstodon.org/@zzzeek">Mastodon</a>
+
+    </div>
+
+    <br clear="all">
+
+</div>
+
+
+
+     <!-- End original user content -->
+
+    
+
+
+
+
+ <!-- end #wrap -->
+
+
+    
+
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+          URL_ROOT:    '../',
+          VERSION:     '2.0.18',
+          COLLAPSE_MODINDEX: false,
+          FILE_SUFFIX: '.html'
+      };
+    </script>
+
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+
+    <!-- begin iterate through sphinx environment script_files -->
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script type="text/javascript" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/sphinx_highlight.js"></script>
+        <script type="text/javascript" src="../_static/clipboard.min.js"></script>
+        <script type="text/javascript" src="../_static/copybutton.js"></script>
+    <!-- end iterate through sphinx environment script_files -->
+
+    <script type="text/javascript" src="../_static/init.js"></script>
+
+
+
+
+<script type="text/javascript" src="../../../../www.sqlalchemy.org/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript" src="../../../../www.sqlalchemy.org/js/doc_versions.js"></script>
+
+<!-- Google tag (gtag.js) -->
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-KWWK46V0YX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-KWWK46V0YX');
+</script>
+
+
+
+
+<!-- Mirrored from docs.sqlalchemy.org/en/20/orm/session.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 06 Jul 2023 08:05:08 GMT -->
+
+
+</body></html>

@@ -1,0 +1,671 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Managing pytest’s output — pytest documentation</title>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/basic.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/pygments_pytest.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../_static/doctools.js"></script>
+<script src="../_static/sphinx_highlight.js"></script>
+<link href="../_static/favicon.png" rel="shortcut icon"/>
+<link href="../search.html" rel="search" title="Search"/>
+<script>DOCUMENTATION_OPTIONS.URL_ROOT = '';</script>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../py-modindex.html" title="Python Module Index">modules</a></li>
+<li class="nav-item nav-item-0"><a href="../contents.html">pytest-7.3</a> »</li>
+<li class="nav-item nav-item-this"><a href="">Managing pytest’s output</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="body" role="main">
+<section id="managing-pytest-s-output">
+<a class="dashAnchor" name="//apple_ref/cpp/Section/Managing pytest’s output"></a><span id="how-to-manage-output"></span><h1>Managing pytest’s output<a class="headerlink" href="#managing-pytest-s-output" title="Permalink to this heading">¶</a></h1>
+<section id="modifying-python-traceback-printing">
+<a class="dashAnchor" name="//apple_ref/cpp/Section/Modifying Python traceback printing"></a><span id="how-to-modifying-python-tb-printing"></span><h2>Modifying Python traceback printing<a class="headerlink" href="#modifying-python-traceback-printing" title="Permalink to this heading">¶</a></h2>
+<p>Examples for modifying traceback printing:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>--showlocals<span class="w">     </span><span class="c1"># show local variables in tracebacks</span>
+pytest<span class="w"> </span>-l<span class="w">               </span><span class="c1"># show local variables (shortcut)</span>
+pytest<span class="w"> </span>--no-showlocals<span class="w">  </span><span class="c1"># hide local variables (if addopts enables them)</span>
+
+pytest<span class="w"> </span>--tb<span class="o">=</span>auto<span class="w">    </span><span class="c1"># (default) 'long' tracebacks for the first and last</span>
+<span class="w">                     </span><span class="c1"># entry, but 'short' style for the other entries</span>
+pytest<span class="w"> </span>--tb<span class="o">=</span>long<span class="w">    </span><span class="c1"># exhaustive, informative traceback formatting</span>
+pytest<span class="w"> </span>--tb<span class="o">=</span>short<span class="w">   </span><span class="c1"># shorter traceback format</span>
+pytest<span class="w"> </span>--tb<span class="o">=</span>line<span class="w">    </span><span class="c1"># only one line per failure</span>
+pytest<span class="w"> </span>--tb<span class="o">=</span>native<span class="w">  </span><span class="c1"># Python standard library formatting</span>
+pytest<span class="w"> </span>--tb<span class="o">=</span>no<span class="w">      </span><span class="c1"># no traceback at all</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">--full-trace</span></code> causes very long traces to be printed on error (longer
+than <code class="docutils literal notranslate"><span class="pre">--tb=long</span></code>). It also ensures that a stack trace is printed on
+<strong>KeyboardInterrupt</strong> (Ctrl+C).
+This is very useful if the tests are taking too long and you interrupt them
+with Ctrl+C to find out where the tests are <em>hanging</em>. By default no output
+will be shown (because KeyboardInterrupt is caught by pytest). By using this
+option you make sure a trace is shown.</p>
+</section>
+<section id="verbosity">
+<h2>Verbosity<a class="headerlink" href="#verbosity" title="Permalink to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">-v</span></code> flag controls the verbosity of pytest output in various aspects: test session progress, assertion
+details when tests fail, fixtures details with <code class="docutils literal notranslate"><span class="pre">--fixtures</span></code>, etc.</p>
+<p>Consider this simple file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># content of test_verbosity_example.py</span>
+<span class="k">def</span> <span class="nf">test_ok</span><span class="p">():</span>
+    <span class="k">pass</span>
+
+
+<span class="k">def</span> <span class="nf">test_words_fail</span><span class="p">():</span>
+    <span class="n">fruits1</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"banana"</span><span class="p">,</span> <span class="s2">"apple"</span><span class="p">,</span> <span class="s2">"grapes"</span><span class="p">,</span> <span class="s2">"melon"</span><span class="p">,</span> <span class="s2">"kiwi"</span><span class="p">]</span>
+    <span class="n">fruits2</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"banana"</span><span class="p">,</span> <span class="s2">"apple"</span><span class="p">,</span> <span class="s2">"orange"</span><span class="p">,</span> <span class="s2">"melon"</span><span class="p">,</span> <span class="s2">"kiwi"</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="n">fruits1</span> <span class="o">==</span> <span class="n">fruits2</span>
+
+
+<span class="k">def</span> <span class="nf">test_numbers_fail</span><span class="p">():</span>
+    <span class="n">number_to_text1</span> <span class="o">=</span> <span class="p">{</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">):</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)}</span>
+    <span class="n">number_to_text2</span> <span class="o">=</span> <span class="p">{</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="mi">10</span><span class="p">):</span> <span class="n">x</span> <span class="o">*</span> <span class="mi">10</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)}</span>
+    <span class="k">assert</span> <span class="n">number_to_text1</span> <span class="o">==</span> <span class="n">number_to_text2</span>
+
+
+<span class="k">def</span> <span class="nf">test_long_text_fail</span><span class="p">():</span>
+    <span class="n">long_text</span> <span class="o">=</span> <span class="s2">"Lorem ipsum dolor sit amet "</span> <span class="o">*</span> <span class="mi">10</span>
+    <span class="k">assert</span> <span class="s2">"hello world"</span> <span class="ow">in</span> <span class="n">long_text</span>
+</pre></div>
+</div>
+<p>Executing pytest normally gives us this output (we are skipping the header to focus on the rest):</p>
+<div class="highlight-pytest notranslate"><div class="highlight"><pre><span></span>$ pytest --no-header
+<span class="-Color -Color-Bold">=========================== test session starts ============================</span>
+collected 4 items
+
+test_verbosity_example.py <span class="-Color -Color-Green">.</span><span class="-Color -Color-Red">FFF</span>                                       <span class="-Color -Color-Red">[100%]</span>
+
+================================= FAILURES =================================
+<span class="-Color -Color-Bold -Color-Bold-Red">_____________________________ test_words_fail ______________________________</span>
+
+    def test_words_fail():
+        fruits1 = ["banana", "apple", "grapes", "melon", "kiwi"]
+        fruits2 = ["banana", "apple", "orange", "melon", "kiwi"]
+&gt;       assert fruits1 == fruits2
+<span class="-Color -Color-Bold -Color-Bold-Red">E       AssertionError: assert ['banana', 'a...elon', 'kiwi'] == ['banana', 'a...elon', 'kiwi']</span>
+<span class="-Color -Color-Bold -Color-Bold-Red">E         At index 2 diff: 'grapes' != 'orange'</span>
+<span class="-Color -Color-Bold -Color-Bold-Red">E         Use -v to get more diff</span>
+
+<span class="-Color -Color-Bold -Color-Bold-Red">test_verbosity_example.py</span>:8: AssertionError
+<span class="-Color -Color-Bold -Color-Bold-Red">____________________________ test_numbers_fail _____________________________</span>
+
+    def test_numbers_fail():
+        number_to_text1 = {str(x): x for x in range(5)}
+        number_to_text2 = {str(x * 10): x * 10 for x in range(5)}
+&gt;       assert number_to_text1 == number_to_text2
+<span class="-Color -Color-Bold -Color-Bold-Red">E       AssertionError: assert {'0': 0, '1':..., '3': 3, ...} == {'0': 0, '10'...'30': 30, ...}</span>
+<span class="-Color -Color-Bold -Color-Bold-Red">E         Omitting 1 identical items, use -vv to show</span>
+<span class="-Color -Color-Bold -Color-Bold-Red">E         Left contains 4 more items:</span>
+<span class="-Color -Color-Bold -Color-Bold-Red">E         {'1': 1, '2': 2, '3': 3, '4': 4}</span>
+<span class="-Color -Color-Bold -Color-Bold-Red">E         Right contains 4 more items:</span>
+<span class="-Color -Color-Bold -Color-Bold-Red">E         {'10': 10, '20': 20, '30': 30, '40': 40}</span>
+<span class="-Color -Color-Bold -Color-Bold-Red">E         Use -v to get more diff</span>
+
+<span class="-Color -Color-Bold -Color-Bold-Red">test_verbosity_example.py</span>:14: AssertionError
+<span class="-Color -Color-Bold -Color-Bold-Red">___________________________ test_long_text_fail ____________________________</span>
+
+    def test_long_text_fail():
+        long_text = "Lorem ipsum dolor sit amet " * 10
+&gt;       assert "hello world" in long_text
+<span class="-Color -Color-Bold -Color-Bold-Red">E       AssertionError: assert 'hello world' in 'Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ips... sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet '</span>
+
+<span class="-Color -Color-Bold -Color-Bold-Red">test_verbosity_example.py</span>:19: AssertionError
+<span class="-Color -Color-Bold -Color-Bold-Cyan">========================= short test summary info ==========================</span>
+<span class="-Color -Color-Red">FAILED</span> test_verbosity_example.py::<span class="-Color -Color-Bold">test_words_fail</span> - AssertionError: asser...
+<span class="-Color -Color-Red">FAILED</span> test_verbosity_example.py::<span class="-Color -Color-Bold">test_numbers_fail</span> - AssertionError: ass...
+<span class="-Color -Color-Red">FAILED</span> test_verbosity_example.py::<span class="-Color -Color-Bold">test_long_text_fail</span> - AssertionError: a...
+<span class="-Color -Color-Red">======================= </span><span class="-Color -Color-Bold -Color-Bold-Red">3 failed</span>, <span class="-Color -Color-Green">1 passed</span><span class="-Color -Color-Red"> in 0.12s ========================</span>
+</pre></div>
+</div>
+<p>Notice that:</p>
+<ul class="simple">
+<li><p>Each test inside the file is shown by a single character in the output: <code class="docutils literal notranslate"><span class="pre">.</span></code> for passing, <code class="docutils literal notranslate"><span class="pre">F</span></code> for failure.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_words_fail</span></code> failed, and we are shown a short summary indicating the index 2 of the two lists differ.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_numbers_fail</span></code> failed, and we are shown a summary of left/right differences on dictionary items. Identical items are omitted.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_long_text_fail</span></code> failed, and the right hand side of the <code class="docutils literal notranslate"><span class="pre">in</span></code> statement is truncated using <code class="docutils literal notranslate"><span class="pre">...`</span></code>
+because it is longer than an internal threshold (240 characters currently).</p></li>
+</ul>
+<p>Now we can increase pytest’s verbosity:</p>
+<div class="highlight-pytest notranslate"><div class="highlight"><pre><span></span>$ pytest --no-header -v
+<span class="-Color -Color-Bold">=========================== test session starts ============================</span>
+<span class="-Color -Color-Bold">collecting ...</span> collected 4 items
+
+test_verbosity_example.py::test_ok <span class="-Color -Color-Green">PASSED</span>                            <span class="-Color -Color-Green">[ 25%]</span>
+test_verbosity_example.py::test_words_fail <span class="-Color -Color-Red">FAILED</span>                    <span class="-Color -Color-Red">[ 50%]</span>
+test_verbosity_example.py::test_numbers_fail <span class="-Color -Color-Red">FAILED</span>                  <span class="-Color -Color-Red">[ 75%]</span>
+test_verbosity_example.py::test_long_text_fail <span class="-Color -Color-Red">FAILED</span>                <span class="-Color -Color-Red">[100%]</span>
+
+================================= FAILURES =================================
+<span class="-Color -Color-Bold -Color-Bold-Red">_____________________________ test_words_fail ______________________________</span>
+
+    def test_words_fail():
+        fruits1 = ["banana", "apple", "grapes", "melon", "kiwi"]
+        fruits2 = ["banana", "apple", "orange", "melon", "kiwi"]
+&gt;       assert fruits1 == fruits2
+<span class="-Color -Color-Bold -Color-Bold-Red">E       AssertionError: assert ['banana', 'a...elon', 'kiwi'] == ['banana', 'a...elon', 'kiwi']</span>
+<span class="-Color -Color-Bold -Color-Bold-Red">E         At index 2 diff: 'grapes' != 'orange'</span>
+<span class="-Color -Color-Bold -Color-Bold-Red">E         Full diff:</span>
+<span class="-Color -Color-Bold -Color-Bold-Red">E         - ['banana', 'apple', 'orange', 'melon', 'kiwi']</span>
+<span class="-Color -Color-Bold -Color-Bold-Red">E         ?                      ^  ^^</span>
+<span class="-Color -Color-Bold -Color-Bold-Red">E         + ['banana', 'apple', 'grapes', 'melon', 'kiwi']</span>
+<span class="-Color -Color-Bold -Color-Bold-Red">E         ?                      ^  ^ +</span>
+
+<span class="-Color -Color-Bold -Color-Bold-Red">test_verbosity_example.py</span>:8: AssertionError
+<span class="-Color -Color-Bold -Color-Bold-Red">____________________________ test_numbers_fail _____________________________</span>
+
+    def test_numbers_fail():
+        number_to_text1 = {str(x): x for x in range(5)}
+        number_to_text2 = {str(x * 10): x * 10 for x in range(5)}
+&gt;       assert number_to_text1 == number_to_text2
+<span class="-Color -Color-Bold -Color-Bold-Red">E       AssertionError: assert {'0': 0, '1':..., '3': 3, ...} == {'0': 0, '10'...'30': 30, ...}</span>
+<span class="-Color -Color-Bold -Color-Bold-Red">E         Omitting 1 identical items, use -vv to show</span>
+<span class="-Color -Color-Bold -Color-Bold-Red">E         Left contains 4 more items:</span>
+<span class="-Color -Color-Bold -Color-Bold-Red">E         {'1': 1, '2': 2, '3': 3, '4': 4}</span>
+<span class="-Color -Color-Bold -Color-Bold-Red">E         Right contains 4 more items:</span>
+<span class="-Color -Color-Bold -Color-Bold-Red">E         {'10': 10, '20': 20, '30': 30, '40': 40}</span>
+<span class="-Color -Color-Bold -Color-Bold-Red">E         Full diff:</span>
+<span class="-Color -Color-Bold -Color-Bold-Red">E         - {'0': 0, '10': 10, '20': 20, '30': 30, '40': 40}</span>
+<span class="-Color -Color-Bold -Color-Bold-Red">E         ?            -    -    -    -    -    -    -    -</span>
+<span class="-Color -Color-Bold -Color-Bold-Red">E         + {'0': 0, '1': 1, '2': 2, '3': 3, '4': 4}</span>
+
+<span class="-Color -Color-Bold -Color-Bold-Red">test_verbosity_example.py</span>:14: AssertionError
+<span class="-Color -Color-Bold -Color-Bold-Red">___________________________ test_long_text_fail ____________________________</span>
+
+    def test_long_text_fail():
+        long_text = "Lorem ipsum dolor sit amet " * 10
+&gt;       assert "hello world" in long_text
+<span class="-Color -Color-Bold -Color-Bold-Red">E       AssertionError: assert 'hello world' in 'Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet '</span>
+
+<span class="-Color -Color-Bold -Color-Bold-Red">test_verbosity_example.py</span>:19: AssertionError
+<span class="-Color -Color-Bold -Color-Bold-Cyan">========================= short test summary info ==========================</span>
+<span class="-Color -Color-Red">FAILED</span> test_verbosity_example.py::<span class="-Color -Color-Bold">test_words_fail</span> - AssertionError: asser...
+<span class="-Color -Color-Red">FAILED</span> test_verbosity_example.py::<span class="-Color -Color-Bold">test_numbers_fail</span> - AssertionError: ass...
+<span class="-Color -Color-Red">FAILED</span> test_verbosity_example.py::<span class="-Color -Color-Bold">test_long_text_fail</span> - AssertionError: a...
+<span class="-Color -Color-Red">======================= </span><span class="-Color -Color-Bold -Color-Bold-Red">3 failed</span>, <span class="-Color -Color-Green">1 passed</span><span class="-Color -Color-Red"> in 0.12s ========================</span>
+</pre></div>
+</div>
+<p>Notice now that:</p>
+<ul class="simple">
+<li><p>Each test inside the file gets its own line in the output.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_words_fail</span></code> now shows the two failing lists in full, in addition to which index differs.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_numbers_fail</span></code> now shows a text diff of the two dictionaries, truncated.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_long_text_fail</span></code> no longer truncates the right hand side of the <code class="docutils literal notranslate"><span class="pre">in</span></code> statement, because the internal
+threshold for truncation is larger now (2400 characters currently).</p></li>
+</ul>
+<p>Now if we increase verbosity even more:</p>
+<div class="highlight-pytest notranslate"><div class="highlight"><pre><span></span>$ pytest --no-header -vv
+<span class="-Color -Color-Bold">=========================== test session starts ============================</span>
+<span class="-Color -Color-Bold">collecting ...</span> collected 4 items
+
+test_verbosity_example.py::test_ok <span class="-Color -Color-Green">PASSED</span>                            <span class="-Color -Color-Green">[ 25%]</span>
+test_verbosity_example.py::test_words_fail <span class="-Color -Color-Red">FAILED</span>                    <span class="-Color -Color-Red">[ 50%]</span>
+test_verbosity_example.py::test_numbers_fail <span class="-Color -Color-Red">FAILED</span>                  <span class="-Color -Color-Red">[ 75%]</span>
+test_verbosity_example.py::test_long_text_fail <span class="-Color -Color-Red">FAILED</span>                <span class="-Color -Color-Red">[100%]</span>
+
+================================= FAILURES =================================
+<span class="-Color -Color-Bold -Color-Bold-Red">_____________________________ test_words_fail ______________________________</span>
+
+    def test_words_fail():
+        fruits1 = ["banana", "apple", "grapes", "melon", "kiwi"]
+        fruits2 = ["banana", "apple", "orange", "melon", "kiwi"]
+&gt;       assert fruits1 == fruits2
+<span class="-Color -Color-Bold -Color-Bold-Red">E       AssertionError: assert ['banana', 'apple', 'grapes', 'melon', 'kiwi'] == ['banana', 'apple', 'orange', 'melon', 'kiwi']</span>
+<span class="-Color -Color-Bold -Color-Bold-Red">E         At index 2 diff: 'grapes' != 'orange'</span>
+<span class="-Color -Color-Bold -Color-Bold-Red">E         Full diff:</span>
+<span class="-Color -Color-Bold -Color-Bold-Red">E         - ['banana', 'apple', 'orange', 'melon', 'kiwi']</span>
+<span class="-Color -Color-Bold -Color-Bold-Red">E         ?                      ^  ^^</span>
+<span class="-Color -Color-Bold -Color-Bold-Red">E         + ['banana', 'apple', 'grapes', 'melon', 'kiwi']</span>
+<span class="-Color -Color-Bold -Color-Bold-Red">E         ?                      ^  ^ +</span>
+
+<span class="-Color -Color-Bold -Color-Bold-Red">test_verbosity_example.py</span>:8: AssertionError
+<span class="-Color -Color-Bold -Color-Bold-Red">____________________________ test_numbers_fail _____________________________</span>
+
+    def test_numbers_fail():
+        number_to_text1 = {str(x): x for x in range(5)}
+        number_to_text2 = {str(x * 10): x * 10 for x in range(5)}
+&gt;       assert number_to_text1 == number_to_text2
+<span class="-Color -Color-Bold -Color-Bold-Red">E       AssertionError: assert {'0': 0, '1': 1, '2': 2, '3': 3, '4': 4} == {'0': 0, '10': 10, '20': 20, '30': 30, '40': 40}</span>
+<span class="-Color -Color-Bold -Color-Bold-Red">E         Common items:</span>
+<span class="-Color -Color-Bold -Color-Bold-Red">E         {'0': 0}</span>
+<span class="-Color -Color-Bold -Color-Bold-Red">E         Left contains 4 more items:</span>
+<span class="-Color -Color-Bold -Color-Bold-Red">E         {'1': 1, '2': 2, '3': 3, '4': 4}</span>
+<span class="-Color -Color-Bold -Color-Bold-Red">E         Right contains 4 more items:</span>
+<span class="-Color -Color-Bold -Color-Bold-Red">E         {'10': 10, '20': 20, '30': 30, '40': 40}</span>
+<span class="-Color -Color-Bold -Color-Bold-Red">E         Full diff:</span>
+<span class="-Color -Color-Bold -Color-Bold-Red">E         - {'0': 0, '10': 10, '20': 20, '30': 30, '40': 40}</span>
+<span class="-Color -Color-Bold -Color-Bold-Red">E         ?            -    -    -    -    -    -    -    -</span>
+<span class="-Color -Color-Bold -Color-Bold-Red">E         + {'0': 0, '1': 1, '2': 2, '3': 3, '4': 4}</span>
+
+<span class="-Color -Color-Bold -Color-Bold-Red">test_verbosity_example.py</span>:14: AssertionError
+<span class="-Color -Color-Bold -Color-Bold-Red">___________________________ test_long_text_fail ____________________________</span>
+
+    def test_long_text_fail():
+        long_text = "Lorem ipsum dolor sit amet " * 10
+&gt;       assert "hello world" in long_text
+<span class="-Color -Color-Bold -Color-Bold-Red">E       AssertionError: assert 'hello world' in 'Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet '</span>
+
+<span class="-Color -Color-Bold -Color-Bold-Red">test_verbosity_example.py</span>:19: AssertionError
+<span class="-Color -Color-Bold -Color-Bold-Cyan">========================= short test summary info ==========================</span>
+<span class="-Color -Color-Red">FAILED</span> test_verbosity_example.py::<span class="-Color -Color-Bold">test_words_fail</span> - AssertionError: asser...
+<span class="-Color -Color-Red">FAILED</span> test_verbosity_example.py::<span class="-Color -Color-Bold">test_numbers_fail</span> - AssertionError: ass...
+<span class="-Color -Color-Red">FAILED</span> test_verbosity_example.py::<span class="-Color -Color-Bold">test_long_text_fail</span> - AssertionError: a...
+<span class="-Color -Color-Red">======================= </span><span class="-Color -Color-Bold -Color-Bold-Red">3 failed</span>, <span class="-Color -Color-Green">1 passed</span><span class="-Color -Color-Red"> in 0.12s ========================</span>
+</pre></div>
+</div>
+<p>Notice now that:</p>
+<ul class="simple">
+<li><p>Each test inside the file gets its own line in the output.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_words_fail</span></code> gives the same output as before in this case.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_numbers_fail</span></code> now shows a full text diff of the two dictionaries.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_long_text_fail</span></code> also doesn’t truncate on the right hand side as before, but now pytest won’t truncate any
+text at all, regardless of its size.</p></li>
+</ul>
+<p>Those were examples of how verbosity affects normal test session output, but verbosity also is used in other
+situations, for example you are shown even fixtures that start with <code class="docutils literal notranslate"><span class="pre">_</span></code> if you use <code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">--fixtures</span> <span class="pre">-v</span></code>.</p>
+<p>Using higher verbosity levels (<code class="docutils literal notranslate"><span class="pre">-vvv</span></code>, <code class="docutils literal notranslate"><span class="pre">-vvvv</span></code>, …) is supported, but has no effect in pytest itself at the moment,
+however some plugins might make use of higher verbosity.</p>
+</section>
+<section id="producing-a-detailed-summary-report">
+<a class="dashAnchor" name="//apple_ref/cpp/Section/Producing a detailed summary report"></a><span id="pytest-detailed-failed-tests-usage"></span><h2>Producing a detailed summary report<a class="headerlink" href="#producing-a-detailed-summary-report" title="Permalink to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">-r</span></code> flag can be used to display a “short test summary info” at the end of the test session,
+making it easy in large test suites to get a clear picture of all failures, skips, xfails, etc.</p>
+<p>It defaults to <code class="docutils literal notranslate"><span class="pre">fE</span></code> to list failures and errors.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># content of test_example.py</span>
+<span class="kn">import</span> <span class="nn">pytest</span>
+
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+<span class="k">def</span> <span class="nf">error_fixture</span><span class="p">():</span>
+    <span class="k">assert</span> <span class="mi">0</span>
+
+
+<span class="k">def</span> <span class="nf">test_ok</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"ok"</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">test_fail</span><span class="p">():</span>
+    <span class="k">assert</span> <span class="mi">0</span>
+
+
+<span class="k">def</span> <span class="nf">test_error</span><span class="p">(</span><span class="n">error_fixture</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+
+<span class="k">def</span> <span class="nf">test_skip</span><span class="p">():</span>
+    <span class="n">pytest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s2">"skipping this test"</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">test_xfail</span><span class="p">():</span>
+    <span class="n">pytest</span><span class="o">.</span><span class="n">xfail</span><span class="p">(</span><span class="s2">"xfailing this test"</span><span class="p">)</span>
+
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">xfail</span><span class="p">(</span><span class="n">reason</span><span class="o">=</span><span class="s2">"always xfail"</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_xpass</span><span class="p">():</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+<div class="highlight-pytest notranslate"><div class="highlight"><pre><span></span>$ pytest -ra
+<span class="-Color -Color-Bold">=========================== test session starts ============================</span>
+platform linux -- Python 3.x.y, pytest-7.x.y, pluggy-1.x.y
+rootdir: /home/sweet/project
+collected 6 items
+
+test_example.py <span class="-Color -Color-Green">.</span><span class="-Color -Color-Red">FE</span><span class="-Color -Color-Yellow">sxX</span>                                               <span class="-Color -Color-Red">[100%]</span>
+
+================================== ERRORS ==================================
+<span class="-Color -Color-Bold -Color-Bold-Red">_______________________ ERROR at setup of test_error _______________________</span>
+
+    @pytest.fixture
+    def error_fixture():
+&gt;       assert 0
+<span class="-Color -Color-Bold -Color-Bold-Red">E       assert 0</span>
+
+<span class="-Color -Color-Bold -Color-Bold-Red">test_example.py</span>:6: AssertionError
+================================= FAILURES =================================
+<span class="-Color -Color-Bold -Color-Bold-Red">________________________________ test_fail _________________________________</span>
+
+    def test_fail():
+&gt;       assert 0
+<span class="-Color -Color-Bold -Color-Bold-Red">E       assert 0</span>
+
+<span class="-Color -Color-Bold -Color-Bold-Red">test_example.py</span>:14: AssertionError
+<span class="-Color -Color-Bold -Color-Bold-Cyan">========================= short test summary info ==========================</span>
+<span class="-Color -Color-Yellow">SKIPPED</span> [1] test_example.py:22: skipping this test
+XFAIL test_example.py::<span class="-Color -Color-Bold">test_xfail</span> - reason: xfailing this test
+<span class="-Color -Color-Yellow">XPASS</span> test_example.py::test_xpass always xfail
+<span class="-Color -Color-Red">ERROR</span> test_example.py::<span class="-Color -Color-Bold">test_error</span> - assert 0
+<span class="-Color -Color-Red">FAILED</span> test_example.py::<span class="-Color -Color-Bold">test_fail</span> - assert 0
+<span class="-Color -Color-Red">== </span><span class="-Color -Color-Bold -Color-Bold-Red">1 failed</span>, <span class="-Color -Color-Green">1 passed</span>, <span class="-Color -Color-Yellow">1 skipped</span>, <span class="-Color -Color-Yellow">1 xfailed</span>, <span class="-Color -Color-Yellow">1 xpassed</span>, <span class="-Color -Color-Bold -Color-Bold-Red">1 error</span><span class="-Color -Color-Red"> in 0.12s ===</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">-r</span></code> options accepts a number of characters after it, with <code class="docutils literal notranslate"><span class="pre">a</span></code> used
+above meaning “all except passes”.</p>
+<p>Here is the full list of available characters that can be used:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">f</span></code> - failed</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">E</span></code> - error</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">s</span></code> - skipped</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code> - xfailed</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">X</span></code> - xpassed</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">p</span></code> - passed</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">P</span></code> - passed with output</p></li>
+</ul>
+</div></blockquote>
+<p>Special characters for (de)selection of groups:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">a</span></code> - all except <code class="docutils literal notranslate"><span class="pre">pP</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code> - all</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">N</span></code> - none, this can be used to display nothing (since <code class="docutils literal notranslate"><span class="pre">fE</span></code> is the default)</p></li>
+</ul>
+</div></blockquote>
+<p>More than one character can be used, so for example to only see failed and skipped tests, you can execute:</p>
+<div class="highlight-pytest notranslate"><div class="highlight"><pre><span></span>$ pytest -rfs
+<span class="-Color -Color-Bold">=========================== test session starts ============================</span>
+platform linux -- Python 3.x.y, pytest-7.x.y, pluggy-1.x.y
+rootdir: /home/sweet/project
+collected 6 items
+
+test_example.py <span class="-Color -Color-Green">.</span><span class="-Color -Color-Red">FE</span><span class="-Color -Color-Yellow">sxX</span>                                               <span class="-Color -Color-Red">[100%]</span>
+
+================================== ERRORS ==================================
+<span class="-Color -Color-Bold -Color-Bold-Red">_______________________ ERROR at setup of test_error _______________________</span>
+
+    @pytest.fixture
+    def error_fixture():
+&gt;       assert 0
+<span class="-Color -Color-Bold -Color-Bold-Red">E       assert 0</span>
+
+<span class="-Color -Color-Bold -Color-Bold-Red">test_example.py</span>:6: AssertionError
+================================= FAILURES =================================
+<span class="-Color -Color-Bold -Color-Bold-Red">________________________________ test_fail _________________________________</span>
+
+    def test_fail():
+&gt;       assert 0
+<span class="-Color -Color-Bold -Color-Bold-Red">E       assert 0</span>
+
+<span class="-Color -Color-Bold -Color-Bold-Red">test_example.py</span>:14: AssertionError
+<span class="-Color -Color-Bold -Color-Bold-Cyan">========================= short test summary info ==========================</span>
+<span class="-Color -Color-Red">FAILED</span> test_example.py::<span class="-Color -Color-Bold">test_fail</span> - assert 0
+<span class="-Color -Color-Yellow">SKIPPED</span> [1] test_example.py:22: skipping this test
+<span class="-Color -Color-Red">== </span><span class="-Color -Color-Bold -Color-Bold-Red">1 failed</span>, <span class="-Color -Color-Green">1 passed</span>, <span class="-Color -Color-Yellow">1 skipped</span>, <span class="-Color -Color-Yellow">1 xfailed</span>, <span class="-Color -Color-Yellow">1 xpassed</span>, <span class="-Color -Color-Bold -Color-Bold-Red">1 error</span><span class="-Color -Color-Red"> in 0.12s ===</span>
+</pre></div>
+</div>
+<p>Using <code class="docutils literal notranslate"><span class="pre">p</span></code> lists the passing tests, whilst <code class="docutils literal notranslate"><span class="pre">P</span></code> adds an extra section “PASSES” with those tests that passed but had
+captured output:</p>
+<div class="highlight-pytest notranslate"><div class="highlight"><pre><span></span>$ pytest -rpP
+<span class="-Color -Color-Bold">=========================== test session starts ============================</span>
+platform linux -- Python 3.x.y, pytest-7.x.y, pluggy-1.x.y
+rootdir: /home/sweet/project
+collected 6 items
+
+test_example.py <span class="-Color -Color-Green">.</span><span class="-Color -Color-Red">FE</span><span class="-Color -Color-Yellow">sxX</span>                                               <span class="-Color -Color-Red">[100%]</span>
+
+================================== ERRORS ==================================
+<span class="-Color -Color-Bold -Color-Bold-Red">_______________________ ERROR at setup of test_error _______________________</span>
+
+    @pytest.fixture
+    def error_fixture():
+&gt;       assert 0
+<span class="-Color -Color-Bold -Color-Bold-Red">E       assert 0</span>
+
+<span class="-Color -Color-Bold -Color-Bold-Red">test_example.py</span>:6: AssertionError
+================================= FAILURES =================================
+<span class="-Color -Color-Bold -Color-Bold-Red">________________________________ test_fail _________________________________</span>
+
+    def test_fail():
+&gt;       assert 0
+<span class="-Color -Color-Bold -Color-Bold-Red">E       assert 0</span>
+
+<span class="-Color -Color-Bold -Color-Bold-Red">test_example.py</span>:14: AssertionError
+================================== PASSES ==================================
+_________________________________ test_ok __________________________________
+--------------------------- Captured stdout call ---------------------------
+ok
+<span class="-Color -Color-Bold -Color-Bold-Cyan">========================= short test summary info ==========================</span>
+<span class="-Color -Color-Green">PASSED</span> test_example.py::test_ok
+<span class="-Color -Color-Red">== </span><span class="-Color -Color-Bold -Color-Bold-Red">1 failed</span>, <span class="-Color -Color-Green">1 passed</span>, <span class="-Color -Color-Yellow">1 skipped</span>, <span class="-Color -Color-Yellow">1 xfailed</span>, <span class="-Color -Color-Yellow">1 xpassed</span>, <span class="-Color -Color-Bold -Color-Bold-Red">1 error</span><span class="-Color -Color-Red"> in 0.12s ===</span>
+</pre></div>
+</div>
+</section>
+<section id="creating-resultlog-format-files">
+<h2>Creating resultlog format files<a class="headerlink" href="#creating-resultlog-format-files" title="Permalink to this heading">¶</a></h2>
+<p>To create plain-text machine-readable result files you can issue:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>--resultlog<span class="o">=</span>path
+</pre></div>
+</div>
+<p>and look at the content at the <code class="docutils literal notranslate"><span class="pre">path</span></code> location.  Such files are used e.g.
+by the <a class="reference external" href="http://buildbot.pypy.org/summary">PyPy-test</a> web page to show test results over several revisions.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This option is rarely used and is scheduled for removal in pytest 6.0.</p>
+<p>If you use this option, consider using the new <a class="reference external" href="https://github.com/pytest-dev/pytest-reportlog">pytest-reportlog</a> plugin instead.</p>
+<p>See <a class="reference internal" href="../deprecations.html#resultlog-deprecated"><span class="std std-ref">the deprecation docs</span></a> for more information.</p>
+</div>
+</section>
+<section id="creating-junitxml-format-files">
+<h2>Creating JUnitXML format files<a class="headerlink" href="#creating-junitxml-format-files" title="Permalink to this heading">¶</a></h2>
+<p>To create result files which can be read by <a class="reference external" href="https://jenkins-ci.org">Jenkins</a> or other Continuous
+integration servers, use this invocation:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>--junitxml<span class="o">=</span>path
+</pre></div>
+</div>
+<p>to create an XML file at <code class="docutils literal notranslate"><span class="pre">path</span></code>.</p>
+<p>To set the name of the root test suite xml item, you can configure the <code class="docutils literal notranslate"><span class="pre">junit_suite_name</span></code> option in your config file:</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[pytest]</span>
+<span class="na">junit_suite_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">my_suite</span>
+</pre></div>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 4.0.</span></p>
+</div>
+<p>JUnit XML specification seems to indicate that <code class="docutils literal notranslate"><span class="pre">"time"</span></code> attribute
+should report total test execution times, including setup and teardown
+(<a class="reference external" href="http://windyroad.com.au/dl/Open%20Source/JUnit.xsd">1</a>, <a class="reference external" href="https://www.ibm.com/support/knowledgecenter/en/SSQ2R2_14.1.0/com.ibm.rsar.analysis.codereview.cobol.doc/topics/cac_useresults_junit.html">2</a>).
+It is the default pytest behavior. To report just call durations
+instead, configure the <code class="docutils literal notranslate"><span class="pre">junit_duration_report</span></code> option like this:</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[pytest]</span>
+<span class="na">junit_duration_report</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">call</span>
+</pre></div>
+</div>
+<section id="record-property">
+<a class="dashAnchor" name="//apple_ref/cpp/Section/record_property"></a><span id="record-property-example"></span><h3>record_property<a class="headerlink" href="#record-property" title="Permalink to this heading">¶</a></h3>
+<p>If you want to log additional information for a test, you can use the
+<code class="docutils literal notranslate"><span class="pre">record_property</span></code> fixture:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">test_function</span><span class="p">(</span><span class="n">record_property</span><span class="p">):</span>
+    <span class="n">record_property</span><span class="p">(</span><span class="s2">"example_key"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="kc">True</span>
+</pre></div>
+</div>
+<p>This will add an extra property <code class="docutils literal notranslate"><span class="pre">example_key="1"</span></code> to the generated
+<code class="docutils literal notranslate"><span class="pre">testcase</span></code> tag:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;testcase</span><span class="w"> </span><span class="na">classname=</span><span class="s">"test_function"</span><span class="w"> </span><span class="na">file=</span><span class="s">"test_function.py"</span><span class="w"> </span><span class="na">line=</span><span class="s">"0"</span><span class="w"> </span><span class="na">name=</span><span class="s">"test_function"</span><span class="w"> </span><span class="na">time=</span><span class="s">"0.0009"</span><span class="nt">&gt;</span>
+<span class="w">  </span><span class="nt">&lt;properties&gt;</span>
+<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"example_key"</span><span class="w"> </span><span class="na">value=</span><span class="s">"1"</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="w">  </span><span class="nt">&lt;/properties&gt;</span>
+<span class="nt">&lt;/testcase&gt;</span>
+</pre></div>
+</div>
+<p>Alternatively, you can integrate this functionality with custom markers:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># content of conftest.py</span>
+
+
+<span class="k">def</span> <span class="nf">pytest_collection_modifyitems</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">items</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">marker</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">iter_markers</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"test_id"</span><span class="p">):</span>
+            <span class="n">test_id</span> <span class="o">=</span> <span class="n">marker</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">item</span><span class="o">.</span><span class="n">user_properties</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">"test_id"</span><span class="p">,</span> <span class="n">test_id</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>And in your tests:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># content of test_function.py</span>
+<span class="kn">import</span> <span class="nn">pytest</span>
+
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">test_id</span><span class="p">(</span><span class="mi">1501</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_function</span><span class="p">():</span>
+    <span class="k">assert</span> <span class="kc">True</span>
+</pre></div>
+</div>
+<p>Will result in:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;testcase</span><span class="w"> </span><span class="na">classname=</span><span class="s">"test_function"</span><span class="w"> </span><span class="na">file=</span><span class="s">"test_function.py"</span><span class="w"> </span><span class="na">line=</span><span class="s">"0"</span><span class="w"> </span><span class="na">name=</span><span class="s">"test_function"</span><span class="w"> </span><span class="na">time=</span><span class="s">"0.0009"</span><span class="nt">&gt;</span>
+<span class="w">  </span><span class="nt">&lt;properties&gt;</span>
+<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"test_id"</span><span class="w"> </span><span class="na">value=</span><span class="s">"1501"</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="w">  </span><span class="nt">&lt;/properties&gt;</span>
+<span class="nt">&lt;/testcase&gt;</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Please note that using this feature will break schema verifications for the latest JUnitXML schema.
+This might be a problem when used with some CI servers.</p>
+</div>
+</section>
+<section id="record-xml-attribute">
+<h3>record_xml_attribute<a class="headerlink" href="#record-xml-attribute" title="Permalink to this heading">¶</a></h3>
+<p>To add an additional xml attribute to a testcase element, you can use
+<code class="docutils literal notranslate"><span class="pre">record_xml_attribute</span></code> fixture. This can also be used to override existing values:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">test_function</span><span class="p">(</span><span class="n">record_xml_attribute</span><span class="p">):</span>
+    <span class="n">record_xml_attribute</span><span class="p">(</span><span class="s2">"assertions"</span><span class="p">,</span> <span class="s2">"REQ-1234"</span><span class="p">)</span>
+    <span class="n">record_xml_attribute</span><span class="p">(</span><span class="s2">"classname"</span><span class="p">,</span> <span class="s2">"custom_classname"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"hello world"</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="kc">True</span>
+</pre></div>
+</div>
+<p>Unlike <code class="docutils literal notranslate"><span class="pre">record_property</span></code>, this will not add a new child element.
+Instead, this will add an attribute <code class="docutils literal notranslate"><span class="pre">assertions="REQ-1234"</span></code> inside the generated
+<code class="docutils literal notranslate"><span class="pre">testcase</span></code> tag and override the default <code class="docutils literal notranslate"><span class="pre">classname</span></code> with <code class="docutils literal notranslate"><span class="pre">"classname=custom_classname"</span></code>:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;testcase</span><span class="w"> </span><span class="na">classname=</span><span class="s">"custom_classname"</span><span class="w"> </span><span class="na">file=</span><span class="s">"test_function.py"</span><span class="w"> </span><span class="na">line=</span><span class="s">"0"</span><span class="w"> </span><span class="na">name=</span><span class="s">"test_function"</span><span class="w"> </span><span class="na">time=</span><span class="s">"0.003"</span><span class="w"> </span><span class="na">assertions=</span><span class="s">"REQ-1234"</span><span class="nt">&gt;</span>
+<span class="w">    </span><span class="nt">&lt;system-out&gt;</span>
+<span class="w">        </span>hello<span class="w"> </span>world
+<span class="w">    </span><span class="nt">&lt;/system-out&gt;</span>
+<span class="nt">&lt;/testcase&gt;</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><code class="docutils literal notranslate"><span class="pre">record_xml_attribute</span></code> is an experimental feature, and its interface might be replaced
+by something more powerful and general in future versions. The
+functionality per-se will be kept, however.</p>
+<p>Using this over <code class="docutils literal notranslate"><span class="pre">record_xml_property</span></code> can help when using ci tools to parse the xml report.
+However, some parsers are quite strict about the elements and attributes that are allowed.
+Many tools use an xsd schema (like the example below) to validate incoming xml.
+Make sure you are using attribute names that are allowed by your parser.</p>
+<p>Below is the Scheme used by Jenkins to validate the XML report:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;xs:element</span><span class="w"> </span><span class="na">name=</span><span class="s">"testcase"</span><span class="nt">&gt;</span>
+<span class="w">    </span><span class="nt">&lt;xs:complexType&gt;</span>
+<span class="w">        </span><span class="nt">&lt;xs:sequence&gt;</span>
+<span class="w">            </span><span class="nt">&lt;xs:element</span><span class="w"> </span><span class="na">ref=</span><span class="s">"skipped"</span><span class="w"> </span><span class="na">minOccurs=</span><span class="s">"0"</span><span class="w"> </span><span class="na">maxOccurs=</span><span class="s">"1"</span><span class="nt">/&gt;</span>
+<span class="w">            </span><span class="nt">&lt;xs:element</span><span class="w"> </span><span class="na">ref=</span><span class="s">"error"</span><span class="w"> </span><span class="na">minOccurs=</span><span class="s">"0"</span><span class="w"> </span><span class="na">maxOccurs=</span><span class="s">"unbounded"</span><span class="nt">/&gt;</span>
+<span class="w">            </span><span class="nt">&lt;xs:element</span><span class="w"> </span><span class="na">ref=</span><span class="s">"failure"</span><span class="w"> </span><span class="na">minOccurs=</span><span class="s">"0"</span><span class="w"> </span><span class="na">maxOccurs=</span><span class="s">"unbounded"</span><span class="nt">/&gt;</span>
+<span class="w">            </span><span class="nt">&lt;xs:element</span><span class="w"> </span><span class="na">ref=</span><span class="s">"system-out"</span><span class="w"> </span><span class="na">minOccurs=</span><span class="s">"0"</span><span class="w"> </span><span class="na">maxOccurs=</span><span class="s">"unbounded"</span><span class="nt">/&gt;</span>
+<span class="w">            </span><span class="nt">&lt;xs:element</span><span class="w"> </span><span class="na">ref=</span><span class="s">"system-err"</span><span class="w"> </span><span class="na">minOccurs=</span><span class="s">"0"</span><span class="w"> </span><span class="na">maxOccurs=</span><span class="s">"unbounded"</span><span class="nt">/&gt;</span>
+<span class="w">        </span><span class="nt">&lt;/xs:sequence&gt;</span>
+<span class="w">        </span><span class="nt">&lt;xs:attribute</span><span class="w"> </span><span class="na">name=</span><span class="s">"name"</span><span class="w"> </span><span class="na">type=</span><span class="s">"xs:string"</span><span class="w"> </span><span class="na">use=</span><span class="s">"required"</span><span class="nt">/&gt;</span>
+<span class="w">        </span><span class="nt">&lt;xs:attribute</span><span class="w"> </span><span class="na">name=</span><span class="s">"assertions"</span><span class="w"> </span><span class="na">type=</span><span class="s">"xs:string"</span><span class="w"> </span><span class="na">use=</span><span class="s">"optional"</span><span class="nt">/&gt;</span>
+<span class="w">        </span><span class="nt">&lt;xs:attribute</span><span class="w"> </span><span class="na">name=</span><span class="s">"time"</span><span class="w"> </span><span class="na">type=</span><span class="s">"xs:string"</span><span class="w"> </span><span class="na">use=</span><span class="s">"optional"</span><span class="nt">/&gt;</span>
+<span class="w">        </span><span class="nt">&lt;xs:attribute</span><span class="w"> </span><span class="na">name=</span><span class="s">"classname"</span><span class="w"> </span><span class="na">type=</span><span class="s">"xs:string"</span><span class="w"> </span><span class="na">use=</span><span class="s">"optional"</span><span class="nt">/&gt;</span>
+<span class="w">        </span><span class="nt">&lt;xs:attribute</span><span class="w"> </span><span class="na">name=</span><span class="s">"status"</span><span class="w"> </span><span class="na">type=</span><span class="s">"xs:string"</span><span class="w"> </span><span class="na">use=</span><span class="s">"optional"</span><span class="nt">/&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/xs:complexType&gt;</span>
+<span class="nt">&lt;/xs:element&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Please note that using this feature will break schema verifications for the latest JUnitXML schema.
+This might be a problem when used with some CI servers.</p>
+</div>
+<section id="record-testsuite-property">
+<a class="dashAnchor" name="//apple_ref/cpp/Section/record_testsuite_property"></a><span id="record-testsuite-property-example"></span><h4>record_testsuite_property<a class="headerlink" href="#record-testsuite-property" title="Permalink to this heading">¶</a></h4>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 4.5.</span></p>
+</div>
+<p>If you want to add a properties node at the test-suite level, which may contains properties
+that are relevant to all tests, you can use the <code class="docutils literal notranslate"><span class="pre">record_testsuite_property</span></code> session-scoped fixture:</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">record_testsuite_property</span></code> session-scoped fixture can be used to add properties relevant
+to all tests.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pytest</span>
+
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">"session"</span><span class="p">,</span> <span class="n">autouse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">log_global_env_facts</span><span class="p">(</span><span class="n">record_testsuite_property</span><span class="p">):</span>
+    <span class="n">record_testsuite_property</span><span class="p">(</span><span class="s2">"ARCH"</span><span class="p">,</span> <span class="s2">"PPC"</span><span class="p">)</span>
+    <span class="n">record_testsuite_property</span><span class="p">(</span><span class="s2">"STORAGE_TYPE"</span><span class="p">,</span> <span class="s2">"CEPH"</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">TestMe</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">test_foo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="kc">True</span>
+</pre></div>
+</div>
+<p>The fixture is a callable which receives <code class="docutils literal notranslate"><span class="pre">name</span></code> and <code class="docutils literal notranslate"><span class="pre">value</span></code> of a <code class="docutils literal notranslate"><span class="pre">&lt;property&gt;</span></code> tag
+added at the test-suite level of the generated xml:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;testsuite</span><span class="w"> </span><span class="na">errors=</span><span class="s">"0"</span><span class="w"> </span><span class="na">failures=</span><span class="s">"0"</span><span class="w"> </span><span class="na">name=</span><span class="s">"pytest"</span><span class="w"> </span><span class="na">skipped=</span><span class="s">"0"</span><span class="w"> </span><span class="na">tests=</span><span class="s">"1"</span><span class="w"> </span><span class="na">time=</span><span class="s">"0.006"</span><span class="nt">&gt;</span>
+<span class="w">  </span><span class="nt">&lt;properties&gt;</span>
+<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"ARCH"</span><span class="w"> </span><span class="na">value=</span><span class="s">"PPC"</span><span class="nt">/&gt;</span>
+<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"STORAGE_TYPE"</span><span class="w"> </span><span class="na">value=</span><span class="s">"CEPH"</span><span class="nt">/&gt;</span>
+<span class="w">  </span><span class="nt">&lt;/properties&gt;</span>
+<span class="w">  </span><span class="nt">&lt;testcase</span><span class="w"> </span><span class="na">classname=</span><span class="s">"test_me.TestMe"</span><span class="w"> </span><span class="na">file=</span><span class="s">"test_me.py"</span><span class="w"> </span><span class="na">line=</span><span class="s">"16"</span><span class="w"> </span><span class="na">name=</span><span class="s">"test_foo"</span><span class="w"> </span><span class="na">time=</span><span class="s">"0.000243663787842"</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/testsuite&gt;</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">name</span></code> must be a string, <code class="docutils literal notranslate"><span class="pre">value</span></code> will be converted to a string and properly xml-escaped.</p>
+<p>The generated XML is compatible with the latest <code class="docutils literal notranslate"><span class="pre">xunit</span></code> standard, contrary to <a class="reference internal" href="#record-property">record_property</a>
+and <a class="reference internal" href="#record-xml-attribute">record_xml_attribute</a>.</p>
+</section>
+</section>
+</section>
+<section id="sending-test-report-to-an-online-pastebin-service">
+<h2>Sending test report to an online pastebin service<a class="headerlink" href="#sending-test-report-to-an-online-pastebin-service" title="Permalink to this heading">¶</a></h2>
+<p><strong>Creating a URL for each test failure</strong>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>--pastebin<span class="o">=</span>failed
+</pre></div>
+</div>
+<p>This will submit test run information to a remote Paste service and
+provide a URL for each failure.  You may select tests as usual or add
+for example <code class="docutils literal notranslate"><span class="pre">-x</span></code> if you only want to send one particular failure.</p>
+<p><strong>Creating a URL for a whole test session log</strong>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>--pastebin<span class="o">=</span>all
+</pre></div>
+</div>
+<p>Currently only pasting to the <a class="reference external" href="https://bpaste.net/">https://bpaste.net/</a> service is implemented.</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 5.2.</span></p>
+</div>
+<p>If creating the URL fails for any reason, a warning is generated instead of failing the
+entire test suite.</p>
+</section>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+<span id="sidebar-top"></span>
+<div class="clearer"></div>
+</div>
+<div class="footer" role="contentinfo">
+        © Copyright 2015, holger krekel and pytest-dev team.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    </div>
+<script src="../_static/version_warning_offset.js"></script>
+</body>
+</html>

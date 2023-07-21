@@ -1,0 +1,9 @@
+{
+    "extra": {
+        "isJavaScriptEnabled": true
+    },
+    "name": "Redis",
+    "revision": "0",
+    "title": "Redis",
+    "version": "7.0.11"
+}

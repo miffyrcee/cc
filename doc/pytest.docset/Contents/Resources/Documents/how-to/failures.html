@@ -1,0 +1,172 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>How to handle test failures — pytest documentation</title>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/basic.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/pygments_pytest.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../_static/doctools.js"></script>
+<script src="../_static/sphinx_highlight.js"></script>
+<link href="../_static/favicon.png" rel="shortcut icon"/>
+<link href="../search.html" rel="search" title="Search"/>
+<script>DOCUMENTATION_OPTIONS.URL_ROOT = '';</script>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../py-modindex.html" title="Python Module Index">modules</a></li>
+<li class="nav-item nav-item-0"><a href="../contents.html">pytest-7.3</a> »</li>
+<li class="nav-item nav-item-this"><a href="">How to handle test failures</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="body" role="main">
+<section id="how-to-handle-test-failures">
+<a class="dashAnchor" name="//apple_ref/cpp/Section/How to handle test failures"></a><span id="how-to-handle-failures"></span><h1>How to handle test failures<a class="headerlink" href="#how-to-handle-test-failures" title="Permalink to this heading">¶</a></h1>
+<section id="stopping-after-the-first-or-n-failures">
+<a class="dashAnchor" name="//apple_ref/cpp/Section/Stopping after the first (or N) failures"></a><span id="maxfail"></span><h2>Stopping after the first (or N) failures<a class="headerlink" href="#stopping-after-the-first-or-n-failures" title="Permalink to this heading">¶</a></h2>
+<p>To stop the testing process after the first (N) failures:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>-x<span class="w">           </span><span class="c1"># stop after first failure</span>
+pytest<span class="w"> </span>--maxfail<span class="o">=</span><span class="m">2</span><span class="w">  </span><span class="c1"># stop after two failures</span>
+</pre></div>
+</div>
+</section>
+<section id="using-python-library-pdb-with-pytest">
+<a class="dashAnchor" name="//apple_ref/cpp/Section/Using python:library/pdb with pytest"></a><span id="pdb-option"></span><h2>Using <a class="reference external" href="https://docs.python.org/3/library/pdb.html" title="(in Python v3.11)"><span>pdb — The Python Debugger</span></a> with pytest<a class="headerlink" href="#using-python-library-pdb-with-pytest" title="Permalink to this heading">¶</a></h2>
+<section id="dropping-to-pdb-on-failures">
+<h3>Dropping to <a class="reference external" href="https://docs.python.org/3/library/pdb.html" title="(in Python v3.11)"><span class="xref std std-doc">pdb</span></a> on failures<a class="headerlink" href="#dropping-to-pdb-on-failures" title="Permalink to this heading">¶</a></h3>
+<p>Python comes with a builtin Python debugger called <a class="reference external" href="https://docs.python.org/3/library/pdb.html" title="(in Python v3.11)"><span class="xref std std-doc">pdb</span></a>.  <code class="docutils literal notranslate"><span class="pre">pytest</span></code>
+allows one to drop into the <a class="reference external" href="https://docs.python.org/3/library/pdb.html" title="(in Python v3.11)"><span class="xref std std-doc">pdb</span></a> prompt via a command line option:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>--pdb
+</pre></div>
+</div>
+<p>This will invoke the Python debugger on every failure (or KeyboardInterrupt).
+Often you might only want to do this for the first failing test to understand
+a certain failure situation:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>-x<span class="w"> </span>--pdb<span class="w">   </span><span class="c1"># drop to PDB on first failure, then end test session</span>
+pytest<span class="w"> </span>--pdb<span class="w"> </span>--maxfail<span class="o">=</span><span class="m">3</span><span class="w">  </span><span class="c1"># drop to PDB for first three failures</span>
+</pre></div>
+</div>
+<p>Note that on any failure the exception information is stored on
+<code class="docutils literal notranslate"><span class="pre">sys.last_value</span></code>, <code class="docutils literal notranslate"><span class="pre">sys.last_type</span></code> and <code class="docutils literal notranslate"><span class="pre">sys.last_traceback</span></code>. In
+interactive use, this allows one to drop into postmortem debugging with
+any debug tool. One can also manually access the exception information,
+for example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sys</span><span class="o">.</span><span class="n">last_traceback</span><span class="o">.</span><span class="n">tb_lineno</span>
+<span class="go">42</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sys</span><span class="o">.</span><span class="n">last_value</span>
+<span class="go">AssertionError('assert result == "ok"',)</span>
+</pre></div>
+</div>
+</section>
+<section id="dropping-to-pdb-at-the-start-of-a-test">
+<a class="dashAnchor" name="//apple_ref/cpp/Section/Dropping to pdb at the start of a test"></a><span id="trace-option"></span><h3>Dropping to <a class="reference external" href="https://docs.python.org/3/library/pdb.html" title="(in Python v3.11)"><span class="xref std std-doc">pdb</span></a> at the start of a test<a class="headerlink" href="#dropping-to-pdb-at-the-start-of-a-test" title="Permalink to this heading">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">pytest</span></code> allows one to drop into the <a class="reference external" href="https://docs.python.org/3/library/pdb.html" title="(in Python v3.11)"><span class="xref std std-doc">pdb</span></a> prompt immediately at the start of each test via a command line option:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>--trace
+</pre></div>
+</div>
+<p>This will invoke the Python debugger at the start of every test.</p>
+</section>
+<section id="setting-breakpoints">
+<a class="dashAnchor" name="//apple_ref/cpp/Section/Setting breakpoints"></a><span id="breakpoints"></span><h3>Setting breakpoints<a class="headerlink" href="#setting-breakpoints" title="Permalink to this heading">¶</a></h3>
+<p>To set a breakpoint in your code use the native Python <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">pdb;pdb.set_trace()</span></code> call
+in your code and pytest automatically disables its output capture for that test:</p>
+<ul class="simple">
+<li><p>Output capture in other tests is not affected.</p></li>
+<li><p>Any prior test output that has already been captured and will be processed as
+such.</p></li>
+<li><p>Output capture gets resumed when ending the debugger session (via the
+<code class="docutils literal notranslate"><span class="pre">continue</span></code> command).</p></li>
+</ul>
+</section>
+<section id="using-the-builtin-breakpoint-function">
+<a class="dashAnchor" name="//apple_ref/cpp/Section/Using the builtin breakpoint function"></a><span id="breakpoint-builtin"></span><h3>Using the builtin breakpoint function<a class="headerlink" href="#using-the-builtin-breakpoint-function" title="Permalink to this heading">¶</a></h3>
+<p>Python 3.7 introduces a builtin <code class="docutils literal notranslate"><span class="pre">breakpoint()</span></code> function.
+Pytest supports the use of <code class="docutils literal notranslate"><span class="pre">breakpoint()</span></code> with the following behaviours:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>When <code class="docutils literal notranslate"><span class="pre">breakpoint()</span></code> is called and <code class="docutils literal notranslate"><span class="pre">PYTHONBREAKPOINT</span></code> is set to the default value, pytest will use the custom internal PDB trace UI instead of the system default <code class="docutils literal notranslate"><span class="pre">Pdb</span></code>.</p></li>
+<li><p>When tests are complete, the system will default back to the system <code class="docutils literal notranslate"><span class="pre">Pdb</span></code> trace UI.</p></li>
+<li><p>With <code class="docutils literal notranslate"><span class="pre">--pdb</span></code> passed to pytest, the custom internal Pdb trace UI is used with both <code class="docutils literal notranslate"><span class="pre">breakpoint()</span></code> and failed tests/unhandled exceptions.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--pdbcls</span></code> can be used to specify a custom debugger class.</p></li>
+</ul>
+</div></blockquote>
+</section>
+</section>
+<section id="fault-handler">
+<a class="dashAnchor" name="//apple_ref/cpp/Section/Fault Handler"></a><span id="faulthandler"></span><h2>Fault Handler<a class="headerlink" href="#fault-handler" title="Permalink to this heading">¶</a></h2>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 5.0.</span></p>
+</div>
+<p>The <a class="reference external" href="https://docs.python.org/3/library/faulthandler.html#module-faulthandler" title="(in Python v3.11)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">faulthandler</span></code></a> standard module
+can be used to dump Python tracebacks on a segfault or after a timeout.</p>
+<p>The module is automatically enabled for pytest runs, unless the <code class="docutils literal notranslate"><span class="pre">-p</span> <span class="pre">no:faulthandler</span></code> is given
+on the command-line.</p>
+<p>Also the <a class="reference internal" href="../reference/reference.html#confval-faulthandler_timeout"><code class="xref std std-confval docutils literal notranslate"><span class="pre">faulthandler_timeout=X</span></code></a> configuration option can be used
+to dump the traceback of all threads if a test takes longer than <code class="docutils literal notranslate"><span class="pre">X</span></code>
+seconds to finish (not available on Windows).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This functionality has been integrated from the external
+<a class="reference external" href="https://github.com/pytest-dev/pytest-faulthandler">pytest-faulthandler</a> plugin, with two
+small differences:</p>
+<ul class="simple">
+<li><p>To disable it, use <code class="docutils literal notranslate"><span class="pre">-p</span> <span class="pre">no:faulthandler</span></code> instead of <code class="docutils literal notranslate"><span class="pre">--no-faulthandler</span></code>: the former
+can be used with any plugin, so it saves one option.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">--faulthandler-timeout</span></code> command-line option has become the
+<a class="reference internal" href="../reference/reference.html#confval-faulthandler_timeout"><code class="xref std std-confval docutils literal notranslate"><span class="pre">faulthandler_timeout</span></code></a> configuration option. It can still be configured from
+the command-line using <code class="docutils literal notranslate"><span class="pre">-o</span> <span class="pre">faulthandler_timeout=X</span></code>.</p></li>
+</ul>
+</div>
+</section>
+<section id="warning-about-unraisable-exceptions-and-unhandled-thread-exceptions">
+<a class="dashAnchor" name="//apple_ref/cpp/Section/Warning about unraisable exceptions and unhandled thread exceptions"></a><span id="unraisable"></span><h2>Warning about unraisable exceptions and unhandled thread exceptions<a class="headerlink" href="#warning-about-unraisable-exceptions-and-unhandled-thread-exceptions" title="Permalink to this heading">¶</a></h2>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 6.2.</span></p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>These features only work on Python&gt;=3.8.</p>
+</div>
+<p>Unhandled exceptions are exceptions that are raised in a situation in which
+they cannot propagate to a caller. The most common case is an exception raised
+in a <a class="reference external" href="https://docs.python.org/3/reference/datamodel.html#object.__del__" title="(in Python v3.11)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">__del__</span></code></a> implementation.</p>
+<p>Unhandled thread exceptions are exceptions raised in a <a class="reference external" href="https://docs.python.org/3/library/threading.html#threading.Thread" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Thread</span></code></a>
+but not handled, causing the thread to terminate uncleanly.</p>
+<p>Both types of exceptions are normally considered bugs, but may go unnoticed
+because they don’t cause the program itself to crash. Pytest detects these
+conditions and issues a warning that is visible in the test run summary.</p>
+<p>The plugins are automatically enabled for pytest runs, unless the
+<code class="docutils literal notranslate"><span class="pre">-p</span> <span class="pre">no:unraisableexception</span></code> (for unraisable exceptions) and
+<code class="docutils literal notranslate"><span class="pre">-p</span> <span class="pre">no:threadexception</span></code> (for thread exceptions) options are given on the
+command-line.</p>
+<p>The warnings may be silenced selectively using the <a class="reference internal" href="../reference/reference.html#pytest-mark-filterwarnings-ref"><span class="std std-ref">pytest.mark.filterwarnings</span></a>
+mark. The warning categories are <a class="reference internal" href="../reference/reference.html#pytest.PytestUnraisableExceptionWarning" title="pytest.PytestUnraisableExceptionWarning"><code class="xref py py-class docutils literal notranslate"><span class="pre">pytest.PytestUnraisableExceptionWarning</span></code></a> and
+<a class="reference internal" href="../reference/reference.html#pytest.PytestUnhandledThreadExceptionWarning" title="pytest.PytestUnhandledThreadExceptionWarning"><code class="xref py py-class docutils literal notranslate"><span class="pre">pytest.PytestUnhandledThreadExceptionWarning</span></code></a>.</p>
+</section>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+<span id="sidebar-top"></span>
+<div class="clearer"></div>
+</div>
+<div class="footer" role="contentinfo">
+        © Copyright 2015, holger krekel and pytest-dev team.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    </div>
+<script src="../_static/version_warning_offset.js"></script>
+</body>
+</html>

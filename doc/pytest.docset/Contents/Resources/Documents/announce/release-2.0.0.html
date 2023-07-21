@@ -3,43 +3,41 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>py.test 2.0.0: asserts++, unittest++, reporting++, config++, docs++ &#8212; pytest documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments_pytest.css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <link rel="shortcut icon" href="../_static/favicon.png"/>
-    <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Changelog" href="../changelog.html" />
     <link rel="prev" title="py.test 2.0.1: bug fixes" href="release-2.0.1.html" />
-  <script>DOCUMENTATION_OPTIONS.URL_ROOT = '../';</script>
+  <script>DOCUMENTATION_OPTIONS.URL_ROOT = '';</script>
    
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
+             >modules</a></li>
         <li class="right" >
           <a href="../changelog.html" title="Changelog"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="release-2.0.1.html" title="py.test 2.0.1: bug fixes"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../contents.html">pytest-6.2</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../contents.html">pytest-7.3</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Release announcements</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">py.test 2.0.0: asserts++, unittest++, reporting++, config++, docs++</a></li> 
       </ul>
@@ -49,8 +47,8 @@
       <div class="documentwrapper">
           <div class="body" role="main">
             
-  <div class="section" id="py-test-2-0-0-asserts-unittest-reporting-config-docs">
-<h1>py.test 2.0.0: asserts++, unittest++, reporting++, config++, docs++<a class="headerlink" href="#py-test-2-0-0-asserts-unittest-reporting-config-docs" title="Permalink to this headline">¶</a></h1>
+  <section id="py-test-2-0-0-asserts-unittest-reporting-config-docs">
+<h1>py.test 2.0.0: asserts++, unittest++, reporting++, config++, docs++<a class="headerlink" href="#py-test-2-0-0-asserts-unittest-reporting-config-docs" title="Permalink to this heading">¶</a></h1>
 <p>Welcome to pytest-2.0.0, a major new release of “py.test”, the rapid
 easy Python testing tool.  There are many new features and enhancements,
 see below for summary and detailed lists.  A lot of long-deprecated code
@@ -72,8 +70,8 @@ complaining.  Particular thanks to Floris Bruynooghe and Ronny Pfannschmidt
 for their great coding contributions and many others for feedback and help.</p>
 <p>best,
 holger krekel</p>
-<div class="section" id="new-features">
-<h2>New Features<a class="headerlink" href="#new-features" title="Permalink to this headline">¶</a></h2>
+<section id="new-features">
+<h2>New Features<a class="headerlink" href="#new-features" title="Permalink to this heading">¶</a></h2>
 <ul>
 <li><p>new invocations through Python interpreter and from Python:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">pytest</span>      <span class="c1"># on all pythons &gt;= 2.5</span>
@@ -83,11 +81,11 @@ holger krekel</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pytest</span> <span class="p">;</span> <span class="n">pytest</span><span class="o">.</span><span class="n">main</span><span class="p">(</span><span class="n">arglist</span><span class="p">,</span> <span class="n">pluginlist</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>see <a class="reference external" href="http://pytest.org/en/stable/usage.html">http://pytest.org/en/stable/usage.html</a> for details.</p>
+<p>see <a class="reference external" href="http://pytest.org/en/stable/how-to/usage.html">http://pytest.org/en/stable/how-to/usage.html</a> for details.</p>
 </li>
 <li><p>new and better reporting information in assert expressions
 if comparing lists, sequences or strings.</p>
-<p>see <a class="reference external" href="http://pytest.org/en/stable/assert.html#newreport">http://pytest.org/en/stable/assert.html#newreport</a></p>
+<p>see <a class="reference external" href="http://pytest.org/en/stable/how-to/assert.html#newreport">http://pytest.org/en/stable/how-to/assert.html#newreport</a></p>
 </li>
 <li><p>new configuration through ini-files (setup.cfg or tox.ini recognized),
 for example:</p>
@@ -96,7 +94,7 @@ for example:</p>
 <span class="n">addopts</span> <span class="o">=</span> <span class="o">-</span><span class="n">x</span> <span class="o">--</span><span class="n">pyargs</span>      <span class="c1"># add these command line options by default</span>
 </pre></div>
 </div>
-<p>see <a class="reference external" href="http://pytest.org/en/stable/customize.html">http://pytest.org/en/stable/customize.html</a></p>
+<p>see <a class="reference external" href="http://pytest.org/en/stable/reference/customize.html">http://pytest.org/en/stable/reference/customize.html</a></p>
 </li>
 <li><p>improved standard unittest support.  In general py.test should now
 better be able to run custom unittest.TestCases like twisted trial
@@ -110,9 +108,9 @@ installed ‘unittest’ package with py.test:</p>
 nose/unittest-style “dot” output.</p></li>
 <li><p>many many more detailed improvements details</p></li>
 </ul>
-</div>
-<div class="section" id="fixes">
-<h2>Fixes<a class="headerlink" href="#fixes" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="fixes">
+<h2>Fixes<a class="headerlink" href="#fixes" title="Permalink to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>fix issue126 - introduce py.test.set_trace() to trace execution via
 PDB during the running of tests even if capturing is ongoing.</p></li>
@@ -126,9 +124,9 @@ conftest.py - this needs to happen at least one level up).</p></li>
 <li><p>fix bug: unittest collected functions now also can have “pytestmark”
 applied at class/module level</p></li>
 </ul>
-</div>
-<div class="section" id="important-notes">
-<h2>Important Notes<a class="headerlink" href="#important-notes" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="important-notes">
+<h2>Important Notes<a class="headerlink" href="#important-notes" title="Permalink to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>The usual way in pre-2.0 times to use py.test in python code was
 to import “py” and then e.g. use “py.test.raises” for the helper.
@@ -144,9 +142,9 @@ summing up to roughly 5000 LOCs, including docstrings. To be fair, it also
 uses generic code from the “pylib”, and the new “py” package to help
 with filesystem and introspection/code manipulation.</p></li>
 </ul>
-</div>
-<div class="section" id="incompatible-removals">
-<h2>(Incompatible) Removals<a class="headerlink" href="#incompatible-removals" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="incompatible-removals">
+<h2>(Incompatible) Removals<a class="headerlink" href="#incompatible-removals" title="Permalink to this heading">¶</a></h2>
 <ul>
 <li><p>py.test.config is now only available if you are in a test run.</p></li>
 <li><p>the following (mostly already deprecated) functionality was removed:</p>
@@ -173,8 +171,8 @@ if a certain dependency or command line option is missing.</p>
 </li>
 </ul>
 <p>see <a class="reference internal" href="../changelog.html#changelog"><span class="std std-ref">Changelog</span></a> for more detailed changes.</p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -185,8 +183,8 @@ if a certain dependency or command line option is missing.</p>
     </div>
   
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2015–2020, holger krekel and pytest-dev team.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
+        &#169; Copyright 2015, holger krekel and pytest-dev team.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
     </div>
   <script src="../_static/version_warning_offset.js"></script>
 

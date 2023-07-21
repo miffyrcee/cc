@@ -1,0 +1,208 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>How to invoke pytest — pytest documentation</title>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/basic.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/pygments_pytest.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../_static/doctools.js"></script>
+<script src="../_static/sphinx_highlight.js"></script>
+<link href="../_static/favicon.png" rel="shortcut icon"/>
+<link href="../search.html" rel="search" title="Search"/>
+<link href="assert.html" rel="next" title="How to write and report assertions in tests"/>
+<link href="../getting-started.html" rel="prev" title="Get Started"/>
+<script>DOCUMENTATION_OPTIONS.URL_ROOT = '';</script>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../py-modindex.html" title="Python Module Index">modules</a></li>
+<li class="right">
+<a accesskey="N" href="assert.html" title="How to write and report assertions in tests">next</a> |</li>
+<li class="right">
+<a accesskey="P" href="../getting-started.html" title="Get Started">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../contents.html">pytest-7.3</a> »</li>
+<li class="nav-item nav-item-this"><a href="">How to invoke pytest</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="body" role="main">
+<section id="how-to-invoke-pytest">
+<a class="dashAnchor" name="//apple_ref/cpp/Section/How to invoke pytest"></a><span id="usage"></span><h1>How to invoke pytest<a class="headerlink" href="#how-to-invoke-pytest" title="Permalink to this heading">¶</a></h1>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../reference/reference.html#command-line-flags"><span class="std std-ref">Complete pytest command-line flag reference</span></a></p>
+</div>
+<p>In general, pytest is invoked with the command <code class="docutils literal notranslate"><span class="pre">pytest</span></code> (see below for <a class="reference internal" href="#invoke-other"><span class="std std-ref">other ways to invoke pytest</span></a>). This will execute all tests in all files whose names follow the form <code class="docutils literal notranslate"><span class="pre">test_*.py</span></code> or <code class="docutils literal notranslate"><span class="pre">\*_test.py</span></code>
+in the current directory and its subdirectories. More generally, pytest follows <a class="reference internal" href="../explanation/goodpractices.html#test-discovery"><span class="std std-ref">standard test discovery rules</span></a>.</p>
+<section id="specifying-which-tests-to-run">
+<a class="dashAnchor" name="//apple_ref/cpp/Section/Specifying which tests to run"></a><span id="select-tests"></span><h2>Specifying which tests to run<a class="headerlink" href="#specifying-which-tests-to-run" title="Permalink to this heading">¶</a></h2>
+<p>Pytest supports several ways to run and select tests from the command-line.</p>
+<p><strong>Run tests in a module</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>test_mod.py
+</pre></div>
+</div>
+<p><strong>Run tests in a directory</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>testing/
+</pre></div>
+</div>
+<p><strong>Run tests by keyword expressions</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>-k<span class="w"> </span><span class="s2">"MyClass and not method"</span>
+</pre></div>
+</div>
+<p>This will run tests which contain names that match the given <em>string expression</em> (case-insensitive),
+which can include Python operators that use filenames, class names and function names as variables.
+The example above will run <code class="docutils literal notranslate"><span class="pre">TestMyClass.test_something</span></code>  but not <code class="docutils literal notranslate"><span class="pre">TestMyClass.test_method_simple</span></code>.</p>
+<a class="dashAnchor" name="//apple_ref/cpp/Section/nodeids"></a><p id="nodeids"><strong>Run tests by node ids</strong></p>
+<p>Each collected test is assigned a unique <code class="docutils literal notranslate"><span class="pre">nodeid</span></code> which consist of the module filename followed
+by specifiers like class names, function names and parameters from parametrization, separated by <code class="docutils literal notranslate"><span class="pre">::</span></code> characters.</p>
+<p>To run a specific test within a module:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>test_mod.py::test_func
+</pre></div>
+</div>
+<p>Another example specifying a test method in the command line:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>test_mod.py::TestClass::test_method
+</pre></div>
+</div>
+<p><strong>Run tests by marker expressions</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>-m<span class="w"> </span>slow
+</pre></div>
+</div>
+<p>Will run all tests which are decorated with the <code class="docutils literal notranslate"><span class="pre">@pytest.mark.slow</span></code> decorator.</p>
+<p>For more information see <a class="reference internal" href="mark.html#mark"><span class="std std-ref">marks</span></a>.</p>
+<p><strong>Run tests from packages</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>--pyargs<span class="w"> </span>pkg.testing
+</pre></div>
+</div>
+<p>This will import <code class="docutils literal notranslate"><span class="pre">pkg.testing</span></code> and use its filesystem location to find and run tests from.</p>
+</section>
+<section id="getting-help-on-version-option-names-environment-variables">
+<h2>Getting help on version, option names, environment variables<a class="headerlink" href="#getting-help-on-version-option-names-environment-variables" title="Permalink to this heading">¶</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>--version<span class="w">   </span><span class="c1"># shows where pytest was imported from</span>
+pytest<span class="w"> </span>--fixtures<span class="w">  </span><span class="c1"># show available builtin function arguments</span>
+pytest<span class="w"> </span>-h<span class="w"> </span><span class="p">|</span><span class="w"> </span>--help<span class="w"> </span><span class="c1"># show help on command line and config file options</span>
+</pre></div>
+</div>
+</section>
+<section id="profiling-test-execution-duration">
+<a class="dashAnchor" name="//apple_ref/cpp/Section/Profiling test execution duration"></a><span id="durations"></span><h2>Profiling test execution duration<a class="headerlink" href="#profiling-test-execution-duration" title="Permalink to this heading">¶</a></h2>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 6.0.</span></p>
+</div>
+<p>To get a list of the slowest 10 test durations over 1.0s long:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>--durations<span class="o">=</span><span class="m">10</span><span class="w"> </span>--durations-min<span class="o">=</span><span class="m">1</span>.0
+</pre></div>
+</div>
+<p>By default, pytest will not show test durations that are too small (&lt;0.005s) unless <code class="docutils literal notranslate"><span class="pre">-vv</span></code> is passed on the command-line.</p>
+</section>
+<section id="managing-loading-of-plugins">
+<h2>Managing loading of plugins<a class="headerlink" href="#managing-loading-of-plugins" title="Permalink to this heading">¶</a></h2>
+<section id="early-loading-plugins">
+<h3>Early loading plugins<a class="headerlink" href="#early-loading-plugins" title="Permalink to this heading">¶</a></h3>
+<p>You can early-load plugins (internal and external) explicitly in the command-line with the <code class="docutils literal notranslate"><span class="pre">-p</span></code> option:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pytest</span> <span class="o">-</span><span class="n">p</span> <span class="n">mypluginmodule</span>
+</pre></div>
+</div>
+<p>The option receives a <code class="docutils literal notranslate"><span class="pre">name</span></code> parameter, which can be:</p>
+<ul>
+<li><p>A full module dotted name, for example <code class="docutils literal notranslate"><span class="pre">myproject.plugins</span></code>. This dotted name must be importable.</p></li>
+<li><p>The entry-point name of a plugin. This is the name passed to <code class="docutils literal notranslate"><span class="pre">setuptools</span></code> when the plugin is
+registered. For example to early-load the <a class="reference external" href="https://pypi.org/project/pytest-cov/">pytest-cov</a> plugin you can use:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pytest</span> <span class="o">-</span><span class="n">p</span> <span class="n">pytest_cov</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+<section id="disabling-plugins">
+<h3>Disabling plugins<a class="headerlink" href="#disabling-plugins" title="Permalink to this heading">¶</a></h3>
+<p>To disable loading specific plugins at invocation time, use the <code class="docutils literal notranslate"><span class="pre">-p</span></code> option
+together with the prefix <code class="docutils literal notranslate"><span class="pre">no:</span></code>.</p>
+<p>Example: to disable loading the plugin <code class="docutils literal notranslate"><span class="pre">doctest</span></code>, which is responsible for
+executing doctest tests from text files, invoke pytest like this:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>-p<span class="w"> </span>no:doctest
+</pre></div>
+</div>
+</section>
+</section>
+<section id="other-ways-of-calling-pytest">
+<a class="dashAnchor" name="//apple_ref/cpp/Section/Other ways of calling pytest"></a><span id="invoke-other"></span><h2>Other ways of calling pytest<a class="headerlink" href="#other-ways-of-calling-pytest" title="Permalink to this heading">¶</a></h2>
+<section id="calling-pytest-through-python-m-pytest">
+<a class="dashAnchor" name="//apple_ref/cpp/Section/Calling pytest through python -m pytest"></a><span id="invoke-python"></span><h3>Calling pytest through <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">pytest</span></code><a class="headerlink" href="#calling-pytest-through-python-m-pytest" title="Permalink to this heading">¶</a></h3>
+<p>You can invoke testing through the Python interpreter from the command line:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>python -m pytest [...]
+</pre></div>
+</div>
+<p>This is almost equivalent to invoking the command line script <code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">[...]</span></code>
+directly, except that calling via <code class="docutils literal notranslate"><span class="pre">python</span></code> will also add the current directory to <code class="docutils literal notranslate"><span class="pre">sys.path</span></code>.</p>
+</section>
+<section id="calling-pytest-from-python-code">
+<a class="dashAnchor" name="//apple_ref/cpp/Section/Calling pytest from Python code"></a><span id="pytest-main-usage"></span><h3>Calling pytest from Python code<a class="headerlink" href="#calling-pytest-from-python-code" title="Permalink to this heading">¶</a></h3>
+<p>You can invoke <code class="docutils literal notranslate"><span class="pre">pytest</span></code> from Python code directly:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">retcode</span> <span class="o">=</span> <span class="n">pytest</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>this acts as if you would call “pytest” from the command line.
+It will not raise <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#SystemExit" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SystemExit</span></code></a> but return the <a class="reference internal" href="../reference/exit-codes.html#exit-codes"><span class="std std-ref">exit code</span></a> instead.
+You can pass in options and arguments:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">retcode</span> <span class="o">=</span> <span class="n">pytest</span><span class="o">.</span><span class="n">main</span><span class="p">([</span><span class="s2">"-x"</span><span class="p">,</span> <span class="s2">"mytestdir"</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>You can specify additional plugins to <code class="docutils literal notranslate"><span class="pre">pytest.main</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># content of myinvoke.py</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">import</span> <span class="nn">pytest</span>
+
+
+<span class="k">class</span> <span class="nc">MyPlugin</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">pytest_sessionfinish</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"*** test run reporting finishing"</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">pytest</span><span class="o">.</span><span class="n">main</span><span class="p">([</span><span class="s2">"-qq"</span><span class="p">],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">MyPlugin</span><span class="p">()]))</span>
+</pre></div>
+</div>
+<p>Running it will show that <code class="docutils literal notranslate"><span class="pre">MyPlugin</span></code> was added and its
+hook was invoked:</p>
+<div class="highlight-pytest notranslate"><div class="highlight"><pre><span></span>$ python myinvoke.py
+*** test run reporting finishing
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Calling <code class="docutils literal notranslate"><span class="pre">pytest.main()</span></code> will result in importing your tests and any modules
+that they import. Due to the caching mechanism of python’s import system,
+making subsequent calls to <code class="docutils literal notranslate"><span class="pre">pytest.main()</span></code> from the same process will not
+reflect changes to those files between the calls. For this reason, making
+multiple calls to <code class="docutils literal notranslate"><span class="pre">pytest.main()</span></code> from the same process (in order to re-run
+tests, for example) is not recommended.</p>
+</div>
+</section>
+</section>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+<span id="sidebar-top"></span>
+<div class="clearer"></div>
+</div>
+<div class="footer" role="contentinfo">
+        © Copyright 2015, holger krekel and pytest-dev team.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    </div>
+<script src="../_static/version_warning_offset.js"></script>
+</body>
+</html>

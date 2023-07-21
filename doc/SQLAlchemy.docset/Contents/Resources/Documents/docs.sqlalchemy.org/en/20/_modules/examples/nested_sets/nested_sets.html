@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<!-- Mirrored from docs.sqlalchemy.org/en/20/_modules/examples/nested_sets/nested_sets.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 06 Jul 2023 08:05:56 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=UTF-8" /><!-- /Added by HTTrack -->
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>
+        
+        
+    
+    examples.nested_sets.nested_sets
+ </title>
+
+    
+
+    
+
+    <link href='../../../../../../fonts.googleapis.com/cssa2b2.css?family=Lato:400,700|Roboto+Slab:400,700' rel='stylesheet' type='text/css'/>
+
+    
+        <!-- begin iterate through SQLA css_files -->
+            <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+        <!-- end iterate through SQLA css_files -->
+
+        <!-- begin iterate through sphinx environment local css_files -->
+            <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+            <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+            <link rel="stylesheet" href="../../../_static/copybutton.css" type="text/css" />
+            <link rel="stylesheet" href="../../../_static/docs.css" type="text/css" />
+            <link rel="stylesheet" href="../../../_static/changelog.css" type="text/css" />
+            <link rel="stylesheet" href="../../../_static/sphinx_paramlinks.css" type="text/css" />
+        <!-- end iterate through sphinx environment local css_files -->
+
+        <link rel="stylesheet" type="text/css" media="all" href="../../../../../../www.sqlalchemy.org/css/bootstrap.min.css"/>
+	    <link rel="stylesheet" type="text/css" media="all" href="../../../../../../www.sqlalchemy.org/css/site.css"/>
+        <link rel="stylesheet" type="text/css" media="all" href="../../../../../../www.sqlalchemy.org/css/sidebar_extra.css"/>
+        <link rel="stylesheet" type="text/css" media="print" href="../../../../../../www.sqlalchemy.org/css/print.css"/>
+
+        <!-- begin iterate through sphinx environment remote css_files -->
+        <!-- end iterate through sphinx environment remote css_files -->
+    
+
+    
+
+    
+
+    
+
+
+    
+        <link rel="canonical" href="http://docs.sqlalchemy.org/en/latest/_modules/examples/nested_sets/nested_sets.html" />
+
+    <script type="text/javascript">
+        var doc_version = "latest";
+        var doc_slug = "sqlalchemy";
+        var static_root = "../../../_static"
+
+        // copied from:
+        // https://github.com/rtfd/readthedocs.org/commit/edbbb4c753454cf20c128d4eb2fef60d740debaa#diff-2f70e8d9361202bfe3f378d2ff2c510bR8
+        var READTHEDOCS_DATA = {
+            project: "sqlalchemy",
+            version: "latest",
+            page: "_modules/examples/nested_sets/nested_sets",
+            theme: ""
+          };
+
+
+    </script>
+    <!-- end RTD <head> via SQLAlchemy adapter -->
+
+    
+
+    <!-- begin layout.mako headers -->
+
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+        <link rel="copyright" title="Copyright" href="../../../copyright.html" />
+    <link rel="top" title="SQLAlchemy 2.0 Documentation" href="../../../index-2.html" />
+        <link rel="up" title="Module code" href="../../index.html" />
+    <!-- end layout.mako headers -->
+
+
+
+
+    
+
+    <!-- sqlalchemy.org docs base head -->
+    
+<link rel="shortcut icon" href="../../../../../../www.sqlalchemy.org/favicon.ico" type="image/x-icon"/>
+<link href='../../../../../../fonts.googleapis.com/css118a.css?family=Source+Sans+Pro:400,600,400italic' rel='stylesheet' type='text/css'/>
+
+<script type="text/javascript">
+var site_base='//www.sqlalchemy.org';
+var docs_base='//docs.sqlalchemy.org';
+</script>
+
+
+    <!-- end sqlalchemy.org docs base head -->
+
+</head>
+
+<body>
+
+<div id="wrap" class="container-xxl wrap px-0">
+
+
+
+
+
+<nav class="navbar navbar-light logo">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="http://www.sqlalchemy.org/">
+            <img src="../../../../../../www.sqlalchemy.org/img/sqla_logo.png" width="240" alt="SQLAlchemy">
+        </a>
+        <div class="navbar-brand align-self-end dbtoolkit">
+            <img src="../../../../../../www.sqlalchemy.org/img/dbtoolkit6.gif" width="180" height="12" alt="The Database Toolkit for Python">
+        </div>
+    </div>
+</nav>
+<nav class="navbar navbar-expand-md navbar-dark bg-sa-green py-0 navigation">
+    <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavigation" aria-controls="navbarNavigation" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <span class="navbar-brand d-md-block d-md-none" href="#">The Database Toolkit for Python</span>
+        <div class="collapse navbar-collapse" id="navbarNavigation">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link "  href="http://www.sqlalchemy.org/">home</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle "  href="#" id="feature-dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        features
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark bg-sa-green" aria-labelledby="feature-dropdown">
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/philosophy.html">Philosophy Statement</a></li>
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/features.html">Feature Overview</a></li>
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/quotes.html">Testimonials</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link "  href="http://www.sqlalchemy.org/blog/">news</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle active" aria-current="page"
+                    href="#" id="docs-dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        documentation
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark bg-sa-green" aria-labelledby="docs-dropdown">
+                        <li><a class="dropdown-item" href="http://docs.sqlalchemy.org/">Current Documentation (version 2.0)</a></li>
+
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/library.html#reference">Documentation by Version</a></li>
+                        
+        <li>
+            <a class="dropdown-item" href="../../../index.html">
+                <span class="ps-2">Version 2.0</span>
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="http://docs.sqlalchemy.org/en/14/">
+                <span class="ps-2">Version 1.4</span>
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="http://docs.sqlalchemy.org/en/13/">
+                <span class="ps-2">Version 1.3</span>
+            </a>
+        </li>
+
+                        <li><hr class="dropdown-divider"></li>
+
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/library.html#talks">Talks and Tutorials</a></li>
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/library.html">Published content overview</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle "  href="#" id="community-dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        community
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark bg-sa-green" aria-labelledby="community-dropdown">
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/support.html">Get Support</a></li>
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/participate.html">Participate</a></li>
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/develop.html">Develop</a></li>
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/codeofconduct.html">Code of Conduct</a></li>
+                        <li><a class="dropdown-item" href="https://github.com/sqlalchemy/sqlalchemy">Github</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle "  href="#" id="download-dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        download
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark bg-sa-green" aria-labelledby="download-dropdown">
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/download.html">Download</a>
+                        
+
+
+
+
+
+
+    <li><a 
+        class="dropdown-item"
+ href="http://www.sqlalchemy.org/download.html#current">Current Release Series (2.0)</a></li>
+
+    <li><a 
+        class="dropdown-item"
+ href="http://www.sqlalchemy.org/download.html#maintenance">Maintenance Release (1.4)</a></li>
+
+    <li><a 
+        class="dropdown-item"
+ href="http://www.sqlalchemy.org/download.html#development">Development Access</a></li>
+    <li><a 
+        class="dropdown-item"
+ href="http://www.sqlalchemy.org/download.html#license">License</a></li>
+    <li><a 
+        class="dropdown-item"
+ href="http://www.sqlalchemy.org/download.html#versions">Version Numbering</a></li>
+    <li><a 
+        class="dropdown-item"
+ href="http://www.sqlalchemy.org/download.html#relstatus">Release Status</a></li>
+
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<div id="main-body" class="docs main-body row m-0">
+
+<main id="docs" class="docs">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div id="docs-container">
+
+
+
+
+
+<div id="docs-top-navigation-container" class="body-background">
+<div id="docs-header">
+    <div id="docs-version-header">
+        Release: <span class="version-num">2.0.18</span>
+
+            <span id="sidebar-current">current release</span>
+
+        | Release Date: July 5, 2023
+
+    </div>
+
+    <h1><a href="../../../index-2.html">SQLAlchemy 2.0 Documentation</a></h1>
+
+</div>
+</div>
+
+<div id="docs-body-container">
+
+    <div id="fixed-sidebar" class="">
+
+        <div id="index-nav">
+            <form class="search" action="https://docs.sqlalchemy.org/en/20/search.html" method="get">
+              <label>
+                 Search terms:
+              <input type="text" placeholder="search..." name="q" size="12" />
+              </label>
+              <input type="submit" value="Search" />
+              <input type="hidden" name="check_keywords" value="yes" />
+              <input type="hidden" name="area" value="default" />
+            </form>
+
+            <p>
+            <a href="../../../contents.html">Contents</a> |
+            <a href="../../../genindex.html">Index</a>
+            | <a href="http://docs.sqlalchemy.org/20/sqlalchemy_20.zip">Download this Documentation</a>
+            </p>
+
+        </div>
+
+
+    </div>
+
+    <div id="narrow-index-nav">
+        <form class="search" action="https://docs.sqlalchemy.org/en/20/search.html" method="get">
+            <label>
+                Search terms:
+            <input type="text" placeholder="search..." name="q" size="12" />
+            </label>
+            <input type="submit" value="Search" />
+            <input type="hidden" name="check_keywords" value="yes" />
+            <input type="hidden" name="area" value="default" />
+        </form>
+
+        <p>
+        <a href="../../../index-2.html">Home</a>
+        | <a href="http://docs.sqlalchemy.org/20/sqlalchemy_20.zip">Download this Documentation</a>
+        </p>
+
+    </div>
+
+
+
+    <div id="docs-body" role="main" class=" _modules-examples-nested_sets-nested_sets" >
+        
+<h1>Source code for examples.nested_sets.nested_sets</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Celko&#39;s &quot;Nested Sets&quot; Tree Structure.</span>
+
+<span class="sd">https://www.intelligententerprise.com/001020/celko.jhtml</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">case</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">Column</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">create_engine</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">event</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">func</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">Integer</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">select</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">String</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy.ext.declarative</span> <span class="kn">import</span> <span class="n">declarative_base</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">aliased</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Session</span>
+
+
+<span class="n">Base</span> <span class="o">=</span> <span class="n">declarative_base</span><span class="p">()</span>
+
+
+<span class="k">class</span> <span class="nc">Employee</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">&quot;personnel&quot;</span>
+    <span class="n">__mapper_args__</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;batch&quot;</span><span class="p">:</span> <span class="kc">False</span>  <span class="c1"># allows extension to fire for each</span>
+        <span class="c1"># instance before going to the next.</span>
+    <span class="p">}</span>
+
+    <span class="n">parent</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">emp</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">left</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s2">&quot;lft&quot;</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">right</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s2">&quot;rgt&quot;</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;Employee(</span><span class="si">%s</span><span class="s2">, </span><span class="si">%d</span><span class="s2">, </span><span class="si">%d</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">emp</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="p">)</span>
+
+
+<span class="nd">@event</span><span class="o">.</span><span class="n">listens_for</span><span class="p">(</span><span class="n">Employee</span><span class="p">,</span> <span class="s2">&quot;before_insert&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">before_insert</span><span class="p">(</span><span class="n">mapper</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">instance</span><span class="o">.</span><span class="n">parent</span><span class="p">:</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">left</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">right</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">personnel</span> <span class="o">=</span> <span class="n">mapper</span><span class="o">.</span><span class="n">mapped_table</span>
+        <span class="n">right_most_sibling</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">scalar</span><span class="p">(</span>
+            <span class="n">select</span><span class="p">(</span><span class="n">personnel</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">rgt</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+                <span class="n">personnel</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">emp</span> <span class="o">==</span> <span class="n">instance</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">emp</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="n">connection</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+            <span class="n">personnel</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+            <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">personnel</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">rgt</span> <span class="o">&gt;=</span> <span class="n">right_most_sibling</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">values</span><span class="p">(</span>
+                <span class="n">lft</span><span class="o">=</span><span class="n">case</span><span class="p">(</span>
+                    <span class="p">(</span>
+                        <span class="n">personnel</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">lft</span> <span class="o">&gt;</span> <span class="n">right_most_sibling</span><span class="p">,</span>
+                        <span class="n">personnel</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">lft</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span>
+                    <span class="p">),</span>
+                    <span class="n">else_</span><span class="o">=</span><span class="n">personnel</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">lft</span><span class="p">,</span>
+                <span class="p">),</span>
+                <span class="n">rgt</span><span class="o">=</span><span class="n">case</span><span class="p">(</span>
+                    <span class="p">(</span>
+                        <span class="n">personnel</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">rgt</span> <span class="o">&gt;=</span> <span class="n">right_most_sibling</span><span class="p">,</span>
+                        <span class="n">personnel</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">rgt</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span>
+                    <span class="p">),</span>
+                    <span class="n">else_</span><span class="o">=</span><span class="n">personnel</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">rgt</span><span class="p">,</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">left</span> <span class="o">=</span> <span class="n">right_most_sibling</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">right</span> <span class="o">=</span> <span class="n">right_most_sibling</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="c1"># before_update() would be needed to support moving of nodes</span>
+    <span class="c1"># after_delete() would be needed to support removal of nodes.</span>
+
+
+<span class="n">engine</span> <span class="o">=</span> <span class="n">create_engine</span><span class="p">(</span><span class="s2">&quot;sqlite://&quot;</span><span class="p">,</span> <span class="n">echo</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">Base</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">(</span><span class="n">engine</span><span class="p">)</span>
+
+<span class="n">session</span> <span class="o">=</span> <span class="n">Session</span><span class="p">(</span><span class="n">bind</span><span class="o">=</span><span class="n">engine</span><span class="p">)</span>
+
+<span class="n">albert</span> <span class="o">=</span> <span class="n">Employee</span><span class="p">(</span><span class="n">emp</span><span class="o">=</span><span class="s2">&quot;Albert&quot;</span><span class="p">)</span>
+<span class="n">bert</span> <span class="o">=</span> <span class="n">Employee</span><span class="p">(</span><span class="n">emp</span><span class="o">=</span><span class="s2">&quot;Bert&quot;</span><span class="p">)</span>
+<span class="n">chuck</span> <span class="o">=</span> <span class="n">Employee</span><span class="p">(</span><span class="n">emp</span><span class="o">=</span><span class="s2">&quot;Chuck&quot;</span><span class="p">)</span>
+<span class="n">donna</span> <span class="o">=</span> <span class="n">Employee</span><span class="p">(</span><span class="n">emp</span><span class="o">=</span><span class="s2">&quot;Donna&quot;</span><span class="p">)</span>
+<span class="n">eddie</span> <span class="o">=</span> <span class="n">Employee</span><span class="p">(</span><span class="n">emp</span><span class="o">=</span><span class="s2">&quot;Eddie&quot;</span><span class="p">)</span>
+<span class="n">fred</span> <span class="o">=</span> <span class="n">Employee</span><span class="p">(</span><span class="n">emp</span><span class="o">=</span><span class="s2">&quot;Fred&quot;</span><span class="p">)</span>
+
+<span class="n">bert</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">albert</span>
+<span class="n">chuck</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">albert</span>
+<span class="n">donna</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">chuck</span>
+<span class="n">eddie</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">chuck</span>
+<span class="n">fred</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">chuck</span>
+
+<span class="c1"># the order of &quot;add&quot; is important here.  elements must be added in</span>
+<span class="c1"># the order in which they should be INSERTed.</span>
+<span class="n">session</span><span class="o">.</span><span class="n">add_all</span><span class="p">([</span><span class="n">albert</span><span class="p">,</span> <span class="n">bert</span><span class="p">,</span> <span class="n">chuck</span><span class="p">,</span> <span class="n">donna</span><span class="p">,</span> <span class="n">eddie</span><span class="p">,</span> <span class="n">fred</span><span class="p">])</span>
+<span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
+<span class="n">print</span><span class="p">(</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Employee</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
+
+<span class="c1"># 1. Find an employee and all their supervisors, no matter how deep the tree.</span>
+<span class="n">ealias</span> <span class="o">=</span> <span class="n">aliased</span><span class="p">(</span><span class="n">Employee</span><span class="p">)</span>
+<span class="n">print</span><span class="p">(</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Employee</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">ealias</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">between</span><span class="p">(</span><span class="n">Employee</span><span class="o">.</span><span class="n">left</span><span class="p">,</span> <span class="n">Employee</span><span class="o">.</span><span class="n">right</span><span class="p">))</span>
+    <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">ealias</span><span class="o">.</span><span class="n">emp</span> <span class="o">==</span> <span class="s2">&quot;Eddie&quot;</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">all</span><span class="p">()</span>
+<span class="p">)</span>
+
+<span class="c1"># 2. Find the employee and all their subordinates.</span>
+<span class="c1"># (This query has a nice symmetry with the first query.)</span>
+<span class="n">print</span><span class="p">(</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Employee</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Employee</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">between</span><span class="p">(</span><span class="n">ealias</span><span class="o">.</span><span class="n">left</span><span class="p">,</span> <span class="n">ealias</span><span class="o">.</span><span class="n">right</span><span class="p">))</span>
+    <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">ealias</span><span class="o">.</span><span class="n">emp</span> <span class="o">==</span> <span class="s2">&quot;Chuck&quot;</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">all</span><span class="p">()</span>
+<span class="p">)</span>
+
+<span class="c1"># 3. Find the level of each node, so you can print the tree</span>
+<span class="c1"># as an indented listing.</span>
+<span class="k">for</span> <span class="n">indentation</span><span class="p">,</span> <span class="n">employee</span> <span class="ow">in</span> <span class="p">(</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">Employee</span><span class="o">.</span><span class="n">emp</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">&quot;indentation&quot;</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">ealias</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">ealias</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">between</span><span class="p">(</span><span class="n">Employee</span><span class="o">.</span><span class="n">left</span><span class="p">,</span> <span class="n">Employee</span><span class="o">.</span><span class="n">right</span><span class="p">))</span>
+    <span class="o">.</span><span class="n">group_by</span><span class="p">(</span><span class="n">ealias</span><span class="o">.</span><span class="n">emp</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">ealias</span><span class="o">.</span><span class="n">left</span><span class="p">)</span>
+<span class="p">):</span>
+    <span class="n">print</span><span class="p">(</span><span class="s2">&quot;    &quot;</span> <span class="o">*</span> <span class="n">indentation</span> <span class="o">+</span> <span class="n">str</span><span class="p">(</span><span class="n">employee</span><span class="p">))</span></pre><div class="code-annotations-key"></div></div>
+    </div>
+
+</div>
+
+<div id="docs-bottom-navigation" class="docs-navigation-links">
+
+    <div id="docs-copyright">
+        &copy; <a href="../../../copyright.html">Copyright</a> 2007-2023, the SQLAlchemy authors and contributors.
+
+
+    <p><b>flambé!</b> the dragon and <b><i>The Alchemist</i></b> image designs created and generously donated by <a href="https://github.com/vmalloc">Rotem Yaari</a>.</p>
+
+        Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 7.0.1.
+
+    Documentation last generated: Wed 05 Jul 2023 03:34:11 PM 
+
+    </div>
+</div>
+
+</div>
+
+
+
+
+</div>
+
+</div> <!-- end #main-body -->
+
+
+    
+
+    
+
+<div id="footer" class="footer">
+    <div class="snd-ad">
+    </div>
+    <div class="pypowered">
+        <a href="http://www.python.org/" title="The Python Language Site">
+            <img src="../../../../../../www.sqlalchemy.org/img/python-logo.gif" width="88" height="30" alt="Python" class="pypowered" />
+        </a>
+    </div>
+
+    <div class="copyright">
+        <p>Website content copyright &copy; by SQLAlchemy authors and contributors.
+            SQLAlchemy and its documentation are licensed under the MIT license.</p>
+        <p>SQLAlchemy is a trademark of Michael Bayer.  mike(&amp;)zzzcomputing.com
+        All rights reserved. </p>
+        <p>Website generation by
+        <a href="https://github.com/sqlalchemyorg/zeekofile/">zeekofile</a>, with
+        huge thanks to the <a href="https://github.com/EnigmaCurry/blogofile">Blogofile</a>
+        project.</p>
+
+        <a rel="me" href="https://fosstodon.org/@zzzeek">Mastodon</a>
+
+    </div>
+
+    <br clear="all" />
+
+</div>
+
+
+
+     <!-- End original user content -->
+
+    
+
+
+
+
+</div> <!-- end #wrap -->
+
+
+    
+
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+          URL_ROOT:    '../../../',
+          VERSION:     '2.0.18',
+          COLLAPSE_MODINDEX: false,
+          FILE_SUFFIX: '.html'
+      };
+    </script>
+
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+
+    <!-- begin iterate through sphinx environment script_files -->
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script type="text/javascript" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/sphinx_highlight.js"></script>
+        <script type="text/javascript" src="../../../_static/clipboard.min.js"></script>
+        <script type="text/javascript" src="../../../_static/copybutton.js"></script>
+    <!-- end iterate through sphinx environment script_files -->
+
+    <script type="text/javascript" src="../../../_static/init.js"></script>
+
+
+
+
+<script type="text/javascript" src="../../../../../../www.sqlalchemy.org/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript" src="../../../../../../www.sqlalchemy.org/js/doc_versions.js"></script>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-KWWK46V0YX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-KWWK46V0YX');
+</script>
+
+
+</body>
+
+<!-- Mirrored from docs.sqlalchemy.org/en/20/_modules/examples/nested_sets/nested_sets.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 06 Jul 2023 08:05:56 GMT -->
+</html>
+

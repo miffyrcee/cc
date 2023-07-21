@@ -1,0 +1,289 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Good Integration Practices — pytest documentation</title>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/basic.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/pygments_pytest.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../_static/doctools.js"></script>
+<script src="../_static/sphinx_highlight.js"></script>
+<link href="../_static/favicon.png" rel="shortcut icon"/>
+<link href="../search.html" rel="search" title="Search"/>
+<link href="flaky.html" rel="next" title="Flaky tests"/>
+<link href="fixtures.html" rel="prev" title="About fixtures"/>
+<script>DOCUMENTATION_OPTIONS.URL_ROOT = '';</script>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../py-modindex.html" title="Python Module Index">modules</a></li>
+<li class="right">
+<a accesskey="N" href="flaky.html" title="Flaky tests">next</a> |</li>
+<li class="right">
+<a accesskey="P" href="fixtures.html" title="About fixtures">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../contents.html">pytest-7.3</a> »</li>
+<li class="nav-item nav-item-this"><a href="">Good Integration Practices</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="body" role="main">
+<section id="good-integration-practices">
+<a class="dashAnchor" name="//apple_ref/cpp/Section/Good Integration Practices"></a><span id="goodpractices"></span><h1>Good Integration Practices<a class="headerlink" href="#good-integration-practices" title="Permalink to this heading">¶</a></h1>
+<section id="install-package-with-pip">
+<h2>Install package with pip<a class="headerlink" href="#install-package-with-pip" title="Permalink to this heading">¶</a></h2>
+<p>For development, we recommend you use <a class="reference external" href="https://docs.python.org/3/library/venv.html#module-venv" title="(in Python v3.11)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">venv</span></code></a> for virtual environments and
+<a class="reference external" href="https://pip.pypa.io/en/stable/" title="(in pip v23.0)"><span>pip</span></a> for installing your application and any dependencies,
+as well as the <code class="docutils literal notranslate"><span class="pre">pytest</span></code> package itself.
+This ensures your code and dependencies are isolated from your system Python installation.</p>
+<p>Create a <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> file in the root of your repository as described in
+<a class="reference external" href="https://packaging.python.org/en/latest/tutorials/packaging-projects/" title="(in Python Packaging User Guide)"><span>Packaging Python Projects</span></a>.
+The first few lines should look like this:</p>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[build-system]</span>
+<span class="n">requires</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s">"hatchling"</span><span class="p">]</span>
+<span class="n">build-backend</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"hatchling.build"</span>
+
+<span class="k">[project]</span>
+<span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"PACKAGENAME"</span>
+<span class="n">version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"PACKAGEVERSION"</span>
+</pre></div>
+</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">PACKAGENAME</span></code> and <code class="docutils literal notranslate"><span class="pre">PACKAGEVERSION</span></code> are the name and version of your package respectively.</p>
+<p>You can then install your package in “editable” mode by running from the same directory:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+</pre></div>
+</div>
+<p>which lets you change your source code (both tests and application) and rerun tests at will.</p>
+</section>
+<section id="conventions-for-python-test-discovery">
+<a class="dashAnchor" name="//apple_ref/cpp/Section/Conventions for Python test discovery"></a><span id="python-test-discovery"></span><a class="dashAnchor" name="//apple_ref/cpp/Section/Conventions for Python test discovery"></a><span id="test-discovery"></span><h2>Conventions for Python test discovery<a class="headerlink" href="#conventions-for-python-test-discovery" title="Permalink to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">pytest</span></code> implements the following standard test discovery:</p>
+<ul class="simple">
+<li><p>If no arguments are specified then collection starts from <a class="reference internal" href="../reference/reference.html#confval-testpaths"><code class="xref std std-confval docutils literal notranslate"><span class="pre">testpaths</span></code></a>
+(if configured) or the current directory. Alternatively, command line arguments
+can be used in any combination of directories, file names or node ids.</p></li>
+<li><p>Recurse into directories, unless they match <a class="reference internal" href="../reference/reference.html#confval-norecursedirs"><code class="xref std std-confval docutils literal notranslate"><span class="pre">norecursedirs</span></code></a>.</p></li>
+<li><p>In those directories, search for <code class="docutils literal notranslate"><span class="pre">test_*.py</span></code> or <code class="docutils literal notranslate"><span class="pre">*_test.py</span></code> files, imported by their <a class="reference internal" href="#test-package-name">test package name</a>.</p></li>
+<li><p>From those files, collect test items:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">test</span></code> prefixed test functions or methods outside of class.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test</span></code> prefixed test functions or methods inside <code class="docutils literal notranslate"><span class="pre">Test</span></code> prefixed test classes (without an <code class="docutils literal notranslate"><span class="pre">__init__</span></code> method). Methods decorated with <code class="docutils literal notranslate"><span class="pre">@staticmethod</span></code> and <code class="docutils literal notranslate"><span class="pre">@classmethods</span></code> are also considered.</p></li>
+</ul>
+</li>
+</ul>
+<p>For examples of how to customize your test discovery <a class="reference internal" href="../example/pythoncollection.html"><span class="doc">Changing standard (Python) test discovery</span></a>.</p>
+<p>Within Python modules, <code class="docutils literal notranslate"><span class="pre">pytest</span></code> also discovers tests using the standard
+<a class="reference internal" href="../how-to/unittest.html#unittest-testcase"><span class="std std-ref">unittest.TestCase</span></a> subclassing technique.</p>
+</section>
+<section id="choosing-a-test-layout-import-rules">
+<h2>Choosing a test layout / import rules<a class="headerlink" href="#choosing-a-test-layout-import-rules" title="Permalink to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">pytest</span></code> supports two common test layouts:</p>
+<section id="tests-outside-application-code">
+<h3>Tests outside application code<a class="headerlink" href="#tests-outside-application-code" title="Permalink to this heading">¶</a></h3>
+<p>Putting tests into an extra directory outside your actual application code
+might be useful if you have many functional tests or for other reasons want
+to keep tests separate from actual application code (often a good idea):</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>pyproject.toml
+src/
+    mypkg/
+        __init__.py
+        app.py
+        view.py
+tests/
+    test_app.py
+    test_view.py
+    ...
+</pre></div>
+</div>
+<p>This has the following benefits:</p>
+<ul class="simple">
+<li><p>Your tests can run against an installed version after executing <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">.</span></code>.</p></li>
+<li><p>Your tests can run against the local copy with an editable install after executing <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">--editable</span> <span class="pre">.</span></code>.</p></li>
+</ul>
+<p>For new projects, we recommend to use <code class="docutils literal notranslate"><span class="pre">importlib</span></code> <a class="reference internal" href="pythonpath.html#import-modes"><span class="std std-ref">import mode</span></a>
+(see <a class="reference internal" href="#which-import-mode">which-import-mode</a> for a detailed explanation).
+To this end, add the following to your <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code>:</p>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[tool.pytest.ini_options]</span>
+<span class="n">addopts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s">"--import-mode=importlib"</span><span class="p">,</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<a class="dashAnchor" name="//apple_ref/cpp/Section/src-layout"></a><p id="src-layout">Generally, but especially if you use the default import mode <code class="docutils literal notranslate"><span class="pre">prepend</span></code>,
+it is <strong>strongly</strong> suggested to use a <code class="docutils literal notranslate"><span class="pre">src</span></code> layout.
+Here, your application root package resides in a sub-directory of your root,
+i.e. <code class="docutils literal notranslate"><span class="pre">src/mypkg/</span></code> instead of <code class="docutils literal notranslate"><span class="pre">mypkg</span></code>.</p>
+<p>This layout prevents a lot of common pitfalls and has many benefits,
+which are better explained in this excellent <a class="reference external" href="https://blog.ionelmc.ro/2014/05/25/python-packaging/#the-structure&gt;">blog post</a> by Ionel Cristian Mărieș.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you do not use an editable install and use the <code class="docutils literal notranslate"><span class="pre">src</span></code> layout as above you need to extend the Python’s
+search path for module files to execute the tests against the local copy directly. You can do it in an
+ad-hoc manner by setting the <code class="docutils literal notranslate"><span class="pre">PYTHONPATH</span></code> environment variable:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">PYTHONPATH</span><span class="o">=</span>src<span class="w"> </span>pytest
+</pre></div>
+</div>
+<p>or in a permanent manner by using the <a class="reference internal" href="../reference/reference.html#confval-pythonpath"><code class="xref std std-confval docutils literal notranslate"><span class="pre">pythonpath</span></code></a> configuration variable and adding the
+following to your <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code>:</p>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[tool.pytest.ini_options]</span>
+<span class="n">pythonpath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"src"</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you do not use an editable install and not use the <code class="docutils literal notranslate"><span class="pre">src</span></code> layout (<code class="docutils literal notranslate"><span class="pre">mypkg</span></code> directly in the root
+directory) you can rely on the fact that Python by default puts the current directory in <code class="docutils literal notranslate"><span class="pre">sys.path</span></code> to
+import your package and run <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">pytest</span></code> to execute the tests against the local copy directly.</p>
+<p>See <a class="reference internal" href="pythonpath.html#pytest-vs-python-m-pytest"><span class="std std-ref">Invoking pytest versus python -m pytest</span></a> for more information about the difference between calling <code class="docutils literal notranslate"><span class="pre">pytest</span></code> and
+<code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">pytest</span></code>.</p>
+</div>
+</section>
+<section id="tests-as-part-of-application-code">
+<h3>Tests as part of application code<a class="headerlink" href="#tests-as-part-of-application-code" title="Permalink to this heading">¶</a></h3>
+<p>Inlining test directories into your application package
+is useful if you have direct relation between tests and application modules and
+want to distribute them along with your application:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>pyproject.toml
+[src/]mypkg/
+    __init__.py
+    app.py
+    view.py
+    tests/
+        __init__.py
+        test_app.py
+        test_view.py
+        ...
+</pre></div>
+</div>
+<p>In this scheme, it is easy to run your tests using the <code class="docutils literal notranslate"><span class="pre">--pyargs</span></code> option:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>--pyargs<span class="w"> </span>mypkg
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">pytest</span></code> will discover where <code class="docutils literal notranslate"><span class="pre">mypkg</span></code> is installed and collect tests from there.</p>
+<p>Note that this layout also works in conjunction with the <code class="docutils literal notranslate"><span class="pre">src</span></code> layout mentioned in the previous section.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You can use namespace packages (PEP420) for your application
+but pytest will still perform <a class="reference internal" href="#test-package-name">test package name</a> discovery based on the
+presence of <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> files.  If you use one of the
+two recommended file system layouts above but leave away the <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code>
+files from your directories, it should just work.  From
+“inlined tests”, however, you will need to use absolute imports for
+getting at your application code.</p>
+</div>
+<a class="dashAnchor" name="//apple_ref/cpp/Section/test package name"></a><div class="admonition note" id="test-package-name">
+<p class="admonition-title">Note</p>
+<p>In <code class="docutils literal notranslate"><span class="pre">prepend</span></code> and <code class="docutils literal notranslate"><span class="pre">append</span></code> import-modes, if pytest finds a <code class="docutils literal notranslate"><span class="pre">"a/b/test_module.py"</span></code>
+test file while recursing into the filesystem it determines the import name
+as follows:</p>
+<ul class="simple">
+<li><p>determine <code class="docutils literal notranslate"><span class="pre">basedir</span></code>: this is the first “upward” (towards the root)
+directory not containing an <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code>.  If e.g. both <code class="docutils literal notranslate"><span class="pre">a</span></code>
+and <code class="docutils literal notranslate"><span class="pre">b</span></code> contain an <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> file then the parent directory
+of <code class="docutils literal notranslate"><span class="pre">a</span></code> will become the <code class="docutils literal notranslate"><span class="pre">basedir</span></code>.</p></li>
+<li><p>perform <code class="docutils literal notranslate"><span class="pre">sys.path.insert(0,</span> <span class="pre">basedir)</span></code> to make the test module
+importable under the fully qualified import name.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">a.b.test_module</span></code> where the path is determined
+by converting path separators <code class="docutils literal notranslate"><span class="pre">/</span></code> into “.” characters.  This means
+you must follow the convention of having directory and file
+names map directly to the import names.</p></li>
+</ul>
+<p>The reason for this somewhat evolved importing technique is
+that in larger projects multiple test modules might import
+from each other and thus deriving a canonical import name helps
+to avoid surprises such as a test module getting imported twice.</p>
+<p>With <code class="docutils literal notranslate"><span class="pre">--import-mode=importlib</span></code> things are less convoluted because
+pytest doesn’t need to change <code class="docutils literal notranslate"><span class="pre">sys.path</span></code> or <code class="docutils literal notranslate"><span class="pre">sys.modules</span></code>, making things
+much less surprising.</p>
+</div>
+</section>
+<section id="choosing-an-import-mode">
+<a class="dashAnchor" name="//apple_ref/cpp/Section/Choosing an import mode"></a><span id="which-import-mode"></span><h3>Choosing an import mode<a class="headerlink" href="#choosing-an-import-mode" title="Permalink to this heading">¶</a></h3>
+<p>For historical reasons, pytest defaults to the <code class="docutils literal notranslate"><span class="pre">prepend</span></code> <a class="reference internal" href="pythonpath.html#import-modes"><span class="std std-ref">import mode</span></a>
+instead of the <code class="docutils literal notranslate"><span class="pre">importlib</span></code> import mode we recommend for new projects.
+The reason lies in the way the <code class="docutils literal notranslate"><span class="pre">prepend</span></code> mode works:</p>
+<p>Since there are no packages to derive a full package name from,
+<code class="docutils literal notranslate"><span class="pre">pytest</span></code> will import your test files as <em>top-level</em> modules.
+The test files in the first example (<a class="reference internal" href="#src-layout"><span class="std std-ref">src layout</span></a>) would be imported as
+<code class="docutils literal notranslate"><span class="pre">test_app</span></code> and <code class="docutils literal notranslate"><span class="pre">test_view</span></code> top-level modules by adding <code class="docutils literal notranslate"><span class="pre">tests/</span></code> to <code class="docutils literal notranslate"><span class="pre">sys.path</span></code>.</p>
+<p>This results in a drawback compared to the import mode <code class="docutils literal notranslate"><span class="pre">importlib</span></code>:
+your test files must have <strong>unique names</strong>.</p>
+<p>If you need to have test modules with the same name,
+as a workaround you might add <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> files to your <code class="docutils literal notranslate"><span class="pre">tests</span></code> folder and subfolders,
+changing them to packages:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>pyproject.toml
+mypkg/
+    ...
+tests/
+    __init__.py
+    foo/
+        __init__.py
+        test_view.py
+    bar/
+        __init__.py
+        test_view.py
+</pre></div>
+</div>
+<p>Now pytest will load the modules as <code class="docutils literal notranslate"><span class="pre">tests.foo.test_view</span></code> and <code class="docutils literal notranslate"><span class="pre">tests.bar.test_view</span></code>,
+allowing you to have modules with the same name.
+But now this introduces a subtle problem:
+in order to load the test modules from the <code class="docutils literal notranslate"><span class="pre">tests</span></code> directory,
+pytest prepends the root of the repository to <code class="docutils literal notranslate"><span class="pre">sys.path</span></code>,
+which adds the side-effect that now <code class="docutils literal notranslate"><span class="pre">mypkg</span></code> is also importable.</p>
+<p>This is problematic if you are using a tool like <a class="reference internal" href="#tox">tox</a> to test your package in a virtual environment,
+because you want to test the <em>installed</em> version of your package,
+not the local code from the repository.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">importlib</span></code> import mode does not have any of the drawbacks above,
+because <code class="docutils literal notranslate"><span class="pre">sys.path</span></code> is not changed when importing test modules.</p>
+</section>
+</section>
+<section id="tox">
+<a class="dashAnchor" name="//apple_ref/cpp/Section/tox"></a><span id="use-tox"></span><h2>tox<a class="headerlink" href="#tox" title="Permalink to this heading">¶</a></h2>
+<p>Once you are done with your work and want to make sure that your actual
+package passes all tests you may want to look into <a class="reference external" href="https://tox.wiki/en/stable/index.html" title="(in Python v4.4)"><span class="xref std std-doc">tox</span></a>, the
+virtualenv test automation tool.
+<code class="docutils literal notranslate"><span class="pre">tox</span></code> helps you to setup virtualenv environments with pre-defined
+dependencies and then executing a pre-configured test command with
+options.  It will run tests against the installed package and not
+against your source code checkout, helping to detect packaging
+glitches.</p>
+</section>
+<section id="do-not-run-via-setuptools">
+<h2>Do not run via setuptools<a class="headerlink" href="#do-not-run-via-setuptools" title="Permalink to this heading">¶</a></h2>
+<p>Integration with setuptools is <strong>not recommended</strong>,
+i.e. you should not be using <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">test</span></code> or <code class="docutils literal notranslate"><span class="pre">pytest-runner</span></code>,
+and may stop working in the future.</p>
+<p>This is deprecated since it depends on deprecated features of setuptools
+and relies on features that break security mechanisms in pip.
+For example ‘setup_requires’ and ‘tests_require’ bypass <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">--require-hashes</span></code>.
+For more information and migration instructions,
+see the <a class="reference external" href="https://github.com/pytest-dev/pytest-runner#deprecation-notice">pytest-runner notice</a>.
+See also <a class="reference external" href="https://github.com/pypa/setuptools/issues/1684">pypa/setuptools#1684</a>.</p>
+<p>setuptools intends to
+<a class="reference external" href="https://github.com/pypa/setuptools/issues/931">remove the test command</a>.</p>
+</section>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+<span id="sidebar-top"></span>
+<div class="clearer"></div>
+</div>
+<div class="footer" role="contentinfo">
+        © Copyright 2015, holger krekel and pytest-dev team.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    </div>
+<script src="../_static/version_warning_offset.js"></script>
+</body>
+</html>

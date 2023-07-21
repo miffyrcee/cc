@@ -3,35 +3,33 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>PROPOSAL: Parametrize with fixtures &#8212; pytest documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments_pytest.css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <link rel="shortcut icon" href="../_static/favicon.png"/>
-    <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-  <script>DOCUMENTATION_OPTIONS.URL_ROOT = '../';</script>
+  <script>DOCUMENTATION_OPTIONS.URL_ROOT = '';</script>
    
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../contents.html">pytest-6.2</a> &#187;</li>
+             >modules</a></li>
+        <li class="nav-item nav-item-0"><a href="../contents.html">pytest-7.3</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">PROPOSAL: Parametrize with fixtures</a></li> 
       </ul>
     </div>  
@@ -40,15 +38,15 @@
       <div class="documentwrapper">
           <div class="body" role="main">
             
-  <div class="section" id="proposal-parametrize-with-fixtures">
-<h1>PROPOSAL: Parametrize with fixtures<a class="headerlink" href="#proposal-parametrize-with-fixtures" title="Permalink to this headline">¶</a></h1>
+  <section id="proposal-parametrize-with-fixtures">
+<h1>PROPOSAL: Parametrize with fixtures<a class="headerlink" href="#proposal-parametrize-with-fixtures" title="Permalink to this heading">¶</a></h1>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>This document outlines a proposal around using fixtures as input
 of parametrized tests or fixtures.</p>
 </div>
-<div class="section" id="problem">
-<h2>Problem<a class="headerlink" href="#problem" title="Permalink to this headline">¶</a></h2>
+<section id="problem">
+<h2>Problem<a class="headerlink" href="#problem" title="Permalink to this heading">¶</a></h2>
 <p>As a user I have functional tests that I would like to run against various
 scenarios.</p>
 <p>In this particular example we want to generate a new project based on a
@@ -93,7 +91,7 @@ emulates user input.</p>
 
 
 <span class="k">def</span> <span class="nf">test_generate_project</span><span class="p">(</span><span class="n">cookies</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Call the cookiecutter API to generate a new project from a</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Call the cookiecutter API to generate a new project from a</span>
 <span class="sd">    template.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">cookies</span><span class="o">.</span><span class="n">bake</span><span class="p">(</span><span class="n">extra_context</span><span class="o">=</span><span class="n">context</span><span class="p">)</span>
@@ -103,9 +101,9 @@ emulates user input.</p>
     <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">isdir</span><span class="p">()</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="issues">
-<h2>Issues<a class="headerlink" href="#issues" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="issues">
+<h2>Issues<a class="headerlink" href="#issues" title="Permalink to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>By using <code class="docutils literal notranslate"><span class="pre">request.getfuncargvalue()</span></code> we rely on actual fixture function
 execution to know what fixtures are involved, due to its dynamic nature</p></li>
@@ -121,9 +119,9 @@ certain parameters for fixtures that are already used by tests</p></li>
 <span class="n">Requested</span> <span class="n">fixture</span> <span class="s1">&#39;extra_context&#39;</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="proposed-solution">
-<h2>Proposed solution<a class="headerlink" href="#proposed-solution" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="proposed-solution">
+<h2>Proposed solution<a class="headerlink" href="#proposed-solution" title="Permalink to this heading">¶</a></h2>
 <p>A new function that can be used in modules can be used to dynamically define
 fixtures from existing ones.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pytest</span><span class="o">.</span><span class="n">define_combined_fixture</span><span class="p">(</span>
@@ -139,9 +137,9 @@ the following values.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">{'project_slug':</span> <span class="pre">'helloworld'}</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">{'author':</span> <span class="pre">'bob',</span> <span class="pre">'project_slug':</span> <span class="pre">'foobar'}</span></code></p></li>
 </ul>
-</div>
-<div class="section" id="alternative-approach">
-<h2>Alternative approach<a class="headerlink" href="#alternative-approach" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="alternative-approach">
+<h2>Alternative approach<a class="headerlink" href="#alternative-approach" title="Permalink to this heading">¶</a></h2>
 <p>A new helper function named <code class="docutils literal notranslate"><span class="pre">fixture_request</span></code> would tell pytest to yield
 all parameters marked as a fixture.</p>
 <div class="admonition note">
@@ -156,7 +154,7 @@ similar solution to the proposal below, make sure to check it out.</p>
     <span class="p">]</span>
 <span class="p">)</span>
 <span class="k">def</span> <span class="nf">context</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns all values for ``default_context``, one-by-one before it</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns all values for ``default_context``, one-by-one before it</span>
 <span class="sd">    does the same for ``extra_context``.</span>
 
 <span class="sd">    request.param:</span>
@@ -177,7 +175,7 @@ similar solution to the proposal below, make sure to check it out.</p>
     <span class="p">],</span>
 <span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_generate_project</span><span class="p">(</span><span class="n">cookies</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">exit_code</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Call the cookiecutter API to generate a new project from a</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Call the cookiecutter API to generate a new project from a</span>
 <span class="sd">    template.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">cookies</span><span class="o">.</span><span class="n">bake</span><span class="p">(</span><span class="n">extra_context</span><span class="o">=</span><span class="n">context</span><span class="p">)</span>
@@ -185,8 +183,8 @@ similar solution to the proposal below, make sure to check it out.</p>
     <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">exit_code</span> <span class="o">==</span> <span class="n">exit_code</span>
 </pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -197,8 +195,8 @@ similar solution to the proposal below, make sure to check it out.</p>
     </div>
   
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2015–2020, holger krekel and pytest-dev team.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
+        &#169; Copyright 2015, holger krekel and pytest-dev team.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
     </div>
   <script src="../_static/version_warning_offset.js"></script>
 

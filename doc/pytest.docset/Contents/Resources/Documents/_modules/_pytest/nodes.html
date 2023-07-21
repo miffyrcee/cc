@@ -3,35 +3,33 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>_pytest.nodes &#8212; pytest documentation</title>
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/pygments_pytest.css" />
-    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <link rel="shortcut icon" href="../../_static/favicon.png"/>
-    <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-  <script>DOCUMENTATION_OPTIONS.URL_ROOT = '../../';</script>
+  <script>DOCUMENTATION_OPTIONS.URL_ROOT = '';</script>
    
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
-          <a href="../../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../contents.html">pytest-6.2</a> &#187;</li>
+             >modules</a></li>
+        <li class="nav-item nav-item-0"><a href="../../contents.html">pytest-7.3</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">_pytest.nodes</a></li> 
       </ul>
@@ -44,11 +42,15 @@
   <h1>Source code for _pytest.nodes</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">signature</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">cast</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Iterable</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Iterator</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">MutableMapping</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">overload</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Set</span>
@@ -58,22 +60,24 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TypeVar</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
 
-<span class="kn">import</span> <span class="nn">py</span>
-
 <span class="kn">import</span> <span class="nn">_pytest._code</span>
 <span class="kn">from</span> <span class="nn">_pytest._code</span> <span class="kn">import</span> <span class="n">getfslineno</span>
 <span class="kn">from</span> <span class="nn">_pytest._code.code</span> <span class="kn">import</span> <span class="n">ExceptionInfo</span>
 <span class="kn">from</span> <span class="nn">_pytest._code.code</span> <span class="kn">import</span> <span class="n">TerminalRepr</span>
 <span class="kn">from</span> <span class="nn">_pytest.compat</span> <span class="kn">import</span> <span class="n">cached_property</span>
+<span class="kn">from</span> <span class="nn">_pytest.compat</span> <span class="kn">import</span> <span class="n">LEGACY_PATH</span>
 <span class="kn">from</span> <span class="nn">_pytest.config</span> <span class="kn">import</span> <span class="n">Config</span>
 <span class="kn">from</span> <span class="nn">_pytest.config</span> <span class="kn">import</span> <span class="n">ConftestImportFailure</span>
 <span class="kn">from</span> <span class="nn">_pytest.deprecated</span> <span class="kn">import</span> <span class="n">FSCOLLECTOR_GETHOOKPROXY_ISINITPATH</span>
+<span class="kn">from</span> <span class="nn">_pytest.deprecated</span> <span class="kn">import</span> <span class="n">NODE_CTOR_FSPATH_ARG</span>
 <span class="kn">from</span> <span class="nn">_pytest.mark.structures</span> <span class="kn">import</span> <span class="n">Mark</span>
 <span class="kn">from</span> <span class="nn">_pytest.mark.structures</span> <span class="kn">import</span> <span class="n">MarkDecorator</span>
 <span class="kn">from</span> <span class="nn">_pytest.mark.structures</span> <span class="kn">import</span> <span class="n">NodeKeywords</span>
 <span class="kn">from</span> <span class="nn">_pytest.outcomes</span> <span class="kn">import</span> <span class="n">fail</span>
 <span class="kn">from</span> <span class="nn">_pytest.pathlib</span> <span class="kn">import</span> <span class="n">absolutepath</span>
-<span class="kn">from</span> <span class="nn">_pytest.store</span> <span class="kn">import</span> <span class="n">Store</span>
+<span class="kn">from</span> <span class="nn">_pytest.pathlib</span> <span class="kn">import</span> <span class="n">commonpath</span>
+<span class="kn">from</span> <span class="nn">_pytest.stash</span> <span class="kn">import</span> <span class="n">Stash</span>
+<span class="kn">from</span> <span class="nn">_pytest.warning_types</span> <span class="kn">import</span> <span class="n">PytestWarning</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="c1"># Imported here due to circular import.</span>
@@ -83,11 +87,11 @@
 
 <span class="n">SEP</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span>
 
-<span class="n">tracebackcutdir</span> <span class="o">=</span> <span class="n">py</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">local</span><span class="p">(</span><span class="n">_pytest</span><span class="o">.</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">dirpath</span><span class="p">()</span>
+<span class="n">tracebackcutdir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">_pytest</span><span class="o">.</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span>
 
 
 <span class="k">def</span> <span class="nf">iterparentnodeids</span><span class="p">(</span><span class="n">nodeid</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Return the parent node IDs of a given node ID, inclusive.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the parent node IDs of a given node ID, inclusive.</span>
 
 <span class="sd">    For the node ID</span>
 
@@ -102,23 +106,62 @@
 <span class="sd">        &quot;testing/code/test_excinfo.py::TestFormattedExcinfo&quot;</span>
 <span class="sd">        &quot;testing/code/test_excinfo.py::TestFormattedExcinfo::test_repr_source&quot;</span>
 
-<span class="sd">    Note that :: parts are only considered at the last / component.</span>
+<span class="sd">    Note that / components are only considered until the first ::.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">pos</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">sep</span> <span class="o">=</span> <span class="n">SEP</span>
+    <span class="n">first_colons</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">nodeid</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;::&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">first_colons</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">first_colons</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="c1"># The root Session node - always present.</span>
     <span class="k">yield</span> <span class="s2">&quot;&quot;</span>
+    <span class="c1"># Eagerly consume SEP parts until first colons.</span>
     <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="n">at</span> <span class="o">=</span> <span class="n">nodeid</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">sep</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">at</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">sep</span> <span class="o">==</span> <span class="n">SEP</span><span class="p">:</span>
-            <span class="n">sep</span> <span class="o">=</span> <span class="s2">&quot;::&quot;</span>
-        <span class="k">elif</span> <span class="n">at</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">nodeid</span><span class="p">:</span>
-                <span class="k">yield</span> <span class="n">nodeid</span>
+        <span class="n">at</span> <span class="o">=</span> <span class="n">nodeid</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">SEP</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">first_colons</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">at</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
             <span class="k">break</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">at</span><span class="p">:</span>
-                <span class="k">yield</span> <span class="n">nodeid</span><span class="p">[:</span><span class="n">at</span><span class="p">]</span>
-            <span class="n">pos</span> <span class="o">=</span> <span class="n">at</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">sep</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">at</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">nodeid</span><span class="p">[:</span><span class="n">at</span><span class="p">]</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">at</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">SEP</span><span class="p">)</span>
+    <span class="c1"># Eagerly consume :: parts.</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">at</span> <span class="o">=</span> <span class="n">nodeid</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;::&quot;</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">at</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="k">if</span> <span class="n">at</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">nodeid</span><span class="p">[:</span><span class="n">at</span><span class="p">]</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">at</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="s2">&quot;::&quot;</span><span class="p">)</span>
+    <span class="c1"># The node ID itself.</span>
+    <span class="k">if</span> <span class="n">nodeid</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="n">nodeid</span>
+
+
+<span class="k">def</span> <span class="nf">_check_path</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">fspath</span><span class="p">:</span> <span class="n">LEGACY_PATH</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">Path</span><span class="p">(</span><span class="n">fspath</span><span class="p">)</span> <span class="o">!=</span> <span class="n">path</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Path(</span><span class="si">{</span><span class="n">fspath</span><span class="si">!r}</span><span class="s2">) != </span><span class="si">{</span><span class="n">path</span><span class="si">!r}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;if both path and fspath are given they need to be equal&quot;</span>
+        <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_imply_path</span><span class="p">(</span>
+    <span class="n">node_type</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="s2">&quot;Node&quot;</span><span class="p">],</span>
+    <span class="n">path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">],</span>
+    <span class="n">fspath</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">LEGACY_PATH</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">fspath</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="n">NODE_CTOR_FSPATH_ARG</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">node_type_name</span><span class="o">=</span><span class="n">node_type</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">fspath</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">_check_path</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">fspath</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">path</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">fspath</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="n">fspath</span><span class="p">)</span>
 
 
 <span class="n">_NodeType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;_NodeType&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s2">&quot;Node&quot;</span><span class="p">)</span>
@@ -131,19 +174,42 @@
             <span class="s2">&quot;See &quot;</span>
             <span class="s2">&quot;https://docs.pytest.org/en/stable/deprecations.html#node-construction-changed-to-node-from-parent&quot;</span>
             <span class="s2">&quot; for more details.&quot;</span>
-        <span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__module__</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">fail</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">pytrace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">k</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__call__</span><span class="p">(</span><span class="o">*</span><span class="n">k</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__call__</span><span class="p">(</span><span class="o">*</span><span class="n">k</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="n">sig</span> <span class="o">=</span> <span class="n">signature</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;__init__&quot;</span><span class="p">))</span>
+            <span class="n">known_kw</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kw</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">sig</span><span class="o">.</span><span class="n">parameters</span><span class="p">}</span>
+            <span class="kn">from</span> <span class="nn">.warning_types</span> <span class="kn">import</span> <span class="n">PytestDeprecationWarning</span>
+
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="n">PytestDeprecationWarning</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> is not using a cooperative constructor and only takes </span><span class="si">{</span><span class="nb">set</span><span class="p">(</span><span class="n">known_kw</span><span class="p">)</span><span class="si">}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="s2">&quot;See https://docs.pytest.org/en/stable/deprecations.html&quot;</span>
+                    <span class="s2">&quot;#constructors-of-custom-pytest-node-subclasses-should-take-kwargs &quot;</span>
+                    <span class="s2">&quot;for more details.&quot;</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__call__</span><span class="p">(</span><span class="o">*</span><span class="n">k</span><span class="p">,</span> <span class="o">**</span><span class="n">known_kw</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="Node"><a class="viewcode-back" href="../../reference.html#pytest.Node">[docs]</a><span class="k">class</span> <span class="nc">Node</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">NodeMeta</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Base class for Collector and Item, the components of the test</span>
+<div class="viewcode-block" id="Node"><a class="viewcode-back" href="../../reference/reference.html#pytest.Node">[docs]</a><span class="k">class</span> <span class="nc">Node</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">NodeMeta</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for Collector and Item, the components of the test</span>
 <span class="sd">    collection tree.</span>
 
 <span class="sd">    Collector subclasses have children; Items are leaf nodes.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Implemented in the legacypath plugin.</span>
+    <span class="c1">#: A ``LEGACY_PATH`` copy of the :attr:`path` attribute. Intended for usage</span>
+    <span class="c1">#: for methods not migrated to ``pathlib.Path`` yet, such as</span>
+    <span class="c1">#: :meth:`Item.reportinfo`. Will be deprecated in a future release, prefer</span>
+    <span class="c1">#: using :attr:`path` instead.</span>
+    <span class="n">fspath</span><span class="p">:</span> <span class="n">LEGACY_PATH</span>
 
     <span class="c1"># Use __slots__ to make attribute access faster.</span>
     <span class="c1"># Note that __dict__ is still available.</span>
@@ -152,7 +218,7 @@
         <span class="s2">&quot;parent&quot;</span><span class="p">,</span>
         <span class="s2">&quot;config&quot;</span><span class="p">,</span>
         <span class="s2">&quot;session&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;fspath&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;path&quot;</span><span class="p">,</span>
         <span class="s2">&quot;_nodeid&quot;</span><span class="p">,</span>
         <span class="s2">&quot;_store&quot;</span><span class="p">,</span>
         <span class="s2">&quot;__dict__&quot;</span><span class="p">,</span>
@@ -164,36 +230,40 @@
         <span class="n">parent</span><span class="p">:</span> <span class="s2">&quot;Optional[Node]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Config</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">session</span><span class="p">:</span> <span class="s2">&quot;Optional[Session]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">fspath</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">py</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">local</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">fspath</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">LEGACY_PATH</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">nodeid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1">#: A unique name within the scope of the parent node.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">name</span>
 
         <span class="c1">#: The parent collector node.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span>
 
-        <span class="c1">#: The pytest config object.</span>
         <span class="k">if</span> <span class="n">config</span><span class="p">:</span>
+            <span class="c1">#: The pytest config object.</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">:</span> <span class="n">Config</span> <span class="o">=</span> <span class="n">config</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">parent</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;config or parent must be provided&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="n">config</span>
 
-        <span class="c1">#: The pytest session this node is part of.</span>
         <span class="k">if</span> <span class="n">session</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">session</span>
+            <span class="c1">#: The pytest session this node is part of.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">:</span> <span class="n">Session</span> <span class="o">=</span> <span class="n">session</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">parent</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;session or parent must be provided&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="n">session</span>
 
+        <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">fspath</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="c1">#: Filesystem path where this node was collected from (can be None).</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">fspath</span> <span class="o">=</span> <span class="n">fspath</span> <span class="ow">or</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="s2">&quot;fspath&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">_imply_path</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="n">path</span><span class="p">,</span> <span class="n">fspath</span><span class="o">=</span><span class="n">fspath</span><span class="p">)</span>
 
+        <span class="c1"># The explicit annotation is to avoid publicly exposing NodeKeywords.</span>
         <span class="c1">#: Keywords/markers collected from all scopes.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">keywords</span> <span class="o">=</span> <span class="n">NodeKeywords</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">keywords</span><span class="p">:</span> <span class="n">MutableMapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">NodeKeywords</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
         <span class="c1">#: The marker objects belonging to this node.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">own_markers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Mark</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -207,17 +277,17 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;nodeid or parent must be provided&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_nodeid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">nodeid</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s2">&quot;()&quot;</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_nodeid</span> <span class="o">+=</span> <span class="s2">&quot;::&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_nodeid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">nodeid</span> <span class="o">+</span> <span class="s2">&quot;::&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
 
-        <span class="c1"># A place where plugins can store information on the node for their</span>
-        <span class="c1"># own use. Currently only intended for internal plugins.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_store</span> <span class="o">=</span> <span class="n">Store</span><span class="p">()</span>
+        <span class="c1">#: A place where plugins can store information on the node for their</span>
+        <span class="c1">#: own use.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stash</span><span class="p">:</span> <span class="n">Stash</span> <span class="o">=</span> <span class="n">Stash</span><span class="p">()</span>
+        <span class="c1"># Deprecated alias. Was never public. Can be removed in a few releases.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_store</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stash</span>
 
-<div class="viewcode-block" id="Node.from_parent"><a class="viewcode-back" href="../../reference.html#pytest.Node.from_parent">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="Node.from_parent"><a class="viewcode-back" href="../../reference/reference.html#pytest.Node.from_parent">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_parent</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">parent</span><span class="p">:</span> <span class="s2">&quot;Node&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Public constructor for Nodes.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Public constructor for Nodes.</span>
 
 <span class="sd">        This indirection got introduced in order to enable removing</span>
 <span class="sd">        the fragile logic from the node constructors.</span>
@@ -235,14 +305,14 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">ihook</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;fspath-sensitive hook proxy used to call pytest hooks.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">gethookproxy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fspath</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;fspath-sensitive hook proxy used to call pytest hooks.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">gethookproxy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="s2">&quot;&lt;</span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
 
-<div class="viewcode-block" id="Node.warn"><a class="viewcode-back" href="../../reference.html#pytest.Node.warn">[docs]</a>    <span class="k">def</span> <span class="nf">warn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">warning</span><span class="p">:</span> <span class="ne">Warning</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Issue a warning for this Node.</span>
+<div class="viewcode-block" id="Node.warn"><a class="viewcode-back" href="../../reference/reference.html#pytest.Node.warn">[docs]</a>    <span class="k">def</span> <span class="nf">warn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">warning</span><span class="p">:</span> <span class="ne">Warning</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Issue a warning for this Node.</span>
 
 <span class="sd">        Warnings will be displayed after the test session, unless explicitly suppressed.</span>
 
@@ -272,14 +342,17 @@
         <span class="n">path</span><span class="p">,</span> <span class="n">lineno</span> <span class="o">=</span> <span class="n">get_fslocation_from_item</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">assert</span> <span class="n">lineno</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn_explicit</span><span class="p">(</span>
-            <span class="n">warning</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="n">lineno</span><span class="o">=</span><span class="n">lineno</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="n">warning</span><span class="p">,</span>
+            <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">filename</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">),</span>
+            <span class="n">lineno</span><span class="o">=</span><span class="n">lineno</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
         <span class="p">)</span></div>
 
     <span class="c1"># Methods for ordering nodes.</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">nodeid</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;A ::-separated string denoting its collection tree address.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A ::-separated string denoting its collection tree address.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nodeid</span>
 
     <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
@@ -291,9 +364,12 @@
     <span class="k">def</span> <span class="nf">teardown</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">pass</span>
 
-<div class="viewcode-block" id="Node.listchain"><a class="viewcode-back" href="../../reference.html#pytest.Node.listchain">[docs]</a>    <span class="k">def</span> <span class="nf">listchain</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="s2">&quot;Node&quot;</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Return list of all parent collectors up to self, starting from</span>
-<span class="sd">        the root of collection tree.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Node.listchain"><a class="viewcode-back" href="../../reference/reference.html#pytest.Node.listchain">[docs]</a>    <span class="k">def</span> <span class="nf">listchain</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="s2">&quot;Node&quot;</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return list of all parent collectors up to self, starting from</span>
+<span class="sd">        the root of collection tree.</span>
+
+<span class="sd">        :returns: The nodes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">chain</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">item</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Node</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span>
         <span class="k">while</span> <span class="n">item</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -302,11 +378,13 @@
         <span class="n">chain</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">chain</span></div>
 
-<div class="viewcode-block" id="Node.add_marker"><a class="viewcode-back" href="../../reference.html#pytest.Node.add_marker">[docs]</a>    <span class="k">def</span> <span class="nf">add_marker</span><span class="p">(</span>
+<div class="viewcode-block" id="Node.add_marker"><a class="viewcode-back" href="../../reference/reference.html#pytest.Node.add_marker">[docs]</a>    <span class="k">def</span> <span class="nf">add_marker</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">marker</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">MarkDecorator</span><span class="p">],</span> <span class="n">append</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Dynamically add a marker object to the node.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Dynamically add a marker object to the node.</span>
 
+<span class="sd">        :param marker:</span>
+<span class="sd">            The marker.</span>
 <span class="sd">        :param append:</span>
 <span class="sd">            Whether to append the marker, or prepend it.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -324,17 +402,18 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">own_markers</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">marker_</span><span class="o">.</span><span class="n">mark</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Node.iter_markers"><a class="viewcode-back" href="../../reference.html#pytest.Node.iter_markers">[docs]</a>    <span class="k">def</span> <span class="nf">iter_markers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Mark</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Iterate over all markers of the node.</span>
+<div class="viewcode-block" id="Node.iter_markers"><a class="viewcode-back" href="../../reference/reference.html#pytest.Node.iter_markers">[docs]</a>    <span class="k">def</span> <span class="nf">iter_markers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Mark</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Iterate over all markers of the node.</span>
 
 <span class="sd">        :param name: If given, filter the results by the name attribute.</span>
+<span class="sd">        :returns: An iterator of the markers of the node.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">iter_markers_with_node</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="Node.iter_markers_with_node"><a class="viewcode-back" href="../../reference.html#pytest.Node.iter_markers_with_node">[docs]</a>    <span class="k">def</span> <span class="nf">iter_markers_with_node</span><span class="p">(</span>
+<div class="viewcode-block" id="Node.iter_markers_with_node"><a class="viewcode-back" href="../../reference/reference.html#pytest.Node.iter_markers_with_node">[docs]</a>    <span class="k">def</span> <span class="nf">iter_markers_with_node</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="s2">&quot;Node&quot;</span><span class="p">,</span> <span class="n">Mark</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;Iterate over all markers of the node.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Iterate over all markers of the node.</span>
 
 <span class="sd">        :param name: If given, filter the results by the name attribute.</span>
 <span class="sd">        :returns: An iterator of (node, mark) tuples.</span>
@@ -352,10 +431,10 @@
     <span class="k">def</span> <span class="nf">get_closest_marker</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">Mark</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Mark</span><span class="p">:</span>
         <span class="o">...</span>
 
-<div class="viewcode-block" id="Node.get_closest_marker"><a class="viewcode-back" href="../../reference.html#pytest.Node.get_closest_marker">[docs]</a>    <span class="k">def</span> <span class="nf">get_closest_marker</span><span class="p">(</span>
+<div class="viewcode-block" id="Node.get_closest_marker"><a class="viewcode-back" href="../../reference/reference.html#pytest.Node.get_closest_marker">[docs]</a>    <span class="k">def</span> <span class="nf">get_closest_marker</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Mark</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Mark</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Return the first marker matching the name, from closest (for</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the first marker matching the name, from closest (for</span>
 <span class="sd">        example function) to farther level (for example module level).</span>
 
 <span class="sd">        :param default: Fallback return value if no marker was found.</span>
@@ -363,8 +442,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iter_markers</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">),</span> <span class="n">default</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Node.listextrakeywords"><a class="viewcode-back" href="../../reference.html#pytest.Node.listextrakeywords">[docs]</a>    <span class="k">def</span> <span class="nf">listextrakeywords</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Return a set of all extra keywords in self and any parents.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Node.listextrakeywords"><a class="viewcode-back" href="../../reference/reference.html#pytest.Node.listextrakeywords">[docs]</a>    <span class="k">def</span> <span class="nf">listextrakeywords</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a set of all extra keywords in self and any parents.&quot;&quot;&quot;</span>
         <span class="n">extra_keywords</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">listchain</span><span class="p">():</span>
             <span class="n">extra_keywords</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">extra_keyword_matches</span><span class="p">)</span>
@@ -373,17 +452,22 @@
     <span class="k">def</span> <span class="nf">listnames</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">listchain</span><span class="p">()]</span>
 
-<div class="viewcode-block" id="Node.addfinalizer"><a class="viewcode-back" href="../../reference.html#pytest.Node.addfinalizer">[docs]</a>    <span class="k">def</span> <span class="nf">addfinalizer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fin</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="nb">object</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Register a function to be called when this node is finalized.</span>
+<div class="viewcode-block" id="Node.addfinalizer"><a class="viewcode-back" href="../../reference/reference.html#pytest.Node.addfinalizer">[docs]</a>    <span class="k">def</span> <span class="nf">addfinalizer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fin</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="nb">object</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Register a function to be called without arguments when this node is</span>
+<span class="sd">        finalized.</span>
 
 <span class="sd">        This method can only be called when this node is active</span>
 <span class="sd">        in a setup chain, for example during self.setup().</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">_setupstate</span><span class="o">.</span><span class="n">addfinalizer</span><span class="p">(</span><span class="n">fin</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Node.getparent"><a class="viewcode-back" href="../../reference.html#pytest.Node.getparent">[docs]</a>    <span class="k">def</span> <span class="nf">getparent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">_NodeType</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">_NodeType</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Get the next parent node (including self) which is an instance of</span>
-<span class="sd">        the given class.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Node.getparent"><a class="viewcode-back" href="../../reference/reference.html#pytest.Node.getparent">[docs]</a>    <span class="k">def</span> <span class="nf">getparent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">_NodeType</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">_NodeType</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the next parent node (including self) which is an instance of</span>
+<span class="sd">        the given class.</span>
+
+<span class="sd">        :param cls: The node class to search for.</span>
+<span class="sd">        :returns: The node, if found.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">current</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Node</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span>
         <span class="k">while</span> <span class="n">current</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">current</span><span class="p">,</span> <span class="bp">cls</span><span class="p">):</span>
             <span class="n">current</span> <span class="o">=</span> <span class="n">current</span><span class="o">.</span><span class="n">parent</span>
@@ -401,7 +485,7 @@
         <span class="kn">from</span> <span class="nn">_pytest.fixtures</span> <span class="kn">import</span> <span class="n">FixtureLookupError</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">excinfo</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">ConftestImportFailure</span><span class="p">):</span>
-            <span class="n">excinfo</span> <span class="o">=</span> <span class="n">ExceptionInfo</span><span class="p">(</span><span class="n">excinfo</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">excinfo</span><span class="p">)</span>
+            <span class="n">excinfo</span> <span class="o">=</span> <span class="n">ExceptionInfo</span><span class="o">.</span><span class="n">from_exc_info</span><span class="p">(</span><span class="n">excinfo</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">excinfo</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">excinfo</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">fail</span><span class="o">.</span><span class="n">Exception</span><span class="p">):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">excinfo</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">pytrace</span><span class="p">:</span>
                 <span class="n">style</span> <span class="o">=</span> <span class="s2">&quot;value&quot;</span>
@@ -448,28 +532,28 @@
             <span class="n">truncate_locals</span><span class="o">=</span><span class="n">truncate_locals</span><span class="p">,</span>
         <span class="p">)</span>
 
-<div class="viewcode-block" id="Node.repr_failure"><a class="viewcode-back" href="../../reference.html#pytest.Node.repr_failure">[docs]</a>    <span class="k">def</span> <span class="nf">repr_failure</span><span class="p">(</span>
+<div class="viewcode-block" id="Node.repr_failure"><a class="viewcode-back" href="../../reference/reference.html#pytest.Node.repr_failure">[docs]</a>    <span class="k">def</span> <span class="nf">repr_failure</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">excinfo</span><span class="p">:</span> <span class="n">ExceptionInfo</span><span class="p">[</span><span class="ne">BaseException</span><span class="p">],</span>
         <span class="n">style</span><span class="p">:</span> <span class="s2">&quot;Optional[_TracebackStyle]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TerminalRepr</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Return a representation of a collection or test failure.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a representation of a collection or test failure.</span>
+
+<span class="sd">        .. seealso:: :ref:`non-python tests`</span>
 
 <span class="sd">        :param excinfo: Exception information for the failure.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_repr_failure_py</span><span class="p">(</span><span class="n">excinfo</span><span class="p">,</span> <span class="n">style</span><span class="p">)</span></div></div>
 
 
-<span class="k">def</span> <span class="nf">get_fslocation_from_item</span><span class="p">(</span>
-    <span class="n">node</span><span class="p">:</span> <span class="s2">&quot;Node&quot;</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">py</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">local</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
-    <span class="sd">&quot;&quot;&quot;Try to extract the actual location from a node, depending on available attributes:</span>
+<span class="k">def</span> <span class="nf">get_fslocation_from_item</span><span class="p">(</span><span class="n">node</span><span class="p">:</span> <span class="s2">&quot;Node&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Try to extract the actual location from a node, depending on available attributes:</span>
 
 <span class="sd">    * &quot;location&quot;: a pair (path, lineno)</span>
 <span class="sd">    * &quot;obj&quot;: a Python object that the node wraps.</span>
 <span class="sd">    * &quot;fspath&quot;: just a path</span>
 
-<span class="sd">    :rtype: A tuple of (str|py.path.local, int) with filename and line number.</span>
+<span class="sd">    :rtype: A tuple of (str|Path, int) with filename and 0-based line number.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># See Item.location.</span>
     <span class="n">location</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">&quot;location&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -481,23 +565,23 @@
     <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">&quot;fspath&quot;</span><span class="p">,</span> <span class="s2">&quot;unknown location&quot;</span><span class="p">),</span> <span class="o">-</span><span class="mi">1</span>
 
 
-<div class="viewcode-block" id="Collector"><a class="viewcode-back" href="../../reference.html#pytest.Collector">[docs]</a><span class="k">class</span> <span class="nc">Collector</span><span class="p">(</span><span class="n">Node</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Collector instances create children through collect() and thus</span>
+<div class="viewcode-block" id="Collector"><a class="viewcode-back" href="../../reference/reference.html#pytest.Collector">[docs]</a><span class="k">class</span> <span class="nc">Collector</span><span class="p">(</span><span class="n">Node</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Collector instances create children through collect() and thus</span>
 <span class="sd">    iteratively build a tree.&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="Collector.CollectError"><a class="viewcode-back" href="../../reference.html#pytest.Collector.CollectError">[docs]</a>    <span class="k">class</span> <span class="nc">CollectError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;An error during collection, contains a custom message.&quot;&quot;&quot;</span></div>
+<div class="viewcode-block" id="Collector.CollectError"><a class="viewcode-back" href="../../reference/reference.html#pytest.Collector.CollectError">[docs]</a>    <span class="k">class</span> <span class="nc">CollectError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;An error during collection, contains a custom message.&quot;&quot;&quot;</span></div>
 
-<div class="viewcode-block" id="Collector.collect"><a class="viewcode-back" href="../../reference.html#pytest.Collector.collect">[docs]</a>    <span class="k">def</span> <span class="nf">collect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s2">&quot;Item&quot;</span><span class="p">,</span> <span class="s2">&quot;Collector&quot;</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;Return a list of children (items and collectors) for this</span>
+<div class="viewcode-block" id="Collector.collect"><a class="viewcode-back" href="../../reference/reference.html#pytest.Collector.collect">[docs]</a>    <span class="k">def</span> <span class="nf">collect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s2">&quot;Item&quot;</span><span class="p">,</span> <span class="s2">&quot;Collector&quot;</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a list of children (items and collectors) for this</span>
 <span class="sd">        collection node.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;abstract&quot;</span><span class="p">)</span></div>
 
     <span class="c1"># TODO: This omits the style= parameter which breaks Liskov Substitution.</span>
-<div class="viewcode-block" id="Collector.repr_failure"><a class="viewcode-back" href="../../reference.html#pytest.Collector.repr_failure">[docs]</a>    <span class="k">def</span> <span class="nf">repr_failure</span><span class="p">(</span>  <span class="c1"># type: ignore[override]</span>
+<div class="viewcode-block" id="Collector.repr_failure"><a class="viewcode-back" href="../../reference/reference.html#pytest.Collector.repr_failure">[docs]</a>    <span class="k">def</span> <span class="nf">repr_failure</span><span class="p">(</span>  <span class="c1"># type: ignore[override]</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">excinfo</span><span class="p">:</span> <span class="n">ExceptionInfo</span><span class="p">[</span><span class="ne">BaseException</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TerminalRepr</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Return a representation of a collection failure.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a representation of a collection failure.</span>
 
 <span class="sd">        :param excinfo: Exception information for the failure.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -516,72 +600,107 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_repr_failure_py</span><span class="p">(</span><span class="n">excinfo</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="n">tbstyle</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_prunetraceback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">excinfo</span><span class="p">:</span> <span class="n">ExceptionInfo</span><span class="p">[</span><span class="ne">BaseException</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;fspath&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">):</span>
             <span class="n">traceback</span> <span class="o">=</span> <span class="n">excinfo</span><span class="o">.</span><span class="n">traceback</span>
-            <span class="n">ntraceback</span> <span class="o">=</span> <span class="n">traceback</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fspath</span><span class="p">)</span>
+            <span class="n">ntraceback</span> <span class="o">=</span> <span class="n">traceback</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">ntraceback</span> <span class="o">==</span> <span class="n">traceback</span><span class="p">:</span>
                 <span class="n">ntraceback</span> <span class="o">=</span> <span class="n">ntraceback</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span><span class="n">excludepath</span><span class="o">=</span><span class="n">tracebackcutdir</span><span class="p">)</span>
             <span class="n">excinfo</span><span class="o">.</span><span class="n">traceback</span> <span class="o">=</span> <span class="n">ntraceback</span><span class="o">.</span><span class="n">filter</span><span class="p">()</span></div>
 
 
-<span class="k">def</span> <span class="nf">_check_initialpaths_for_relpath</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">fspath</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_check_initialpaths_for_relpath</span><span class="p">(</span><span class="n">session</span><span class="p">:</span> <span class="s2">&quot;Session&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
     <span class="k">for</span> <span class="n">initial_path</span> <span class="ow">in</span> <span class="n">session</span><span class="o">.</span><span class="n">_initialpaths</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">fspath</span><span class="o">.</span><span class="n">common</span><span class="p">(</span><span class="n">initial_path</span><span class="p">)</span> <span class="o">==</span> <span class="n">initial_path</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">fspath</span><span class="o">.</span><span class="n">relto</span><span class="p">(</span><span class="n">initial_path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">commonpath</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">initial_path</span><span class="p">)</span> <span class="o">==</span> <span class="n">initial_path</span><span class="p">:</span>
+            <span class="n">rel</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">initial_path</span><span class="p">))</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">rel</span> <span class="o">==</span> <span class="s2">&quot;.&quot;</span> <span class="k">else</span> <span class="n">rel</span>
+    <span class="k">return</span> <span class="kc">None</span>
 
 
-<div class="viewcode-block" id="FSCollector"><a class="viewcode-back" href="../../reference.html#pytest.FSCollector">[docs]</a><span class="k">class</span> <span class="nc">FSCollector</span><span class="p">(</span><span class="n">Collector</span><span class="p">):</span>
+<div class="viewcode-block" id="FSCollector"><a class="viewcode-back" href="../../reference/reference.html#pytest.FSCollector">[docs]</a><span class="k">class</span> <span class="nc">FSCollector</span><span class="p">(</span><span class="n">Collector</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">fspath</span><span class="p">:</span> <span class="n">py</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">local</span><span class="p">,</span>
-        <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">fspath</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">LEGACY_PATH</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">path_or_parent</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">Node</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">parent</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Node</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Config</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Session&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">nodeid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">name</span> <span class="o">=</span> <span class="n">fspath</span><span class="o">.</span><span class="n">basename</span>
-        <span class="k">if</span> <span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">rel</span> <span class="o">=</span> <span class="n">fspath</span><span class="o">.</span><span class="n">relto</span><span class="p">(</span><span class="n">parent</span><span class="o">.</span><span class="n">fspath</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">rel</span><span class="p">:</span>
-                <span class="n">name</span> <span class="o">=</span> <span class="n">rel</span>
-            <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">,</span> <span class="n">SEP</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">fspath</span> <span class="o">=</span> <span class="n">fspath</span>
+        <span class="k">if</span> <span class="n">path_or_parent</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path_or_parent</span><span class="p">,</span> <span class="n">Node</span><span class="p">):</span>
+                <span class="k">assert</span> <span class="n">parent</span> <span class="ow">is</span> <span class="kc">None</span>
+                <span class="n">parent</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">FSCollector</span><span class="p">,</span> <span class="n">path_or_parent</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path_or_parent</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>
+                <span class="k">assert</span> <span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span>
+                <span class="n">path</span> <span class="o">=</span> <span class="n">path_or_parent</span>
 
-        <span class="n">session</span> <span class="o">=</span> <span class="n">session</span> <span class="ow">or</span> <span class="n">parent</span><span class="o">.</span><span class="n">session</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">_imply_path</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="n">path</span><span class="p">,</span> <span class="n">fspath</span><span class="o">=</span><span class="n">fspath</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">name</span>
+            <span class="k">if</span> <span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">parent</span><span class="o">.</span><span class="n">path</span> <span class="o">!=</span> <span class="n">path</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">rel</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">parent</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                    <span class="k">pass</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">rel</span><span class="p">)</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">,</span> <span class="n">SEP</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
+
+        <span class="k">if</span> <span class="n">session</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="n">session</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="n">session</span>
 
         <span class="k">if</span> <span class="n">nodeid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">nodeid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fspath</span><span class="o">.</span><span class="n">relto</span><span class="p">(</span><span class="n">session</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">rootdir</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">nodeid</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">session</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">rootpath</span><span class="p">))</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="n">nodeid</span> <span class="o">=</span> <span class="n">_check_initialpaths_for_relpath</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">nodeid</span><span class="p">:</span>
-                <span class="n">nodeid</span> <span class="o">=</span> <span class="n">_check_initialpaths_for_relpath</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">fspath</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">nodeid</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">sep</span> <span class="o">!=</span> <span class="n">SEP</span><span class="p">:</span>
                 <span class="n">nodeid</span> <span class="o">=</span> <span class="n">nodeid</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">,</span> <span class="n">SEP</span><span class="p">)</span>
 
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">nodeid</span><span class="o">=</span><span class="n">nodeid</span><span class="p">,</span> <span class="n">fspath</span><span class="o">=</span><span class="n">fspath</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">,</span>
+            <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span>
+            <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span>
+            <span class="n">nodeid</span><span class="o">=</span><span class="n">nodeid</span><span class="p">,</span>
+            <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
+        <span class="p">)</span>
 
-<div class="viewcode-block" id="FSCollector.from_parent"><a class="viewcode-back" href="../../reference.html#pytest.FSCollector.from_parent">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_parent</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">fspath</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;The public constructor.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">from_parent</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">,</span> <span class="n">fspath</span><span class="o">=</span><span class="n">fspath</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span></div>
+<div class="viewcode-block" id="FSCollector.from_parent"><a class="viewcode-back" href="../../reference/reference.html#pytest.FSCollector.from_parent">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_parent</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">parent</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">fspath</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">LEGACY_PATH</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kw</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The public constructor.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">from_parent</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">,</span> <span class="n">fspath</span><span class="o">=</span><span class="n">fspath</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">gethookproxy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fspath</span><span class="p">:</span> <span class="n">py</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">local</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">gethookproxy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fspath</span><span class="p">:</span> <span class="s2">&quot;os.PathLike[str]&quot;</span><span class="p">):</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">FSCOLLECTOR_GETHOOKPROXY_ISINITPATH</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">gethookproxy</span><span class="p">(</span><span class="n">fspath</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">isinitpath</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">py</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">local</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">isinitpath</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;os.PathLike[str]&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">FSCOLLECTOR_GETHOOKPROXY_ISINITPATH</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">isinitpath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="File"><a class="viewcode-back" href="../../reference.html#pytest.File">[docs]</a><span class="k">class</span> <span class="nc">File</span><span class="p">(</span><span class="n">FSCollector</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Base class for collecting tests from a file.</span>
+<div class="viewcode-block" id="File"><a class="viewcode-back" href="../../reference/reference.html#pytest.File">[docs]</a><span class="k">class</span> <span class="nc">File</span><span class="p">(</span><span class="n">FSCollector</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for collecting tests from a file.</span>
 
 <span class="sd">    :ref:`non-python tests`.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="Item"><a class="viewcode-back" href="../../reference.html#pytest.Item">[docs]</a><span class="k">class</span> <span class="nc">Item</span><span class="p">(</span><span class="n">Node</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A basic test invocation item.</span>
+<div class="viewcode-block" id="Item"><a class="viewcode-back" href="../../reference/reference.html#pytest.Item">[docs]</a><span class="k">class</span> <span class="nc">Item</span><span class="p">(</span><span class="n">Node</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A basic test invocation item.</span>
 
 <span class="sd">    Note that for a single function there might be multiple test invocation items.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -595,19 +714,68 @@
         <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Config</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Session&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">nodeid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kw</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">nodeid</span><span class="o">=</span><span class="n">nodeid</span><span class="p">)</span>
+        <span class="c1"># The first two arguments are intentionally passed positionally,</span>
+        <span class="c1"># to keep plugins who define a node type which inherits from</span>
+        <span class="c1"># (pytest.Item, pytest.File) working (see issue #8435).</span>
+        <span class="c1"># They can be made kwargs when the deprecation above is done.</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">name</span><span class="p">,</span>
+            <span class="n">parent</span><span class="p">,</span>
+            <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span>
+            <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span>
+            <span class="n">nodeid</span><span class="o">=</span><span class="n">nodeid</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kw</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_report_sections</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="c1">#: A list of tuples (name, value) that holds user defined properties</span>
         <span class="c1">#: for this test.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">user_properties</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
 
-    <span class="k">def</span> <span class="nf">runtest</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;runtest must be implemented by Item subclass&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_item_and_collector_diamond_inheritance</span><span class="p">()</span>
 
-<div class="viewcode-block" id="Item.add_report_section"><a class="viewcode-back" href="../../reference.html#pytest.Item.add_report_section">[docs]</a>    <span class="k">def</span> <span class="nf">add_report_section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">when</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Add a new report section, similar to what&#39;s done internally to add</span>
+    <span class="k">def</span> <span class="nf">_check_item_and_collector_diamond_inheritance</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if the current type inherits from both File and Collector</span>
+<span class="sd">        at the same time, emitting a warning accordingly (#8447).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">cls</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="c1"># We inject an attribute in the type to avoid issuing this warning</span>
+        <span class="c1"># for the same class more than once, which is not helpful.</span>
+        <span class="c1"># It is a hack, but was deemed acceptable in order to avoid</span>
+        <span class="c1"># flooding the user in the common case.</span>
+        <span class="n">attr_name</span> <span class="o">=</span> <span class="s2">&quot;_pytest_diamond_inheritance_warning_shown&quot;</span>
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="k">return</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">problems</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">base</span><span class="o">.</span><span class="vm">__name__</span> <span class="k">for</span> <span class="n">base</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__bases__</span> <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">Collector</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">problems</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> is an Item subclass and should not be a collector, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;however its bases </span><span class="si">{</span><span class="n">problems</span><span class="si">}</span><span class="s2"> are collectors.</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;Please split the Collectors and the Item into separate node types.</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;Pytest Doc example: https://docs.pytest.org/en/latest/example/nonpython.html</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;example pull request on a plugin: https://github.com/asmeurer/pytest-flakes/pull/40/&quot;</span><span class="p">,</span>
+                <span class="n">PytestWarning</span><span class="p">,</span>
+            <span class="p">)</span>
+
+<div class="viewcode-block" id="Item.runtest"><a class="viewcode-back" href="../../reference/reference.html#pytest.Item.runtest">[docs]</a>    <span class="k">def</span> <span class="nf">runtest</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run the test case for this item.</span>
+
+<span class="sd">        Must be implemented by subclasses.</span>
+
+<span class="sd">        .. seealso:: :ref:`non-python tests`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;runtest must be implemented by Item subclass&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Item.add_report_section"><a class="viewcode-back" href="../../reference/reference.html#pytest.Item.add_report_section">[docs]</a>    <span class="k">def</span> <span class="nf">add_report_section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">when</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a new report section, similar to what&#39;s done internally to add</span>
 <span class="sd">        stdout and stderr captured output::</span>
 
 <span class="sd">            item.add_report_section(&quot;call&quot;, &quot;stdout&quot;, &quot;report section contents&quot;)</span>
@@ -623,14 +791,29 @@
         <span class="k">if</span> <span class="n">content</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_report_sections</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">when</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">content</span><span class="p">))</span></div>
 
-    <span class="k">def</span> <span class="nf">reportinfo</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">py</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">local</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">str</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fspath</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;&quot;</span>
+<div class="viewcode-block" id="Item.reportinfo"><a class="viewcode-back" href="../../reference/reference.html#pytest.Item.reportinfo">[docs]</a>    <span class="k">def</span> <span class="nf">reportinfo</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s2">&quot;os.PathLike[str]&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get location information for this item for test reports.</span>
+
+<span class="sd">        Returns a tuple with three elements:</span>
+
+<span class="sd">        - The path of the test (default ``self.path``)</span>
+<span class="sd">        - The 0-based line number of the test (default ``None``)</span>
+<span class="sd">        - A name of the test to be shown (default ``&quot;&quot;``)</span>
+
+<span class="sd">        .. seealso:: :ref:`non-python tests`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;&quot;</span></div>
 
     <span class="nd">@cached_property</span>
     <span class="k">def</span> <span class="nf">location</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a tuple of ``(relfspath, lineno, testname)`` for this item</span>
+<span class="sd">        where ``relfspath`` is file path relative to ``config.rootpath``</span>
+<span class="sd">        and lineno is a 0-based line number.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reportinfo</span><span class="p">()</span>
-        <span class="n">fspath</span> <span class="o">=</span> <span class="n">absolutepath</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">location</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
-        <span class="n">relfspath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">_node_location_to_relpath</span><span class="p">(</span><span class="n">fspath</span><span class="p">)</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">absolutepath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">fspath</span><span class="p">(</span><span class="n">location</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="n">relfspath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">_node_location_to_relpath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
         <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">location</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="ow">is</span> <span class="nb">str</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">relfspath</span><span class="p">,</span> <span class="n">location</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">location</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span></div>
 </pre></div>
@@ -643,8 +826,8 @@
     </div>
   
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2015–2020, holger krekel and pytest-dev team.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
+        &#169; Copyright 2015, holger krekel and pytest-dev team.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
     </div>
   <script src="../../_static/version_warning_offset.js"></script>
 

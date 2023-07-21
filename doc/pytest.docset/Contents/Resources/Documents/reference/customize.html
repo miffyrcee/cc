@@ -1,0 +1,258 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Configuration — pytest documentation</title>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/basic.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/pygments_pytest.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../_static/doctools.js"></script>
+<script src="../_static/sphinx_highlight.js"></script>
+<link href="../_static/favicon.png" rel="shortcut icon"/>
+<link href="../search.html" rel="search" title="Search"/>
+<link href="reference.html" rel="next" title="API Reference"/>
+<link href="plugin_list.html" rel="prev" title="Plugin List"/>
+<script>DOCUMENTATION_OPTIONS.URL_ROOT = '';</script>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../py-modindex.html" title="Python Module Index">modules</a></li>
+<li class="right">
+<a accesskey="N" href="reference.html" title="API Reference">next</a> |</li>
+<li class="right">
+<a accesskey="P" href="plugin_list.html" title="Plugin List">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../contents.html">pytest-7.3</a> »</li>
+<li class="nav-item nav-item-this"><a href="">Configuration</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="body" role="main">
+<section id="configuration">
+<h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this heading">¶</a></h1>
+<section id="command-line-options-and-configuration-file-settings">
+<h2>Command line options and configuration file settings<a class="headerlink" href="#command-line-options-and-configuration-file-settings" title="Permalink to this heading">¶</a></h2>
+<p>You can get help on command line options and values in INI-style
+configurations files by using the general help option:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>-h<span class="w">   </span><span class="c1"># prints options _and_ config file settings</span>
+</pre></div>
+</div>
+<p>This will display command line and configuration file settings
+which were registered by installed plugins.</p>
+</section>
+<section id="configuration-file-formats">
+<a class="dashAnchor" name="//apple_ref/cpp/Section/Configuration file formats"></a><span id="config-file-formats"></span><h2>Configuration file formats<a class="headerlink" href="#configuration-file-formats" title="Permalink to this heading">¶</a></h2>
+<p>Many <a class="reference internal" href="reference.html#ini-options-ref"><span class="std std-ref">pytest settings</span></a> can be set in a <em>configuration file</em>, which
+by convention resides in the root directory of your repository.</p>
+<p>A quick example of the configuration files supported by pytest:</p>
+<section id="pytest-ini">
+<h3>pytest.ini<a class="headerlink" href="#pytest-ini" title="Permalink to this heading">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">pytest.ini</span></code> files take precedence over other files, even when empty.</p>
+<p>Alternatively, the hidden version <code class="docutils literal notranslate"><span class="pre">.pytest.ini</span></code> can be used.</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="c1"># pytest.ini or .pytest.ini</span>
+<span class="k">[pytest]</span>
+<span class="na">minversion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">6.0</span>
+<span class="na">addopts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">-ra -q</span>
+<span class="na">testpaths</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="na">tests</span>
+<span class="w">    </span><span class="na">integration</span>
+</pre></div>
+</div>
+</section>
+<section id="pyproject-toml">
+<h3>pyproject.toml<a class="headerlink" href="#pyproject-toml" title="Permalink to this heading">¶</a></h3>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 6.0.</span></p>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> are considered for configuration when they contain a <code class="docutils literal notranslate"><span class="pre">tool.pytest.ini_options</span></code> table.</p>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="c1"># pyproject.toml</span>
+<span class="k">[tool.pytest.ini_options]</span>
+<span class="n">minversion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"6.0"</span>
+<span class="n">addopts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"-ra -q"</span>
+<span class="n">testpaths</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s">"tests"</span><span class="p">,</span>
+<span class="w">    </span><span class="s">"integration"</span><span class="p">,</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>One might wonder why <code class="docutils literal notranslate"><span class="pre">[tool.pytest.ini_options]</span></code> instead of <code class="docutils literal notranslate"><span class="pre">[tool.pytest]</span></code> as is the
+case with other tools.</p>
+<p>The reason is that the pytest team intends to fully utilize the rich TOML data format
+for configuration in the future, reserving the <code class="docutils literal notranslate"><span class="pre">[tool.pytest]</span></code> table for that.
+The <code class="docutils literal notranslate"><span class="pre">ini_options</span></code> table is being used, for now, as a bridge between the existing
+<code class="docutils literal notranslate"><span class="pre">.ini</span></code> configuration system and the future configuration format.</p>
+</div>
+</section>
+<section id="tox-ini">
+<h3>tox.ini<a class="headerlink" href="#tox-ini" title="Permalink to this heading">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">tox.ini</span></code> files are the configuration files of the <a class="reference external" href="https://tox.readthedocs.io">tox</a> project,
+and can also be used to hold pytest configuration if they have a <code class="docutils literal notranslate"><span class="pre">[pytest]</span></code> section.</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="c1"># tox.ini</span>
+<span class="k">[pytest]</span>
+<span class="na">minversion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">6.0</span>
+<span class="na">addopts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">-ra -q</span>
+<span class="na">testpaths</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="na">tests</span>
+<span class="w">    </span><span class="na">integration</span>
+</pre></div>
+</div>
+</section>
+<section id="setup-cfg">
+<h3>setup.cfg<a class="headerlink" href="#setup-cfg" title="Permalink to this heading">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">setup.cfg</span></code> files are general purpose configuration files, used originally by <a class="reference external" href="https://docs.python.org/3/distutils/configfile.html" title="(in Python v3.11)"><span class="xref std std-doc">distutils</span></a>, and can also be used to hold pytest configuration
+if they have a <code class="docutils literal notranslate"><span class="pre">[tool:pytest]</span></code> section.</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="c1"># setup.cfg</span>
+<span class="k">[tool:pytest]</span>
+<span class="na">minversion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">6.0</span>
+<span class="na">addopts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">-ra -q</span>
+<span class="na">testpaths</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="na">tests</span>
+<span class="w">    </span><span class="na">integration</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Usage of <code class="docutils literal notranslate"><span class="pre">setup.cfg</span></code> is not recommended unless for very simple use cases. <code class="docutils literal notranslate"><span class="pre">.cfg</span></code>
+files use a different parser than <code class="docutils literal notranslate"><span class="pre">pytest.ini</span></code> and <code class="docutils literal notranslate"><span class="pre">tox.ini</span></code> which might cause hard to track
+down problems.
+When possible, it is recommended to use the latter files, or <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code>, to hold your
+pytest configuration.</p>
+</div>
+</section>
+</section>
+<section id="initialization-determining-rootdir-and-configfile">
+<a class="dashAnchor" name="//apple_ref/cpp/Section/Initialization: determining rootdir and configfile"></a><span id="configfiles"></span><a class="dashAnchor" name="//apple_ref/cpp/Section/Initialization: determining rootdir and configfile"></a><span id="rootdir"></span><h2>Initialization: determining rootdir and configfile<a class="headerlink" href="#initialization-determining-rootdir-and-configfile" title="Permalink to this heading">¶</a></h2>
+<p>pytest determines a <code class="docutils literal notranslate"><span class="pre">rootdir</span></code> for each test run which depends on
+the command line arguments (specified test files, paths) and on
+the existence of configuration files.  The determined <code class="docutils literal notranslate"><span class="pre">rootdir</span></code> and <code class="docutils literal notranslate"><span class="pre">configfile</span></code> are
+printed as part of the pytest header during startup.</p>
+<p>Here’s a summary what <code class="docutils literal notranslate"><span class="pre">pytest</span></code> uses <code class="docutils literal notranslate"><span class="pre">rootdir</span></code> for:</p>
+<ul class="simple">
+<li><p>Construct <em>nodeids</em> during collection; each test is assigned
+a unique <em>nodeid</em> which is rooted at the <code class="docutils literal notranslate"><span class="pre">rootdir</span></code> and takes into account
+the full path, class name, function name and parametrization (if any).</p></li>
+<li><p>Is used by plugins as a stable location to store project/test run specific information;
+for example, the internal <a class="reference internal" href="../how-to/cache.html#cache"><span class="std std-ref">cache</span></a> plugin creates a <code class="docutils literal notranslate"><span class="pre">.pytest_cache</span></code> subdirectory
+in <code class="docutils literal notranslate"><span class="pre">rootdir</span></code> to store its cross-test run state.</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">rootdir</span></code> is <strong>NOT</strong> used to modify <code class="docutils literal notranslate"><span class="pre">sys.path</span></code>/<code class="docutils literal notranslate"><span class="pre">PYTHONPATH</span></code> or
+influence how modules are imported. See <a class="reference internal" href="../explanation/pythonpath.html#pythonpath"><span class="std std-ref">pytest import mechanisms and sys.path/PYTHONPATH</span></a> for more details.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">--rootdir=path</span></code> command-line option can be used to force a specific directory.
+Note that contrary to other command-line options, <code class="docutils literal notranslate"><span class="pre">--rootdir</span></code> cannot be used with
+<a class="reference internal" href="reference.html#confval-addopts"><code class="xref std std-confval docutils literal notranslate"><span class="pre">addopts</span></code></a> inside <code class="docutils literal notranslate"><span class="pre">pytest.ini</span></code> because the <code class="docutils literal notranslate"><span class="pre">rootdir</span></code> is used to <em>find</em> <code class="docutils literal notranslate"><span class="pre">pytest.ini</span></code>
+already.</p>
+<section id="finding-the-rootdir">
+<h3>Finding the <code class="docutils literal notranslate"><span class="pre">rootdir</span></code><a class="headerlink" href="#finding-the-rootdir" title="Permalink to this heading">¶</a></h3>
+<p>Here is the algorithm which finds the rootdir from <code class="docutils literal notranslate"><span class="pre">args</span></code>:</p>
+<ul class="simple">
+<li><p>If <code class="docutils literal notranslate"><span class="pre">-c</span></code> is passed in the command-line, use that as configuration file, and its directory as <code class="docutils literal notranslate"><span class="pre">rootdir</span></code>.</p></li>
+<li><p>Determine the common ancestor directory for the specified <code class="docutils literal notranslate"><span class="pre">args</span></code> that are
+recognised as paths that exist in the file system. If no such paths are
+found, the common ancestor directory is set to the current working directory.</p></li>
+<li><p>Look for <code class="docutils literal notranslate"><span class="pre">pytest.ini</span></code>, <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code>, <code class="docutils literal notranslate"><span class="pre">tox.ini</span></code>, and <code class="docutils literal notranslate"><span class="pre">setup.cfg</span></code> files in the ancestor
+directory and upwards.  If one is matched, it becomes the <code class="docutils literal notranslate"><span class="pre">configfile</span></code> and its
+directory becomes the <code class="docutils literal notranslate"><span class="pre">rootdir</span></code>.</p></li>
+<li><p>If no configuration file was found, look for <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> upwards from the common
+ancestor directory to determine the <code class="docutils literal notranslate"><span class="pre">rootdir</span></code>.</p></li>
+<li><p>If no <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> was found, look for <code class="docutils literal notranslate"><span class="pre">pytest.ini</span></code>, <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code>, <code class="docutils literal notranslate"><span class="pre">tox.ini</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">setup.cfg</span></code> in each of the specified <code class="docutils literal notranslate"><span class="pre">args</span></code> and upwards. If one is
+matched, it becomes the <code class="docutils literal notranslate"><span class="pre">configfile</span></code> and its directory becomes the <code class="docutils literal notranslate"><span class="pre">rootdir</span></code>.</p></li>
+<li><p>If no <code class="docutils literal notranslate"><span class="pre">configfile</span></code> was found and no configuration argument is passed, use the already determined common ancestor as root
+directory. This allows the use of pytest in structures that are not part of
+a package and don’t have any particular configuration file.</p></li>
+</ul>
+<p>If no <code class="docutils literal notranslate"><span class="pre">args</span></code> are given, pytest collects test below the current working
+directory and also starts determining the <code class="docutils literal notranslate"><span class="pre">rootdir</span></code> from there.</p>
+<p>Files will only be matched for configuration if:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">pytest.ini</span></code>: will always match and take precedence, even if empty.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code>: contains a <code class="docutils literal notranslate"><span class="pre">[tool.pytest.ini_options]</span></code> table.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tox.ini</span></code>: contains a <code class="docutils literal notranslate"><span class="pre">[pytest]</span></code> section.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">setup.cfg</span></code>: contains a <code class="docutils literal notranslate"><span class="pre">[tool:pytest]</span></code> section.</p></li>
+</ul>
+<p>The files are considered in the order above. Options from multiple <code class="docutils literal notranslate"><span class="pre">configfiles</span></code> candidates
+are never merged - the first match wins.</p>
+<p>The <a class="reference internal" href="reference.html#pytest.Config" title="pytest.Config"><code class="xref py py-class docutils literal notranslate"><span class="pre">Config</span></code></a> object (accessible via hooks or through the <a class="reference internal" href="reference.html#std-fixture-pytestconfig"><code class="xref std std-fixture docutils literal notranslate"><span class="pre">pytestconfig</span></code></a> fixture)
+will subsequently carry these attributes:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="reference.html#pytest.Config.rootpath" title="pytest.Config.rootpath"><code class="xref py py-attr docutils literal notranslate"><span class="pre">config.rootpath</span></code></a>: the determined root directory, guaranteed to exist.</p></li>
+<li><p><a class="reference internal" href="reference.html#pytest.Config.inipath" title="pytest.Config.inipath"><code class="xref py py-attr docutils literal notranslate"><span class="pre">config.inipath</span></code></a>: the determined <code class="docutils literal notranslate"><span class="pre">configfile</span></code>, may be <code class="docutils literal notranslate"><span class="pre">None</span></code>
+(it is named <code class="docutils literal notranslate"><span class="pre">inipath</span></code> for historical reasons).</p></li>
+</ul>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 6.1: </span>The <code class="docutils literal notranslate"><span class="pre">config.rootpath</span></code> and <code class="docutils literal notranslate"><span class="pre">config.inipath</span></code> properties. They are <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a>
+versions of the older <code class="docutils literal notranslate"><span class="pre">config.rootdir</span></code> and <code class="docutils literal notranslate"><span class="pre">config.inifile</span></code>, which have type
+<code class="docutils literal notranslate"><span class="pre">py.path.local</span></code>, and still exist for backward compatibility.</p>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">rootdir</span></code> is used as a reference directory for constructing test
+addresses (“nodeids”) and can be used also by plugins for storing
+per-testrun information.</p>
+<p>Example:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>path/to/testdir<span class="w"> </span>path/other/
+</pre></div>
+</div>
+<p>will determine the common ancestor as <code class="docutils literal notranslate"><span class="pre">path</span></code> and then
+check for configuration files as follows:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># first look for pytest.ini files
+path/pytest.ini
+path/pyproject.toml  # must contain a [tool.pytest.ini_options] table to match
+path/tox.ini         # must contain [pytest] section to match
+path/setup.cfg       # must contain [tool:pytest] section to match
+pytest.ini
+... # all the way up to the root
+
+# now look for setup.py
+path/setup.py
+setup.py
+... # all the way up to the root
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Custom pytest plugin commandline arguments may include a path, as in
+<code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">--log-output</span> <span class="pre">../../test.log</span> <span class="pre">args</span></code>. Then <code class="docutils literal notranslate"><span class="pre">args</span></code> is mandatory,
+otherwise pytest uses the folder of test.log for rootdir determination
+(see also <a class="reference external" href="https://github.com/pytest-dev/pytest/issues/1435">issue #1435</a>).
+A dot <code class="docutils literal notranslate"><span class="pre">.</span></code> for referencing to the current working directory is also
+possible.</p>
+</div>
+</section>
+</section>
+<section id="builtin-configuration-file-options">
+<a class="dashAnchor" name="//apple_ref/cpp/Section/Builtin configuration file options"></a><span id="adding-default-options"></span><a class="dashAnchor" name="//apple_ref/cpp/Section/Builtin configuration file options"></a><span id="how-to-change-command-line-options-defaults"></span><h2>Builtin configuration file options<a class="headerlink" href="#builtin-configuration-file-options" title="Permalink to this heading">¶</a></h2>
+<p>For the full list of options consult the <a class="reference internal" href="reference.html#ini-options-ref"><span class="std std-ref">reference documentation</span></a>.</p>
+</section>
+<section id="syntax-highlighting-theme-customization">
+<h2>Syntax highlighting theme customization<a class="headerlink" href="#syntax-highlighting-theme-customization" title="Permalink to this heading">¶</a></h2>
+<p>The syntax highlighting themes used by pytest can be customized using two environment variables:</p>
+<ul class="simple">
+<li><p><span class="target" id="index-0"></span><a class="reference internal" href="reference.html#envvar-PYTEST_THEME"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">PYTEST_THEME</span></code></a> sets a <a class="reference external" href="https://pygments.org/docs/styles/">pygment style</a> to use.</p></li>
+<li><p><span class="target" id="index-1"></span><a class="reference internal" href="reference.html#envvar-PYTEST_THEME_MODE"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">PYTEST_THEME_MODE</span></code></a> sets this style to <em>light</em> or <em>dark</em>.</p></li>
+</ul>
+</section>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+<span id="sidebar-top"></span>
+<div class="clearer"></div>
+</div>
+<div class="footer" role="contentinfo">
+        © Copyright 2015, holger krekel and pytest-dev team.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    </div>
+<script src="../_static/version_warning_offset.js"></script>
+</body>
+</html>

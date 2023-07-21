@@ -1,0 +1,79 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>How to use pytest with an existing test suite — pytest documentation</title>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/basic.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/pygments_pytest.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../_static/doctools.js"></script>
+<script src="../_static/sphinx_highlight.js"></script>
+<link href="../_static/favicon.png" rel="shortcut icon"/>
+<link href="../search.html" rel="search" title="Search"/>
+<link href="unittest.html" rel="next" title="How to use unittest-based tests with pytest"/>
+<link href="writing_hook_functions.html" rel="prev" title="Writing hook functions"/>
+<script>DOCUMENTATION_OPTIONS.URL_ROOT = '';</script>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../py-modindex.html" title="Python Module Index">modules</a></li>
+<li class="right">
+<a accesskey="N" href="unittest.html" title="How to use unittest-based tests with pytest">next</a> |</li>
+<li class="right">
+<a accesskey="P" href="writing_hook_functions.html" title="Writing hook functions">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../contents.html">pytest-7.3</a> »</li>
+<li class="nav-item nav-item-this"><a href="">How to use pytest with an existing test suite</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="body" role="main">
+<section id="how-to-use-pytest-with-an-existing-test-suite">
+<a class="dashAnchor" name="//apple_ref/cpp/Section/How to use pytest with an existing test suite"></a><span id="existingtestsuite"></span><h1>How to use pytest with an existing test suite<a class="headerlink" href="#how-to-use-pytest-with-an-existing-test-suite" title="Permalink to this heading">¶</a></h1>
+<p>Pytest can be used with most existing test suites, but its
+behavior differs from other test runners such as <a class="reference internal" href="nose.html#noseintegration"><span class="std std-ref">nose</span></a> or
+Python’s default unittest framework.</p>
+<p>Before using this section you will want to <a class="reference internal" href="../getting-started.html#getstarted"><span class="std std-ref">install pytest</span></a>.</p>
+<section id="running-an-existing-test-suite-with-pytest">
+<h2>Running an existing test suite with pytest<a class="headerlink" href="#running-an-existing-test-suite-with-pytest" title="Permalink to this heading">¶</a></h2>
+<p>Say you want to contribute to an existing repository somewhere.
+After pulling the code into your development space using some
+flavor of version control and (optionally) setting up a virtualenv
+you will want to run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>&lt;repository&gt;
+pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.<span class="w">  </span><span class="c1"># Environment dependent alternatives include</span>
+<span class="w">                  </span><span class="c1"># 'python setup.py develop' and 'conda develop'</span>
+</pre></div>
+</div>
+<p>in your project root.  This will set up a symlink to your code in
+site-packages, allowing you to edit your code while your tests
+run against it as if it were installed.</p>
+<p>Setting up your project in development mode lets you avoid having to
+reinstall every time you want to run your tests, and is less brittle than
+mucking about with sys.path to point your tests at local code.</p>
+<p>Also consider using <a class="reference internal" href="../explanation/goodpractices.html#use-tox"><span class="std std-ref">tox</span></a>.</p>
+</section>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+<span id="sidebar-top"></span>
+<div class="clearer"></div>
+</div>
+<div class="footer" role="contentinfo">
+        © Copyright 2015, holger krekel and pytest-dev team.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    </div>
+<script src="../_static/version_warning_offset.js"></script>
+</body>
+</html>

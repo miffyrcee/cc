@@ -1,0 +1,343 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Writing hook functions — pytest documentation</title>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/basic.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/pygments_pytest.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../_static/doctools.js"></script>
+<script src="../_static/sphinx_highlight.js"></script>
+<link href="../_static/favicon.png" rel="shortcut icon"/>
+<link href="../search.html" rel="search" title="Search"/>
+<link href="existingtestsuite.html" rel="next" title="How to use pytest with an existing test suite"/>
+<link href="writing_plugins.html" rel="prev" title="Writing plugins"/>
+<script>DOCUMENTATION_OPTIONS.URL_ROOT = '';</script>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../py-modindex.html" title="Python Module Index">modules</a></li>
+<li class="right">
+<a accesskey="N" href="existingtestsuite.html" title="How to use pytest with an existing test suite">next</a> |</li>
+<li class="right">
+<a accesskey="P" href="writing_plugins.html" title="Writing plugins">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../contents.html">pytest-7.3</a> »</li>
+<li class="nav-item nav-item-this"><a href="">Writing hook functions</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="body" role="main">
+<section id="writing-hook-functions">
+<a class="dashAnchor" name="//apple_ref/cpp/Section/Writing hook functions"></a><span id="writinghooks"></span><h1>Writing hook functions<a class="headerlink" href="#writing-hook-functions" title="Permalink to this heading">¶</a></h1>
+<section id="hook-function-validation-and-execution">
+<a class="dashAnchor" name="//apple_ref/cpp/Section/hook function validation and execution"></a><span id="validation"></span><h2>hook function validation and execution<a class="headerlink" href="#hook-function-validation-and-execution" title="Permalink to this heading">¶</a></h2>
+<p>pytest calls hook functions from registered plugins for any
+given hook specification.  Let’s look at a typical hook function
+for the <code class="docutils literal notranslate"><span class="pre">pytest_collection_modifyitems(session,</span> <span class="pre">config,</span>
+<span class="pre">items)</span></code> hook which pytest calls after collection of all test items is
+completed.</p>
+<p>When we implement a <code class="docutils literal notranslate"><span class="pre">pytest_collection_modifyitems</span></code> function in our plugin
+pytest will during registration verify that you use argument
+names which match the specification and bail out if not.</p>
+<p>Let’s look at a possible implementation:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">pytest_collection_modifyitems</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">items</span><span class="p">):</span>
+    <span class="c1"># called after collection is completed</span>
+    <span class="c1"># you can modify the ``items`` list</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>Here, <code class="docutils literal notranslate"><span class="pre">pytest</span></code> will pass in <code class="docutils literal notranslate"><span class="pre">config</span></code> (the pytest config object)
+and <code class="docutils literal notranslate"><span class="pre">items</span></code> (the list of collected test items) but will not pass
+in the <code class="docutils literal notranslate"><span class="pre">session</span></code> argument because we didn’t list it in the function
+signature.  This dynamic “pruning” of arguments allows <code class="docutils literal notranslate"><span class="pre">pytest</span></code> to
+be “future-compatible”: we can introduce new hook named parameters without
+breaking the signatures of existing hook implementations.  It is one of
+the reasons for the general long-lived compatibility of pytest plugins.</p>
+<p>Note that hook functions other than <code class="docutils literal notranslate"><span class="pre">pytest_runtest_*</span></code> are not
+allowed to raise exceptions.  Doing so will break the pytest run.</p>
+</section>
+<section id="firstresult-stop-at-first-non-none-result">
+<a class="dashAnchor" name="//apple_ref/cpp/Section/firstresult: stop at first non-None result"></a><span id="firstresult"></span><h2>firstresult: stop at first non-None result<a class="headerlink" href="#firstresult-stop-at-first-non-none-result" title="Permalink to this heading">¶</a></h2>
+<p>Most calls to <code class="docutils literal notranslate"><span class="pre">pytest</span></code> hooks result in a <strong>list of results</strong> which contains
+all non-None results of the called hook functions.</p>
+<p>Some hook specifications use the <code class="docutils literal notranslate"><span class="pre">firstresult=True</span></code> option so that the hook
+call only executes until the first of N registered functions returns a
+non-None result which is then taken as result of the overall hook call.
+The remaining hook functions will not be called in this case.</p>
+</section>
+<section id="hookwrapper-executing-around-other-hooks">
+<a class="dashAnchor" name="//apple_ref/cpp/Section/hookwrapper: executing around other hooks"></a><span id="hookwrapper"></span><h2>hookwrapper: executing around other hooks<a class="headerlink" href="#hookwrapper-executing-around-other-hooks" title="Permalink to this heading">¶</a></h2>
+<p>pytest plugins can implement hook wrappers which wrap the execution
+of other hook implementations.  A hook wrapper is a generator function
+which yields exactly once. When pytest invokes hooks it first executes
+hook wrappers and passes the same arguments as to the regular hooks.</p>
+<p>At the yield point of the hook wrapper pytest will execute the next hook
+implementations and return their result to the yield point in the form of
+a <code class="xref py py-class docutils literal notranslate"><span class="pre">Result</span></code> instance which encapsulates a result or
+exception info.  The yield point itself will thus typically not raise
+exceptions (unless there are bugs).</p>
+<p>Here is an example definition of a hook wrapper:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pytest</span>
+
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">hookimpl</span><span class="p">(</span><span class="n">hookwrapper</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">pytest_pyfunc_call</span><span class="p">(</span><span class="n">pyfuncitem</span><span class="p">):</span>
+    <span class="n">do_something_before_next_hook_executes</span><span class="p">()</span>
+
+    <span class="n">outcome</span> <span class="o">=</span> <span class="k">yield</span>
+    <span class="c1"># outcome.excinfo may be None or a (cls, val, tb) tuple</span>
+
+    <span class="n">res</span> <span class="o">=</span> <span class="n">outcome</span><span class="o">.</span><span class="n">get_result</span><span class="p">()</span>  <span class="c1"># will raise if outcome was exception</span>
+
+    <span class="n">post_process_result</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+
+    <span class="n">outcome</span><span class="o">.</span><span class="n">force_result</span><span class="p">(</span><span class="n">new_res</span><span class="p">)</span>  <span class="c1"># to override the return value to the plugin system</span>
+</pre></div>
+</div>
+<p>Note that hook wrappers don’t return results themselves, they merely
+perform tracing or other side effects around the actual hook implementations.
+If the result of the underlying hook is a mutable object, they may modify
+that result but it’s probably better to avoid it.</p>
+<p>For more information, consult the
+<a class="reference external" href="https://pluggy.readthedocs.io/en/stable/index.html#hookwrappers" title="(in pluggy v1.0)"><span class="xref std std-ref">pluggy documentation about hookwrappers</span></a>.</p>
+</section>
+<section id="hook-function-ordering-call-example">
+<a class="dashAnchor" name="//apple_ref/cpp/Section/Hook function ordering / call example"></a><span id="plugin-hookorder"></span><h2>Hook function ordering / call example<a class="headerlink" href="#hook-function-ordering-call-example" title="Permalink to this heading">¶</a></h2>
+<p>For any given hook specification there may be more than one
+implementation and we thus generally view <code class="docutils literal notranslate"><span class="pre">hook</span></code> execution as a
+<code class="docutils literal notranslate"><span class="pre">1:N</span></code> function call where <code class="docutils literal notranslate"><span class="pre">N</span></code> is the number of registered functions.
+There are ways to influence if a hook implementation comes before or
+after others, i.e.  the position in the <code class="docutils literal notranslate"><span class="pre">N</span></code>-sized list of functions:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plugin 1</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">hookimpl</span><span class="p">(</span><span class="n">tryfirst</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">pytest_collection_modifyitems</span><span class="p">(</span><span class="n">items</span><span class="p">):</span>
+    <span class="c1"># will execute as early as possible</span>
+    <span class="o">...</span>
+
+
+<span class="c1"># Plugin 2</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">hookimpl</span><span class="p">(</span><span class="n">trylast</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">pytest_collection_modifyitems</span><span class="p">(</span><span class="n">items</span><span class="p">):</span>
+    <span class="c1"># will execute as late as possible</span>
+    <span class="o">...</span>
+
+
+<span class="c1"># Plugin 3</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">hookimpl</span><span class="p">(</span><span class="n">hookwrapper</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">pytest_collection_modifyitems</span><span class="p">(</span><span class="n">items</span><span class="p">):</span>
+    <span class="c1"># will execute even before the tryfirst one above!</span>
+    <span class="n">outcome</span> <span class="o">=</span> <span class="k">yield</span>
+    <span class="c1"># will execute after all non-hookwrappers executed</span>
+</pre></div>
+</div>
+<p>Here is the order of execution:</p>
+<ol class="arabic simple">
+<li><p>Plugin3’s pytest_collection_modifyitems called until the yield point
+because it is a hook wrapper.</p></li>
+<li><p>Plugin1’s pytest_collection_modifyitems is called because it is marked
+with <code class="docutils literal notranslate"><span class="pre">tryfirst=True</span></code>.</p></li>
+<li><p>Plugin2’s pytest_collection_modifyitems is called because it is marked
+with <code class="docutils literal notranslate"><span class="pre">trylast=True</span></code> (but even without this mark it would come after
+Plugin1).</p></li>
+<li><p>Plugin3’s pytest_collection_modifyitems then executing the code after the yield
+point.  The yield receives a <code class="xref py py-class docutils literal notranslate"><span class="pre">Result</span></code> instance which encapsulates
+the result from calling the non-wrappers.  Wrappers shall not modify the result.</p></li>
+</ol>
+<p>It’s possible to use <code class="docutils literal notranslate"><span class="pre">tryfirst</span></code> and <code class="docutils literal notranslate"><span class="pre">trylast</span></code> also in conjunction with
+<code class="docutils literal notranslate"><span class="pre">hookwrapper=True</span></code> in which case it will influence the ordering of hookwrappers
+among each other.</p>
+</section>
+<section id="declaring-new-hooks">
+<h2>Declaring new hooks<a class="headerlink" href="#declaring-new-hooks" title="Permalink to this heading">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is a quick overview on how to add new hooks and how they work in general, but a more complete
+overview can be found in <a class="reference external" href="https://pluggy.readthedocs.io/en/latest/">the pluggy documentation</a>.</p>
+</div>
+<p>Plugins and <code class="docutils literal notranslate"><span class="pre">conftest.py</span></code> files may declare new hooks that can then be
+implemented by other plugins in order to alter behaviour or interact with
+the new plugin:</p>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">pytest_addhooks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pluginmanager</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/_pytest/hookspec.html#pytest_addhooks"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Called at plugin registration time to allow adding new hooks via a call to
+<code class="docutils literal notranslate"><span class="pre">pluginmanager.add_hookspecs(module_or_class,</span> <span class="pre">prefix)</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pluginmanager</strong> (<a class="reference internal" href="../reference/reference.html#pytest.PytestPluginManager" title="pytest.PytestPluginManager"><em>pytest.PytestPluginManager</em></a>) – The pytest plugin manager.</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This hook is incompatible with <code class="docutils literal notranslate"><span class="pre">hookwrapper=True</span></code>.</p>
+</div>
+</dd></dl>
+<p>Hooks are usually declared as do-nothing functions that contain only
+documentation describing when the hook will be called and what return values
+are expected. The names of the functions must start with <code class="docutils literal notranslate"><span class="pre">pytest_</span></code> otherwise pytest won’t recognize them.</p>
+<p>Here’s an example. Let’s assume this code is in the <code class="docutils literal notranslate"><span class="pre">sample_hook.py</span></code> module.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">pytest_my_hook</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Receives the pytest config and does things with it</span>
+<span class="sd">    """</span>
+</pre></div>
+</div>
+<p>To register the hooks with pytest they need to be structured in their own module or class. This
+class or module can then be passed to the <code class="docutils literal notranslate"><span class="pre">pluginmanager</span></code> using the <code class="docutils literal notranslate"><span class="pre">pytest_addhooks</span></code> function
+(which itself is a hook exposed by pytest).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">pytest_addhooks</span><span class="p">(</span><span class="n">pluginmanager</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""This example assumes the hooks are grouped in the 'sample_hook' module."""</span>
+    <span class="kn">from</span> <span class="nn">my_app.tests</span> <span class="kn">import</span> <span class="n">sample_hook</span>
+
+    <span class="n">pluginmanager</span><span class="o">.</span><span class="n">add_hookspecs</span><span class="p">(</span><span class="n">sample_hook</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For a real world example, see <a class="reference external" href="https://github.com/pytest-dev/pytest-xdist/blob/974bd566c599dc6a9ea291838c6f226197208b46/xdist/newhooks.py">newhooks.py</a> from <a class="reference external" href="https://github.com/pytest-dev/pytest-xdist">xdist</a>.</p>
+<p>Hooks may be called both from fixtures or from other hooks. In both cases, hooks are called
+through the <code class="docutils literal notranslate"><span class="pre">hook</span></code> object, available in the <code class="docutils literal notranslate"><span class="pre">config</span></code> object. Most hooks receive a
+<code class="docutils literal notranslate"><span class="pre">config</span></code> object directly, while fixtures may use the <code class="docutils literal notranslate"><span class="pre">pytestconfig</span></code> fixture which provides the same object.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">my_fixture</span><span class="p">(</span><span class="n">pytestconfig</span><span class="p">):</span>
+    <span class="c1"># call the hook called "pytest_my_hook"</span>
+    <span class="c1"># 'result' will be a list of return values from all registered functions.</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">pytestconfig</span><span class="o">.</span><span class="n">hook</span><span class="o">.</span><span class="n">pytest_my_hook</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">pytestconfig</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Hooks receive parameters using only keyword arguments.</p>
+</div>
+<p>Now your hook is ready to be used. To register a function at the hook, other plugins or users must
+now simply define the function <code class="docutils literal notranslate"><span class="pre">pytest_my_hook</span></code> with the correct signature in their <code class="docutils literal notranslate"><span class="pre">conftest.py</span></code>.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">pytest_my_hook</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Print all active hooks to the screen.</span>
+<span class="sd">    """</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">hook</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="using-hooks-in-pytest-addoption">
+<a class="dashAnchor" name="//apple_ref/cpp/Section/Using hooks in pytest_addoption"></a><span id="addoptionhooks"></span><h2>Using hooks in pytest_addoption<a class="headerlink" href="#using-hooks-in-pytest-addoption" title="Permalink to this heading">¶</a></h2>
+<p>Occasionally, it is necessary to change the way in which command line options
+are defined by one plugin based on hooks in another plugin. For example,
+a plugin may expose a command line option for which another plugin needs
+to define the default value. The pluginmanager can be used to install and
+use hooks to accomplish this. The plugin would define and add the hooks
+and use pytest_addoption as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># contents of hooks.py</span>
+
+
+<span class="c1"># Use firstresult=True because we only want one plugin to define this</span>
+<span class="c1"># default value</span>
+<span class="nd">@hookspec</span><span class="p">(</span><span class="n">firstresult</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">pytest_config_file_default_value</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">"""Return the default value for the config file command line option."""</span>
+
+
+<span class="c1"># contents of myplugin.py</span>
+
+
+<span class="k">def</span> <span class="nf">pytest_addhooks</span><span class="p">(</span><span class="n">pluginmanager</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""This example assumes the hooks are grouped in the 'hooks' module."""</span>
+    <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">hooks</span>
+
+    <span class="n">pluginmanager</span><span class="o">.</span><span class="n">add_hookspecs</span><span class="p">(</span><span class="n">hooks</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">pytest_addoption</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">pluginmanager</span><span class="p">):</span>
+    <span class="n">default_value</span> <span class="o">=</span> <span class="n">pluginmanager</span><span class="o">.</span><span class="n">hook</span><span class="o">.</span><span class="n">pytest_config_file_default_value</span><span class="p">()</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">addoption</span><span class="p">(</span>
+        <span class="s2">"--config-file"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Config file to use, defaults to </span><span class="si">%(default)s</span><span class="s2">"</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">default_value</span><span class="p">,</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+<p>The conftest.py that is using myplugin would simply define the hook as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">pytest_config_file_default_value</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s2">"config.yaml"</span>
+</pre></div>
+</div>
+</section>
+<section id="optionally-using-hooks-from-3rd-party-plugins">
+<h2>Optionally using hooks from 3rd party plugins<a class="headerlink" href="#optionally-using-hooks-from-3rd-party-plugins" title="Permalink to this heading">¶</a></h2>
+<p>Using new hooks from plugins as explained above might be a little tricky
+because of the standard <a class="reference internal" href="#validation"><span class="std std-ref">validation mechanism</span></a>:
+if you depend on a plugin that is not installed, validation will fail and
+the error message will not make much sense to your users.</p>
+<p>One approach is to defer the hook implementation to a new plugin instead of
+declaring the hook functions directly in your plugin module, for example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># contents of myplugin.py</span>
+
+
+<span class="k">class</span> <span class="nc">DeferPlugin</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Simple plugin to defer pytest-xdist hook functions."""</span>
+
+    <span class="k">def</span> <span class="nf">pytest_testnodedown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">error</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""standard xdist hook function."""</span>
+
+
+<span class="k">def</span> <span class="nf">pytest_configure</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">pluginmanager</span><span class="o">.</span><span class="n">hasplugin</span><span class="p">(</span><span class="s2">"xdist"</span><span class="p">):</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">pluginmanager</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">DeferPlugin</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>This has the added benefit of allowing you to conditionally install hooks
+depending on which plugins are installed.</p>
+</section>
+<section id="storing-data-on-items-across-hook-functions">
+<a class="dashAnchor" name="//apple_ref/cpp/Section/Storing data on items across hook functions"></a><span id="plugin-stash"></span><h2>Storing data on items across hook functions<a class="headerlink" href="#storing-data-on-items-across-hook-functions" title="Permalink to this heading">¶</a></h2>
+<p>Plugins often need to store data on <a class="reference internal" href="../reference/reference.html#pytest.Item" title="pytest.Item"><code class="xref py py-class docutils literal notranslate"><span class="pre">Item</span></code></a>s in one hook
+implementation, and access it in another. One common solution is to just
+assign some private attribute directly on the item, but type-checkers like
+mypy frown upon this, and it may also cause conflicts with other plugins.
+So pytest offers a better way to do this, <a class="reference internal" href="../reference/reference.html#pytest.nodes.Node.stash" title="_pytest.nodes.Node.stash"><code class="xref py py-attr docutils literal notranslate"><span class="pre">item.stash</span></code></a>.</p>
+<p>To use the “stash” in your plugins, first create “stash keys” somewhere at the
+top level of your plugin:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">been_there_key</span> <span class="o">=</span> <span class="n">pytest</span><span class="o">.</span><span class="n">StashKey</span><span class="p">[</span><span class="nb">bool</span><span class="p">]()</span>
+<span class="n">done_that_key</span> <span class="o">=</span> <span class="n">pytest</span><span class="o">.</span><span class="n">StashKey</span><span class="p">[</span><span class="nb">str</span><span class="p">]()</span>
+</pre></div>
+</div>
+<p>then use the keys to stash your data at some point:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">pytest_runtest_setup</span><span class="p">(</span><span class="n">item</span><span class="p">:</span> <span class="n">pytest</span><span class="o">.</span><span class="n">Item</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">item</span><span class="o">.</span><span class="n">stash</span><span class="p">[</span><span class="n">been_there_key</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">item</span><span class="o">.</span><span class="n">stash</span><span class="p">[</span><span class="n">done_that_key</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"no"</span>
+</pre></div>
+</div>
+<p>and retrieve them at another point:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">pytest_runtest_teardown</span><span class="p">(</span><span class="n">item</span><span class="p">:</span> <span class="n">pytest</span><span class="o">.</span><span class="n">Item</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">item</span><span class="o">.</span><span class="n">stash</span><span class="p">[</span><span class="n">been_there_key</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"Oh?"</span><span class="p">)</span>
+    <span class="n">item</span><span class="o">.</span><span class="n">stash</span><span class="p">[</span><span class="n">done_that_key</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"yes!"</span>
+</pre></div>
+</div>
+<p>Stashes are available on all node types (like <a class="reference internal" href="../reference/reference.html#pytest.Class" title="pytest.Class"><code class="xref py py-class docutils literal notranslate"><span class="pre">Class</span></code></a>,
+<a class="reference internal" href="../reference/reference.html#pytest.Session" title="pytest.Session"><code class="xref py py-class docutils literal notranslate"><span class="pre">Session</span></code></a>) and also on <a class="reference internal" href="../reference/reference.html#pytest.Config" title="pytest.Config"><code class="xref py py-class docutils literal notranslate"><span class="pre">Config</span></code></a>, if needed.</p>
+</section>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+<span id="sidebar-top"></span>
+<div class="clearer"></div>
+</div>
+<div class="footer" role="contentinfo">
+        © Copyright 2015, holger krekel and pytest-dev team.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    </div>
+<script src="../_static/version_warning_offset.js"></script>
+</body>
+</html>

@@ -1,0 +1,628 @@
+<html><!-- Mirrored from docs.sqlalchemy.org/en/20/faq/metadata_schema.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 06 Jul 2023 08:05:56 GMT --><!-- Added by HTTrack --><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><!-- /Added by HTTrack -->
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>
+        
+        
+    
+    MetaData / Schema
+ </title>
+
+    
+
+    
+
+    <link href="../../../../fonts.googleapis.com/cssa2b2.css?family=Lato:400,700|Roboto+Slab:400,700" rel="stylesheet" type="text/css">
+
+    
+        <!-- begin iterate through SQLA css_files -->
+            <link rel="stylesheet" href="../_static/pygments.css" type="text/css">
+        <!-- end iterate through SQLA css_files -->
+
+        <!-- begin iterate through sphinx environment local css_files -->
+            <link rel="stylesheet" href="../_static/pygments.css" type="text/css">
+            <link rel="stylesheet" href="../_static/default.css" type="text/css">
+            <link rel="stylesheet" href="../_static/copybutton.css" type="text/css">
+            <link rel="stylesheet" href="../_static/docs.css" type="text/css">
+            <link rel="stylesheet" href="../_static/changelog.css" type="text/css">
+            <link rel="stylesheet" href="../_static/sphinx_paramlinks.css" type="text/css">
+        <!-- end iterate through sphinx environment local css_files -->
+
+        <link rel="stylesheet" type="text/css" media="all" href="../../../../www.sqlalchemy.org/css/bootstrap.min.css">
+	    <link rel="stylesheet" type="text/css" media="all" href="../../../../www.sqlalchemy.org/css/site.css">
+        <link rel="stylesheet" type="text/css" media="all" href="../../../../www.sqlalchemy.org/css/sidebar_extra.css">
+        <link rel="stylesheet" type="text/css" media="print" href="../../../../www.sqlalchemy.org/css/print.css">
+
+        <!-- begin iterate through sphinx environment remote css_files -->
+        <!-- end iterate through sphinx environment remote css_files -->
+    
+
+    
+
+    
+
+    
+
+
+    
+        <link rel="canonical" href="http://docs.sqlalchemy.org/en/latest/faq/metadata_schema.html">
+
+    <script type="text/javascript">
+        var doc_version = "latest";
+        var doc_slug = "sqlalchemy";
+        var static_root = "../_static"
+
+        // copied from:
+        // https://github.com/rtfd/readthedocs.org/commit/edbbb4c753454cf20c128d4eb2fef60d740debaa#diff-2f70e8d9361202bfe3f378d2ff2c510bR8
+        var READTHEDOCS_DATA = {
+            project: "sqlalchemy",
+            version: "latest",
+            page: "faq/metadata_schema",
+            theme: ""
+          };
+
+
+    </script>
+    <!-- end RTD <head> via SQLAlchemy adapter -->
+
+    
+
+    <!-- begin layout.mako headers -->
+
+    <link rel="index" title="Index" href="../genindex.html">
+    <link rel="search" title="Search" href="../search.html">
+        <link rel="copyright" title="Copyright" href="../copyright.html">
+    <link rel="top" title="SQLAlchemy 2.0 Documentation" href="../index-2.html">
+        <link rel="up" title="Frequently Asked Questions" href="index.html">
+        <link rel="next" title="SQL Expressions" href="sqlexpressions.html">
+        <link rel="prev" title="Connections / Engines" href="connections.html">
+    <!-- end layout.mako headers -->
+
+
+
+
+    
+
+    <!-- sqlalchemy.org docs base head -->
+    
+<link rel="shortcut icon" href="../../../../www.sqlalchemy.org/favicon.ico" type="image/x-icon">
+<link href="../../../../fonts.googleapis.com/css118a.css?family=Source+Sans+Pro:400,600,400italic" rel="stylesheet" type="text/css">
+
+<script type="text/javascript">
+var site_base='//www.sqlalchemy.org';
+var docs_base='//docs.sqlalchemy.org';
+</script>
+
+
+    <!-- end sqlalchemy.org docs base head -->
+
+</head>
+
+<body>
+
+<div id="wrap" class="container-xxl wrap px-0">
+
+
+
+
+
+<nav class="navbar navbar-light logo">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="http://www.sqlalchemy.org/">
+            <img src="../../../../www.sqlalchemy.org/img/sqla_logo.png" width="240" alt="SQLAlchemy">
+        </a>
+        <div class="navbar-brand align-self-end dbtoolkit">
+            <img src="../../../../www.sqlalchemy.org/img/dbtoolkit6.gif" width="180" height="12" alt="The Database Toolkit for Python">
+        </div>
+    </div>
+</nav>
+<nav class="navbar navbar-expand-md navbar-dark bg-sa-green py-0 navigation">
+    <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavigation" aria-controls="navbarNavigation" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <span class="navbar-brand d-md-block d-md-none" href="#">The Database Toolkit for Python</span>
+        <div class="collapse navbar-collapse" id="navbarNavigation">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link " href="http://www.sqlalchemy.org/">home</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle " href="#" id="feature-dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        features
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark bg-sa-green" aria-labelledby="feature-dropdown">
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/philosophy.html">Philosophy Statement</a></li>
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/features.html">Feature Overview</a></li>
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/quotes.html">Testimonials</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link " href="http://www.sqlalchemy.org/blog/">news</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle active" aria-current="page" href="#" id="docs-dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        documentation
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark bg-sa-green" aria-labelledby="docs-dropdown">
+                        <li><a class="dropdown-item" href="http://docs.sqlalchemy.org/">Current Documentation (version 2.0)</a></li>
+
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/library.html#reference">Documentation by Version</a></li>
+                        
+        <li>
+            <a class="dropdown-item" href="../index.html">
+                <span class="ps-2">Version 2.0</span>
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="http://docs.sqlalchemy.org/en/14/">
+                <span class="ps-2">Version 1.4</span>
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="http://docs.sqlalchemy.org/en/13/">
+                <span class="ps-2">Version 1.3</span>
+            </a>
+        </li>
+
+                        <li><hr class="dropdown-divider"></li>
+
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/library.html#talks">Talks and Tutorials</a></li>
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/library.html">Published content overview</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle " href="#" id="community-dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        community
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark bg-sa-green" aria-labelledby="community-dropdown">
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/support.html">Get Support</a></li>
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/participate.html">Participate</a></li>
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/develop.html">Develop</a></li>
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/codeofconduct.html">Code of Conduct</a></li>
+                        <li><a class="dropdown-item" href="https://github.com/sqlalchemy/sqlalchemy">Github</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle " href="#" id="download-dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        download
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark bg-sa-green" aria-labelledby="download-dropdown">
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/download.html">Download</a>
+                        
+
+
+
+
+
+
+    </li><li><a class="dropdown-item" href="http://www.sqlalchemy.org/download.html#current">Current Release Series (2.0)</a></li>
+
+    <li><a class="dropdown-item" href="http://www.sqlalchemy.org/download.html#maintenance">Maintenance Release (1.4)</a></li>
+
+    <li><a class="dropdown-item" href="http://www.sqlalchemy.org/download.html#development">Development Access</a></li>
+    <li><a class="dropdown-item" href="http://www.sqlalchemy.org/download.html#license">License</a></li>
+    <li><a class="dropdown-item" href="http://www.sqlalchemy.org/download.html#versions">Version Numbering</a></li>
+    <li><a class="dropdown-item" href="http://www.sqlalchemy.org/download.html#relstatus">Release Status</a></li>
+
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<div id="main-body" class="docs main-body row m-0">
+
+<main id="docs" class="docs">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div id="docs-container">
+
+
+
+
+
+<div id="docs-top-navigation-container" class="body-background">
+<div id="docs-header">
+    <div id="docs-version-header">
+        Release: <span class="version-num">2.0.18</span>
+
+            <span id="sidebar-current">current release</span>
+
+        | Release Date: July 5, 2023
+
+    </div>
+
+    <h1><a href="../index-2.html">SQLAlchemy 2.0 Documentation</a></h1>
+
+</div>
+</div>
+
+<div id="docs-body-container">
+
+    <div id="fixed-sidebar" class="">
+
+
+
+        <div id="docs-sidebar-popout">
+            <h3><a href="../index-2.html">SQLAlchemy 2.0 Documentation</a></h3>
+                <p id="sidebar-current">current release</p>
+            <p id="sidebar-topnav">
+                <a href="../index-2.html">Home</a>
+                | <a href="http://docs.sqlalchemy.org/20/sqlalchemy_20.zip">Download this Documentation</a>
+            </p>
+
+            <div id="sidebar-search">
+                <form class="search" action="https://docs.sqlalchemy.org/en/20/search.html" method="get">
+                  <label>
+                  Search terms:
+                  <input type="text" placeholder="search..." name="q" size="12">
+                  </label>
+                  <input type="hidden" name="check_keywords" value="yes">
+                  <input type="hidden" name="area" value="default">
+                </form>
+            </div>
+
+        </div>
+
+        <div id="docs-sidebar">
+
+        <div id="sidebar-banner">
+            
+        
+<script async="" type="text/javascript" id="_carbonads_js"></script>
+<script async="" type="text/javascript" id="_eaads_js" src="../../../../media.ethicalads.io/media/client/ethicalads.min.js"></script>
+
+<div data-ea-publisher="sqlalchemyorg" data-ea-type="image" class="adaptive flat horizontal"></div>
+
+<script type="text/javascript">
+
+var ea = "../../../../media.ethicalads.io/media/client/ethicalads.min.js";
+var carbon = "../../../../cdn.carbonads.com/carbon8b90.js?serve=CKYILK7Y&amp;placement=sqlalchemyorg";
+
+if (Math.floor(Math.random() * 10) < 8) {
+    ea_script = document.getElementById("_eaads_js");
+    ea_script.setAttribute('src', ea);
+}
+else {
+    carbon_script = document.getElementById("_carbonads_js");
+    carbon_script.setAttribute('src', carbon);
+}
+
+</script>
+
+    
+        </div>
+
+        <div id="docs-sidebar-inner">
+
+        
+        <h3>
+            <a href="index.html" title="Frequently Asked Questions">Frequently Asked Questions</a>
+        </h3>
+
+        <ul>
+<li><span class="link-container"><a class="reference external" href="installation.html">Installation</a></span></li>
+<li><span class="link-container"><a class="reference external" href="connections.html">Connections / Engines</a></span></li>
+<li class="selected"><span class="link-container"><strong>MetaData / Schema</strong><a class="paramlink headerlink reference internal" href="#">¶</a></span><ul>
+<li><span class="link-container"><a class="reference external" href="#my-program-is-hanging-when-i-say-table-drop-metadata-drop-all">My program is hanging when I say <code class="docutils literal notranslate"><span class="pre">table.drop()</span></code> / <code class="docutils literal notranslate"><span class="pre">metadata.drop_all()</span></code></a></span></li>
+<li><span class="link-container"><a class="reference external" href="#does-sqlalchemy-support-alter-table-create-view-create-trigger-schema-upgrade-functionality">Does SQLAlchemy support ALTER TABLE, CREATE VIEW, CREATE TRIGGER, Schema Upgrade Functionality?</a></span></li>
+<li><span class="link-container"><a class="reference external" href="#how-can-i-sort-table-objects-in-order-of-their-dependency">How can I sort Table objects in order of their dependency?</a></span></li>
+<li><span class="link-container"><a class="reference external" href="#how-can-i-get-the-create-table-drop-table-output-as-a-string">How can I get the CREATE TABLE/ DROP TABLE output as a string?</a></span></li>
+<li><span class="link-container"><a class="reference external" href="#how-can-i-subclass-table-column-to-provide-certain-behaviors-configurations">How can I subclass Table/Column to provide certain behaviors/configurations?</a></span></li>
+</ul>
+</li>
+<li><span class="link-container"><a class="reference external" href="sqlexpressions.html">SQL Expressions</a></span></li>
+<li><span class="link-container"><a class="reference external" href="ormconfiguration.html">ORM Configuration</a></span></li>
+<li><span class="link-container"><a class="reference external" href="performance.html">Performance</a></span></li>
+<li><span class="link-container"><a class="reference external" href="sessions.html">Sessions / Queries</a></span></li>
+<li><span class="link-container"><a class="reference external" href="thirdparty.html">Third Party Integration Issues</a></span></li>
+</ul>
+
+
+        <h4>Project Versions</h4>
+        <ul class="version-listing">
+            <li><a href="../index-2.html">2.0.18</a></li>
+        </ul>
+
+        </div>
+
+        </div>
+
+    </div>
+
+    <div id="narrow-index-nav">
+        <form class="search" action="https://docs.sqlalchemy.org/en/20/search.html" method="get">
+            <label>
+                Search terms:
+            <input type="text" placeholder="search..." name="q" size="12">
+            </label>
+            <input type="submit" value="Search">
+            <input type="hidden" name="check_keywords" value="yes">
+            <input type="hidden" name="area" value="default">
+        </form>
+
+        <p>
+        <a href="../index-2.html">Home</a>
+        | <a href="http://docs.sqlalchemy.org/20/sqlalchemy_20.zip">Download this Documentation</a>
+        </p>
+
+    </div>
+
+
+        <div id="docs-narrow-top-navigation">
+            <ul>
+                <li><b>Previous:</b>
+                <a href="connections.html" title="previous chapter">Connections / Engines</a></li>
+                <li><b>Next:</b>
+                <a href="sqlexpressions.html" title="next chapter">SQL Expressions</a></li>
+
+            <li><b>Up:</b> <a href="../index-2.html">Home</a></li>
+                    <ul><li><a href="index.html" title="Frequently Asked Questions">Frequently Asked Questions</a></li>
+                </ul>
+
+
+
+            <li><b>On this page:</b></li>
+            <ul>
+<li><a class="reference internal" href="#metadata-schema">MetaData / Schema</a><ul>
+<li><a class="reference internal" href="#my-program-is-hanging-when-i-say-table-drop-metadata-drop-all">My program is hanging when I say <code class="docutils literal notranslate"><span class="pre">table.drop()</span></code> / <code class="docutils literal notranslate"><span class="pre">metadata.drop_all()</span></code></a></li>
+<li><a class="reference internal" href="#does-sqlalchemy-support-alter-table-create-view-create-trigger-schema-upgrade-functionality">Does SQLAlchemy support ALTER TABLE, CREATE VIEW, CREATE TRIGGER, Schema Upgrade Functionality?</a></li>
+<li><a class="reference internal" href="#how-can-i-sort-table-objects-in-order-of-their-dependency">How can I sort Table objects in order of their dependency?</a></li>
+<li><a class="reference internal" href="#how-can-i-get-the-create-table-drop-table-output-as-a-string">How can I get the CREATE TABLE/ DROP TABLE output as a string?</a></li>
+<li><a class="reference internal" href="#how-can-i-subclass-table-column-to-provide-certain-behaviors-configurations">How can I subclass Table/Column to provide certain behaviors/configurations?</a></li>
+</ul>
+</li>
+</ul>
+
+
+            </ul>
+
+        </div>
+
+
+
+    <div id="docs-body" role="main" class=" faq-metadata_schema">
+        
+<section id="metadata-schema">
+<h1>MetaData / Schema<a class="headerlink" href="#metadata-schema" title="Permalink to this heading">¶</a></h1>
+<nav class="contents faq local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#my-program-is-hanging-when-i-say-table-drop-metadata-drop-all" id="id1">My program is hanging when I say <code class="docutils literal notranslate"><span class="pre">table.drop()</span></code> / <code class="docutils literal notranslate"><span class="pre">metadata.drop_all()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#does-sqlalchemy-support-alter-table-create-view-create-trigger-schema-upgrade-functionality" id="id2">Does SQLAlchemy support ALTER TABLE, CREATE VIEW, CREATE TRIGGER, Schema Upgrade Functionality?</a></p></li>
+<li><p><a class="reference internal" href="#how-can-i-sort-table-objects-in-order-of-their-dependency" id="id3">How can I sort Table objects in order of their dependency?</a></p></li>
+<li><p><a class="reference internal" href="#how-can-i-get-the-create-table-drop-table-output-as-a-string" id="id4">How can I get the CREATE TABLE/ DROP TABLE output as a string?</a></p></li>
+<li><p><a class="reference internal" href="#how-can-i-subclass-table-column-to-provide-certain-behaviors-configurations" id="id5">How can I subclass Table/Column to provide certain behaviors/configurations?</a></p></li>
+</ul>
+</nav>
+<section id="my-program-is-hanging-when-i-say-table-drop-metadata-drop-all">
+<h2>My program is hanging when I say <code class="docutils literal notranslate"><span class="pre">table.drop()</span></code> / <code class="docutils literal notranslate"><span class="pre">metadata.drop_all()</span></code><a class="headerlink" href="#my-program-is-hanging-when-i-say-table-drop-metadata-drop-all" title="Permalink to this heading">¶</a></h2>
+<p>This usually corresponds to two conditions: 1. using PostgreSQL, which is really
+strict about table locks, and 2. you have a connection still open which
+contains locks on the table and is distinct from the connection being used for
+the DROP statement.  Heres the most minimal version of the pattern:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">connection</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">mytable</span><span class="o">.</span><span class="n">select</span><span class="p">())</span>
+
+<span class="n">mytable</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">engine</span><span class="p">)</span></pre></div>
+</div>
+<p>Above, a connection pool connection is still checked out; furthermore, the
+result object above also maintains a link to this connection.  If
+“implicit execution” is used, the result will hold this connection opened until
+the result object is closed or all rows are exhausted.</p>
+<p>The call to <code class="docutils literal notranslate"><span class="pre">mytable.drop(engine)</span></code> attempts to emit DROP TABLE on a second
+connection procured from the <a class="reference internal" href="../core/connections.html#sqlalchemy.engine.Engine" title="sqlalchemy.engine.Engine"><code class="xref py py-class docutils literal notranslate"><span class="pre">Engine</span></code></a> which will lock.</p>
+<p>The solution is to close out all connections before emitting DROP TABLE:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">connection</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">mytable</span><span class="o">.</span><span class="n">select</span><span class="p">())</span>
+
+<span class="c1"># fully read result sets</span>
+<span class="n">result</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+
+<span class="c1"># close connections</span>
+<span class="n">connection</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="c1"># now locks are removed</span>
+<span class="n">mytable</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">engine</span><span class="p">)</span></pre></div>
+</div>
+</section>
+<section id="does-sqlalchemy-support-alter-table-create-view-create-trigger-schema-upgrade-functionality">
+<h2>Does SQLAlchemy support ALTER TABLE, CREATE VIEW, CREATE TRIGGER, Schema Upgrade Functionality?<a class="headerlink" href="#does-sqlalchemy-support-alter-table-create-view-create-trigger-schema-upgrade-functionality" title="Permalink to this heading">¶</a></h2>
+<p>General ALTER support isn’t present in SQLAlchemy directly.  For special DDL
+on an ad-hoc basis, the <a class="reference internal" href="../core/ddl.html#sqlalchemy.schema.DDL" title="sqlalchemy.schema.DDL"><code class="xref py py-class docutils literal notranslate"><span class="pre">DDL</span></code></a> and related constructs can be used.
+See <a class="reference internal" href="../core/ddl.html"><span class="std std-ref">Customizing DDL</span></a> for a discussion on this subject.</p>
+<p>A more comprehensive option is to use schema migration tools, such as Alembic
+or SQLAlchemy-Migrate; see <a class="reference internal" href="../core/metadata.html#schema-migrations"><span class="std std-ref">Altering Database Objects through Migrations</span></a> for discussion on this.</p>
+</section>
+<section id="how-can-i-sort-table-objects-in-order-of-their-dependency">
+<h2>How can I sort Table objects in order of their dependency?<a class="headerlink" href="#how-can-i-sort-table-objects-in-order-of-their-dependency" title="Permalink to this heading">¶</a></h2>
+<p>This is available via the <a class="reference internal" href="../core/metadata.html#sqlalchemy.schema.MetaData.sorted_tables" title="sqlalchemy.schema.MetaData.sorted_tables"><code class="xref py py-attr docutils literal notranslate"><span class="pre">MetaData.sorted_tables</span></code></a> function:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">metadata_obj</span> <span class="o">=</span> <span class="n">MetaData</span><span class="p">()</span>
+<span class="c1"># ... add Table objects to metadata</span>
+<span class="n">ti</span> <span class="o">=</span> <span class="n">metadata_obj</span><span class="o">.</span><span class="n">sorted_tables</span>
+<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">ti</span><span class="p">:</span>
+    <span class="n">print</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></pre></div>
+</div>
+</section>
+<section id="how-can-i-get-the-create-table-drop-table-output-as-a-string">
+<a class="dashAnchor" name="//apple_ref/Section/How%20can%20I%20get%20the%20CREATE%20TABLE%2F%20DROP%20TABLE%20output%20as%20a%20string?"></a><span id="faq-ddl-as-string"></span><h2>How can I get the CREATE TABLE/ DROP TABLE output as a string?<a class="headerlink" href="#how-can-i-get-the-create-table-drop-table-output-as-a-string" title="Permalink to this heading">¶</a></h2>
+<p>Modern SQLAlchemy has clause constructs which represent DDL operations. These
+can be rendered to strings like any other SQL expression:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sqlalchemy.schema</span> <span class="kn">import</span> <span class="n">CreateTable</span>
+
+<span class="n">print</span><span class="p">(</span><span class="n">CreateTable</span><span class="p">(</span><span class="n">mytable</span><span class="p">))</span></pre></div>
+</div>
+<p>To get the string specific to a certain engine:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">print</span><span class="p">(</span><span class="n">CreateTable</span><span class="p">(</span><span class="n">mytable</span><span class="p">)</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">engine</span><span class="p">))</span></pre></div>
+</div>
+<p>There’s also a special form of <a class="reference internal" href="../core/connections.html#sqlalchemy.engine.Engine" title="sqlalchemy.engine.Engine"><code class="xref py py-class docutils literal notranslate"><span class="pre">Engine</span></code></a> available via
+<a class="reference internal" href="../core/engines.html#sqlalchemy.create_mock_engine" title="sqlalchemy.create_mock_engine"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_mock_engine()</span></code></a> that allows one to dump an entire
+metadata creation sequence as a string, using this recipe:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">create_mock_engine</span>
+
+
+<span class="k">def</span> <span class="nf">dump</span><span class="p">(</span><span class="n">sql</span><span class="p">,</span> <span class="o">*</span><span class="n">multiparams</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
+    <span class="n">print</span><span class="p">(</span><span class="n">sql</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">dialect</span><span class="o">=</span><span class="n">engine</span><span class="o">.</span><span class="n">dialect</span><span class="p">))</span>
+
+
+<span class="n">engine</span> <span class="o">=</span> <span class="n">create_mock_engine</span><span class="p">(</span><span class="s2">"postgresql+psycopg2://"</span><span class="p">,</span> <span class="n">dump</span><span class="p">)</span>
+<span class="n">metadata_obj</span><span class="o">.</span><span class="n">create_all</span><span class="p">(</span><span class="n">engine</span><span class="p">,</span> <span class="n">checkfirst</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></pre></div>
+</div>
+<p>The <a class="reference external" href="https://alembic.sqlalchemy.org/">Alembic</a> tool also supports
+an “offline” SQL generation mode that renders database migrations as SQL scripts.</p>
+</section>
+<section id="how-can-i-subclass-table-column-to-provide-certain-behaviors-configurations">
+<h2>How can I subclass Table/Column to provide certain behaviors/configurations?<a class="headerlink" href="#how-can-i-subclass-table-column-to-provide-certain-behaviors-configurations" title="Permalink to this heading">¶</a></h2>
+<p><a class="reference internal" href="../core/metadata.html#sqlalchemy.schema.Table" title="sqlalchemy.schema.Table"><code class="xref py py-class docutils literal notranslate"><span class="pre">Table</span></code></a> and <a class="reference internal" href="../core/metadata.html#sqlalchemy.schema.Column" title="sqlalchemy.schema.Column"><code class="xref py py-class docutils literal notranslate"><span class="pre">Column</span></code></a> are not good targets for direct subclassing.
+However, there are simple ways to get on-construction behaviors using creation
+functions, and behaviors related to the linkages between schema objects such as
+constraint conventions or naming conventions using attachment events.
+An example of many of these
+techniques can be seen at <a class="reference external" href="https://www.sqlalchemy.org/trac/wiki/UsageRecipes/NamingConventions">Naming Conventions</a>.</p>
+</section>
+</section>
+
+    </div>
+
+</div>
+
+<div id="docs-bottom-navigation" class="docs-navigation-links, ">
+        Previous:
+        <a href="connections.html" title="previous chapter">Connections / Engines</a>
+        Next:
+        <a href="sqlexpressions.html" title="next chapter">SQL Expressions</a>
+
+    <div id="docs-copyright">
+        © <a href="../copyright.html">Copyright</a> 2007-2023, the SQLAlchemy authors and contributors.
+
+
+    <p><b>flambé!</b> the dragon and <b><i>The Alchemist</i></b> image designs created and generously donated by <a href="https://github.com/vmalloc">Rotem Yaari</a>.</p>
+
+        Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 7.0.1.
+
+    Documentation last generated: Wed 05 Jul 2023 03:33:34 PM 
+
+    </div>
+</div>
+
+</div>
+
+
+
+
+</main></div>
+
+</div> <!-- end #main-body -->
+
+
+    
+
+    
+
+<div id="footer" class="footer">
+    <div class="snd-ad">
+    </div>
+    <div class="pypowered">
+        <a href="http://www.python.org/" title="The Python Language Site">
+            <img src="../../../../www.sqlalchemy.org/img/python-logo.gif" width="88" height="30" alt="Python" class="pypowered">
+        </a>
+    </div>
+
+    <div class="copyright">
+        <p>Website content copyright © by SQLAlchemy authors and contributors.
+            SQLAlchemy and its documentation are licensed under the MIT license.</p>
+        <p>SQLAlchemy is a trademark of Michael Bayer.  mike(&amp;)zzzcomputing.com
+        All rights reserved. </p>
+        <p>Website generation by
+        <a href="https://github.com/sqlalchemyorg/zeekofile/">zeekofile</a>, with
+        huge thanks to the <a href="https://github.com/EnigmaCurry/blogofile">Blogofile</a>
+        project.</p>
+
+        <a rel="me" href="https://fosstodon.org/@zzzeek">Mastodon</a>
+
+    </div>
+
+    <br clear="all">
+
+</div>
+
+
+
+     <!-- End original user content -->
+
+    
+
+
+
+
+ <!-- end #wrap -->
+
+
+    
+
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+          URL_ROOT:    '../',
+          VERSION:     '2.0.18',
+          COLLAPSE_MODINDEX: false,
+          FILE_SUFFIX: '.html'
+      };
+    </script>
+
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+
+    <!-- begin iterate through sphinx environment script_files -->
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script type="text/javascript" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/sphinx_highlight.js"></script>
+        <script type="text/javascript" src="../_static/clipboard.min.js"></script>
+        <script type="text/javascript" src="../_static/copybutton.js"></script>
+    <!-- end iterate through sphinx environment script_files -->
+
+    <script type="text/javascript" src="../_static/init.js"></script>
+
+
+
+
+<script type="text/javascript" src="../../../../www.sqlalchemy.org/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript" src="../../../../www.sqlalchemy.org/js/doc_versions.js"></script>
+
+<!-- Google tag (gtag.js) -->
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-KWWK46V0YX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-KWWK46V0YX');
+</script>
+
+
+
+
+<!-- Mirrored from docs.sqlalchemy.org/en/20/faq/metadata_schema.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 06 Jul 2023 08:05:56 GMT -->
+
+
+</body></html>

@@ -1,0 +1,451 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Writing plugins — pytest documentation</title>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/basic.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/pygments_pytest.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../_static/doctools.js"></script>
+<script src="../_static/sphinx_highlight.js"></script>
+<link href="../_static/favicon.png" rel="shortcut icon"/>
+<link href="../search.html" rel="search" title="Search"/>
+<link href="writing_hook_functions.html" rel="next" title="Writing hook functions"/>
+<link href="plugins.html" rel="prev" title="How to install and use plugins"/>
+<script>DOCUMENTATION_OPTIONS.URL_ROOT = '';</script>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../py-modindex.html" title="Python Module Index">modules</a></li>
+<li class="right">
+<a accesskey="N" href="writing_hook_functions.html" title="Writing hook functions">next</a> |</li>
+<li class="right">
+<a accesskey="P" href="plugins.html" title="How to install and use plugins">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../contents.html">pytest-7.3</a> »</li>
+<li class="nav-item nav-item-this"><a href="">Writing plugins</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="body" role="main">
+<a class="dashAnchor" name="//apple_ref/cpp/Section/Writing plugins"></a><section id="writing-plugins">
+<a class="dashAnchor" name="//apple_ref/cpp/Section/Writing plugins"></a><span id="plugins"></span><span id="id1"></span><h1>Writing plugins<a class="headerlink" href="#writing-plugins" title="Permalink to this heading">¶</a></h1>
+<p>It is easy to implement <a class="reference internal" href="#local-conftest-plugins">local conftest plugins</a> for your own project
+or <a class="reference internal" href="#pip-installable-plugins">pip-installable plugins</a> that can be used throughout many projects,
+including third party projects.  Please refer to <a class="reference internal" href="plugins.html#using-plugins"><span class="std std-ref">How to install and use plugins</span></a> if you
+only want to use but not write plugins.</p>
+<p>A plugin contains one or multiple hook functions. <a class="reference internal" href="writing_hook_functions.html#writinghooks"><span class="std std-ref">Writing hooks</span></a>
+explains the basics and details of how you can write a hook function yourself.
+<code class="docutils literal notranslate"><span class="pre">pytest</span></code> implements all aspects of configuration, collection, running and
+reporting by calling <a class="reference internal" href="../reference/reference.html#hook-reference"><span class="std std-ref">well specified hooks</span></a> of the following plugins:</p>
+<ul class="simple">
+<li><p>builtin plugins: loaded from pytest’s internal <code class="docutils literal notranslate"><span class="pre">_pytest</span></code> directory.</p></li>
+<li><p><a class="reference internal" href="plugins.html#extplugins"><span class="std std-ref">external plugins</span></a>: modules discovered through
+<a class="reference internal" href="#setuptools-entry-points">setuptools entry points</a></p></li>
+<li><p><a class="reference internal" href="#conftest-py-plugins">conftest.py plugins</a>: modules auto-discovered in test directories</p></li>
+</ul>
+<p>In principle, each hook call is a <code class="docutils literal notranslate"><span class="pre">1:N</span></code> Python function call where <code class="docutils literal notranslate"><span class="pre">N</span></code> is the
+number of registered implementation functions for a given specification.
+All specifications and implementations follow the <code class="docutils literal notranslate"><span class="pre">pytest_</span></code> prefix
+naming convention, making them easy to distinguish and find.</p>
+<section id="plugin-discovery-order-at-tool-startup">
+<a class="dashAnchor" name="//apple_ref/cpp/Section/Plugin discovery order at tool startup"></a><span id="pluginorder"></span><h2>Plugin discovery order at tool startup<a class="headerlink" href="#plugin-discovery-order-at-tool-startup" title="Permalink to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">pytest</span></code> loads plugin modules at tool startup in the following way:</p>
+<ol class="arabic">
+<li><p>by scanning the command line for the <code class="docutils literal notranslate"><span class="pre">-p</span> <span class="pre">no:name</span></code> option
+and <em>blocking</em> that plugin from being loaded (even builtin plugins can
+be blocked this way). This happens before normal command-line parsing.</p></li>
+<li><p>by loading all builtin plugins.</p></li>
+<li><p>by scanning the command line for the <code class="docutils literal notranslate"><span class="pre">-p</span> <span class="pre">name</span></code> option
+and loading the specified plugin. This happens before normal command-line parsing.</p></li>
+<li><p>by loading all plugins registered through <a class="reference internal" href="#setuptools-entry-points">setuptools entry points</a>.</p></li>
+<li><p>by loading all plugins specified through the <span class="target" id="index-0"></span><a class="reference internal" href="../reference/reference.html#envvar-PYTEST_PLUGINS"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">PYTEST_PLUGINS</span></code></a> environment variable.</p></li>
+<li><p>by loading all <code class="file docutils literal notranslate"><span class="pre">conftest.py</span></code> files as inferred by the command line
+invocation:</p>
+<ul class="simple">
+<li><p>if no test paths are specified, use the current dir as a test path</p></li>
+<li><p>if exists, load <code class="docutils literal notranslate"><span class="pre">conftest.py</span></code> and <code class="docutils literal notranslate"><span class="pre">test*/conftest.py</span></code> relative
+to the directory part of the first test path. After the <code class="docutils literal notranslate"><span class="pre">conftest.py</span></code>
+file is loaded, load all plugins specified in its
+<a class="reference internal" href="../reference/reference.html#globalvar-pytest_plugins"><code class="xref std std-globalvar docutils literal notranslate"><span class="pre">pytest_plugins</span></code></a> variable if present.</p></li>
+</ul>
+<p>Note that pytest does not find <code class="docutils literal notranslate"><span class="pre">conftest.py</span></code> files in deeper nested
+sub directories at tool startup.  It is usually a good idea to keep
+your <code class="docutils literal notranslate"><span class="pre">conftest.py</span></code> file in the top level test or project root directory.</p>
+</li>
+<li><p>by recursively loading all plugins specified by the
+<a class="reference internal" href="../reference/reference.html#globalvar-pytest_plugins"><code class="xref std std-globalvar docutils literal notranslate"><span class="pre">pytest_plugins</span></code></a> variable in <code class="docutils literal notranslate"><span class="pre">conftest.py</span></code> files.</p></li>
+</ol>
+</section>
+<section id="conftest-py-local-per-directory-plugins">
+<a class="dashAnchor" name="//apple_ref/cpp/Section/conftest.py: local per-directory plugins"></a><span id="local-conftest-plugins"></span><a class="dashAnchor" name="//apple_ref/cpp/Section/conftest.py: local per-directory plugins"></a><span id="localplugin"></span><a class="dashAnchor" name="//apple_ref/cpp/Section/conftest.py: local per-directory plugins"></a><span id="conftest-py-plugins"></span><h2>conftest.py: local per-directory plugins<a class="headerlink" href="#conftest-py-local-per-directory-plugins" title="Permalink to this heading">¶</a></h2>
+<p>Local <code class="docutils literal notranslate"><span class="pre">conftest.py</span></code> plugins contain directory-specific hook
+implementations.  Hook Session and test running activities will
+invoke all hooks defined in <code class="docutils literal notranslate"><span class="pre">conftest.py</span></code> files closer to the
+root of the filesystem.  Example of implementing the
+<code class="docutils literal notranslate"><span class="pre">pytest_runtest_setup</span></code> hook so that is called for tests in the <code class="docutils literal notranslate"><span class="pre">a</span></code>
+sub directory but not for other directories:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">a</span><span class="o">/</span><span class="n">conftest</span><span class="o">.</span><span class="n">py</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">pytest_runtest_setup</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
+        <span class="c1"># called for running each test in 'a' directory</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"setting up"</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
+
+<span class="n">a</span><span class="o">/</span><span class="n">test_sub</span><span class="o">.</span><span class="n">py</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">test_sub</span><span class="p">():</span>
+        <span class="k">pass</span>
+
+<span class="n">test_flat</span><span class="o">.</span><span class="n">py</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">test_flat</span><span class="p">():</span>
+        <span class="k">pass</span>
+</pre></div>
+</div>
+<p>Here is how you might run it:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pytest</span> <span class="n">test_flat</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">capture</span><span class="o">=</span><span class="n">no</span>  <span class="c1"># will not show "setting up"</span>
+<span class="n">pytest</span> <span class="n">a</span><span class="o">/</span><span class="n">test_sub</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">capture</span><span class="o">=</span><span class="n">no</span>  <span class="c1"># will show "setting up"</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you have <code class="docutils literal notranslate"><span class="pre">conftest.py</span></code> files which do not reside in a
+python package directory (i.e. one containing an <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code>) then
+“import conftest” can be ambiguous because there might be other
+<code class="docutils literal notranslate"><span class="pre">conftest.py</span></code> files as well on your <code class="docutils literal notranslate"><span class="pre">PYTHONPATH</span></code> or <code class="docutils literal notranslate"><span class="pre">sys.path</span></code>.
+It is thus good practice for projects to either put <code class="docutils literal notranslate"><span class="pre">conftest.py</span></code>
+under a package scope or to never import anything from a
+<code class="docutils literal notranslate"><span class="pre">conftest.py</span></code> file.</p>
+<p>See also: <a class="reference internal" href="../explanation/pythonpath.html#pythonpath"><span class="std std-ref">pytest import mechanisms and sys.path/PYTHONPATH</span></a>.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Some hooks should be implemented only in plugins or conftest.py files situated at the
+tests root directory due to how pytest discovers plugins during startup,
+see the documentation of each hook for details.</p>
+</div>
+</section>
+<section id="writing-your-own-plugin">
+<h2>Writing your own plugin<a class="headerlink" href="#writing-your-own-plugin" title="Permalink to this heading">¶</a></h2>
+<p>If you want to write a plugin, there are many real-life examples
+you can copy from:</p>
+<ul class="simple">
+<li><p>a custom collection example plugin: <a class="reference internal" href="../example/nonpython.html#yaml-plugin"><span class="std std-ref">A basic example for specifying tests in Yaml files</span></a></p></li>
+<li><p>builtin plugins which provide pytest’s own functionality</p></li>
+<li><p>many <a class="reference internal" href="../reference/plugin_list.html#plugin-list"><span class="std std-ref">external plugins</span></a> providing additional features</p></li>
+</ul>
+<p>All of these plugins implement <a class="reference internal" href="../reference/reference.html#hook-reference"><span class="std std-ref">hooks</span></a> and/or <a class="reference internal" href="../reference/fixtures.html#fixture"><span class="std std-ref">fixtures</span></a>
+to extend and add functionality.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Make sure to check out the excellent
+<a class="reference external" href="https://github.com/pytest-dev/cookiecutter-pytest-plugin">cookiecutter-pytest-plugin</a>
+project, which is a <a class="reference external" href="https://github.com/audreyr/cookiecutter">cookiecutter template</a>
+for authoring plugins.</p>
+<p>The template provides an excellent starting point with a working plugin,
+tests running with tox, a comprehensive README file as well as a
+pre-configured entry-point.</p>
+</div>
+<p>Also consider <a class="reference internal" href="../contributing.html#submitplugin"><span class="std std-ref">contributing your plugin to pytest-dev</span></a>
+once it has some happy users other than yourself.</p>
+</section>
+<section id="making-your-plugin-installable-by-others">
+<a class="dashAnchor" name="//apple_ref/cpp/Section/Making your plugin installable by others"></a><span id="pip-installable-plugins"></span><a class="dashAnchor" name="//apple_ref/cpp/Section/Making your plugin installable by others"></a><span id="setuptools-entry-points"></span><h2>Making your plugin installable by others<a class="headerlink" href="#making-your-plugin-installable-by-others" title="Permalink to this heading">¶</a></h2>
+<p>If you want to make your plugin externally available, you
+may define a so-called entry point for your distribution so
+that <code class="docutils literal notranslate"><span class="pre">pytest</span></code> finds your plugin module. Entry points are
+a feature that is provided by <a class="reference external" href="https://setuptools.pypa.io/en/stable/index.html" title="(in setuptools v67.6.1.post20230328)"><span class="xref std std-doc">setuptools</span></a>.</p>
+<p>pytest looks up the <code class="docutils literal notranslate"><span class="pre">pytest11</span></code> entrypoint to discover its
+plugins, thus you can make your plugin available by defining
+it in your <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> file.</p>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="c1"># sample ./pyproject.toml file</span>
+<span class="k">[build-system]</span>
+<span class="n">requires</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s">"hatchling"</span><span class="p">]</span>
+<span class="n">build-backend</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"hatchling.build"</span>
+
+<span class="k">[project]</span>
+<span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"myproject"</span>
+<span class="n">classifiers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s">"Framework :: Pytest"</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="k">[project.entry-points.pytest11]</span>
+<span class="n">myproject</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"myproject.pluginmodule"</span>
+</pre></div>
+</div>
+<p>If a package is installed this way, <code class="docutils literal notranslate"><span class="pre">pytest</span></code> will load
+<code class="docutils literal notranslate"><span class="pre">myproject.pluginmodule</span></code> as a plugin which can define
+<a class="reference internal" href="../reference/reference.html#hook-reference"><span class="std std-ref">hooks</span></a>. Confirm registration with <code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">--trace-config</span></code></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Make sure to include <code class="docutils literal notranslate"><span class="pre">Framework</span> <span class="pre">::</span> <span class="pre">Pytest</span></code> in your list of
+<a class="reference external" href="https://pypi.org/classifiers/">PyPI classifiers</a>
+to make it easy for users to find your plugin.</p>
+</div>
+</section>
+<a class="dashAnchor" name="//apple_ref/cpp/Section/Assertion Rewriting"></a><section id="assertion-rewriting">
+<span id="id2"></span><h2>Assertion Rewriting<a class="headerlink" href="#assertion-rewriting" title="Permalink to this heading">¶</a></h2>
+<p>One of the main features of <code class="docutils literal notranslate"><span class="pre">pytest</span></code> is the use of plain assert
+statements and the detailed introspection of expressions upon
+assertion failures.  This is provided by “assertion rewriting” which
+modifies the parsed AST before it gets compiled to bytecode.  This is
+done via a <span class="target" id="index-1"></span><a class="pep reference external" href="https://peps.python.org/pep-0302/"><strong>PEP 302</strong></a> import hook which gets installed early on when
+<code class="docutils literal notranslate"><span class="pre">pytest</span></code> starts up and will perform this rewriting when modules get
+imported.  However, since we do not want to test different bytecode
+from what you will run in production, this hook only rewrites test modules
+themselves (as defined by the <a class="reference internal" href="../reference/reference.html#confval-python_files"><code class="xref std std-confval docutils literal notranslate"><span class="pre">python_files</span></code></a> configuration option),
+and any modules which are part of plugins.
+Any other imported module will not be rewritten and normal assertion behaviour
+will happen.</p>
+<p>If you have assertion helpers in other modules where you would need
+assertion rewriting to be enabled you need to ask <code class="docutils literal notranslate"><span class="pre">pytest</span></code>
+explicitly to rewrite this module before it gets imported.</p>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">register_assert_rewrite</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">names</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/_pytest/assertion.html#register_assert_rewrite"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Register one or more module names to be rewritten on import.</p>
+<p>This function will make sure that this module or all modules inside
+the package will get their assert statements rewritten.
+Thus you should make sure to call this before the module is
+actually imported, usually in your __init__.py if you are a plugin
+using a package.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>names</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – The module names to register.</p>
+</dd>
+</dl>
+</dd></dl>
+<p>This is especially important when you write a pytest plugin which is
+created using a package.  The import hook only treats <code class="docutils literal notranslate"><span class="pre">conftest.py</span></code>
+files and any modules which are listed in the <code class="docutils literal notranslate"><span class="pre">pytest11</span></code> entrypoint
+as plugins.  As an example consider the following package:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pytest_foo</span><span class="o">/</span><span class="fm">__init__</span><span class="o">.</span><span class="n">py</span>
+<span class="n">pytest_foo</span><span class="o">/</span><span class="n">plugin</span><span class="o">.</span><span class="n">py</span>
+<span class="n">pytest_foo</span><span class="o">/</span><span class="n">helper</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>With the following typical <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> extract:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">setup</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">entry_points</span><span class="o">=</span><span class="p">{</span><span class="s2">"pytest11"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"foo = pytest_foo.plugin"</span><span class="p">]},</span> <span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In this case only <code class="docutils literal notranslate"><span class="pre">pytest_foo/plugin.py</span></code> will be rewritten.  If the
+helper module also contains assert statements which need to be
+rewritten it needs to be marked as such, before it gets imported.
+This is easiest by marking it for rewriting inside the
+<code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> module, which will always be imported first when a
+module inside a package is imported.  This way <code class="docutils literal notranslate"><span class="pre">plugin.py</span></code> can still
+import <code class="docutils literal notranslate"><span class="pre">helper.py</span></code> normally.  The contents of
+<code class="docutils literal notranslate"><span class="pre">pytest_foo/__init__.py</span></code> will then need to look like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pytest</span>
+
+<span class="n">pytest</span><span class="o">.</span><span class="n">register_assert_rewrite</span><span class="p">(</span><span class="s2">"pytest_foo.helper"</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="requiring-loading-plugins-in-a-test-module-or-conftest-file">
+<h2>Requiring/Loading plugins in a test module or conftest file<a class="headerlink" href="#requiring-loading-plugins-in-a-test-module-or-conftest-file" title="Permalink to this heading">¶</a></h2>
+<p>You can require plugins in a test module or a <code class="docutils literal notranslate"><span class="pre">conftest.py</span></code> file using <a class="reference internal" href="../reference/reference.html#globalvar-pytest_plugins"><code class="xref std std-globalvar docutils literal notranslate"><span class="pre">pytest_plugins</span></code></a>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pytest_plugins</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"name1"</span><span class="p">,</span> <span class="s2">"name2"</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>When the test module or conftest plugin is loaded the specified plugins
+will be loaded as well. Any module can be blessed as a plugin, including internal
+application modules:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pytest_plugins</span> <span class="o">=</span> <span class="s2">"myapp.testsupport.myplugin"</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="../reference/reference.html#globalvar-pytest_plugins"><code class="xref std std-globalvar docutils literal notranslate"><span class="pre">pytest_plugins</span></code></a> are processed recursively, so note that in the example above
+if <code class="docutils literal notranslate"><span class="pre">myapp.testsupport.myplugin</span></code> also declares <a class="reference internal" href="../reference/reference.html#globalvar-pytest_plugins"><code class="xref std std-globalvar docutils literal notranslate"><span class="pre">pytest_plugins</span></code></a>, the contents
+of the variable will also be loaded as plugins, and so on.</p>
+<a class="dashAnchor" name="//apple_ref/cpp/Section/requiring plugins in non-root conftests"></a><div class="admonition note" id="requiring-plugins-in-non-root-conftests">
+<p class="admonition-title">Note</p>
+<p>Requiring plugins using <a class="reference internal" href="../reference/reference.html#globalvar-pytest_plugins"><code class="xref std std-globalvar docutils literal notranslate"><span class="pre">pytest_plugins</span></code></a> variable in non-root
+<code class="docutils literal notranslate"><span class="pre">conftest.py</span></code> files is deprecated.</p>
+<p>This is important because <code class="docutils literal notranslate"><span class="pre">conftest.py</span></code> files implement per-directory
+hook implementations, but once a plugin is imported, it will affect the
+entire directory tree. In order to avoid confusion, defining
+<a class="reference internal" href="../reference/reference.html#globalvar-pytest_plugins"><code class="xref std std-globalvar docutils literal notranslate"><span class="pre">pytest_plugins</span></code></a> in any <code class="docutils literal notranslate"><span class="pre">conftest.py</span></code> file which is not located in the
+tests root directory is deprecated, and will raise a warning.</p>
+</div>
+<p>This mechanism makes it easy to share fixtures within applications or even
+external applications without the need to create external plugins using
+the <code class="docutils literal notranslate"><span class="pre">setuptools</span></code>’s entry point technique.</p>
+<p>Plugins imported by <a class="reference internal" href="../reference/reference.html#globalvar-pytest_plugins"><code class="xref std std-globalvar docutils literal notranslate"><span class="pre">pytest_plugins</span></code></a> will also automatically be marked
+for assertion rewriting (see <a class="reference internal" href="../reference/reference.html#pytest.register_assert_rewrite" title="pytest.register_assert_rewrite"><code class="xref py py-func docutils literal notranslate"><span class="pre">pytest.register_assert_rewrite()</span></code></a>).
+However for this to have any effect the module must not be
+imported already; if it was already imported at the time the
+<a class="reference internal" href="../reference/reference.html#globalvar-pytest_plugins"><code class="xref std std-globalvar docutils literal notranslate"><span class="pre">pytest_plugins</span></code></a> statement is processed, a warning will result and
+assertions inside the plugin will not be rewritten.  To fix this you
+can either call <a class="reference internal" href="../reference/reference.html#pytest.register_assert_rewrite" title="pytest.register_assert_rewrite"><code class="xref py py-func docutils literal notranslate"><span class="pre">pytest.register_assert_rewrite()</span></code></a> yourself before
+the module is imported, or you can arrange the code to delay the
+importing until after the plugin is registered.</p>
+</section>
+<section id="accessing-another-plugin-by-name">
+<h2>Accessing another plugin by name<a class="headerlink" href="#accessing-another-plugin-by-name" title="Permalink to this heading">¶</a></h2>
+<p>If a plugin wants to collaborate with code from
+another plugin it can obtain a reference through
+the plugin manager like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">plugin</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">pluginmanager</span><span class="o">.</span><span class="n">get_plugin</span><span class="p">(</span><span class="s2">"name_of_plugin"</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you want to look at the names of existing plugins, use
+the <code class="docutils literal notranslate"><span class="pre">--trace-config</span></code> option.</p>
+</section>
+<section id="registering-custom-markers">
+<a class="dashAnchor" name="//apple_ref/cpp/Section/Registering custom markers"></a><span id="registering-markers"></span><h2>Registering custom markers<a class="headerlink" href="#registering-custom-markers" title="Permalink to this heading">¶</a></h2>
+<p>If your plugin uses any markers, you should register them so that they appear in
+pytest’s help text and do not <a class="reference internal" href="mark.html#unknown-marks"><span class="std std-ref">cause spurious warnings</span></a>.
+For example, the following plugin would register <code class="docutils literal notranslate"><span class="pre">cool_marker</span></code> and
+<code class="docutils literal notranslate"><span class="pre">mark_with</span></code> for all users:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">pytest_configure</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">addinivalue_line</span><span class="p">(</span><span class="s2">"markers"</span><span class="p">,</span> <span class="s2">"cool_marker: this one is for cool tests."</span><span class="p">)</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">addinivalue_line</span><span class="p">(</span>
+        <span class="s2">"markers"</span><span class="p">,</span> <span class="s2">"mark_with(arg, arg2): this marker takes arguments."</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="testing-plugins">
+<h2>Testing plugins<a class="headerlink" href="#testing-plugins" title="Permalink to this heading">¶</a></h2>
+<p>pytest comes with a plugin named <code class="docutils literal notranslate"><span class="pre">pytester</span></code> that helps you write tests for
+your plugin code. The plugin is disabled by default, so you will have to enable
+it before you can use it.</p>
+<p>You can do so by adding the following line to a <code class="docutils literal notranslate"><span class="pre">conftest.py</span></code> file in your
+testing directory:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># content of conftest.py</span>
+
+<span class="n">pytest_plugins</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"pytester"</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Alternatively you can invoke pytest with the <code class="docutils literal notranslate"><span class="pre">-p</span> <span class="pre">pytester</span></code> command line
+option.</p>
+<p>This will allow you to use the <a class="reference internal" href="../reference/reference.html#pytest.Pytester" title="pytest.Pytester"><code class="xref py py-class docutils literal notranslate"><span class="pre">pytester</span></code></a>
+fixture for testing your plugin code.</p>
+<p>Let’s demonstrate what you can do with the plugin with an example. Imagine we
+developed a plugin that provides a fixture <code class="docutils literal notranslate"><span class="pre">hello</span></code> which yields a function
+and we can invoke this function with one optional parameter. It will return a
+string value of <code class="docutils literal notranslate"><span class="pre">Hello</span> <span class="pre">World!</span></code> if we do not supply a value or <code class="docutils literal notranslate"><span class="pre">Hello</span>
+<span class="pre">{value}!</span></code> if we do supply a string value.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pytest</span>
+
+
+<span class="k">def</span> <span class="nf">pytest_addoption</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
+    <span class="n">group</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getgroup</span><span class="p">(</span><span class="s2">"helloworld"</span><span class="p">)</span>
+    <span class="n">group</span><span class="o">.</span><span class="n">addoption</span><span class="p">(</span>
+        <span class="s2">"--name"</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">"store"</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">"name"</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">"World"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'Default "name" for hello().'</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+<span class="k">def</span> <span class="nf">hello</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">getoption</span><span class="p">(</span><span class="s2">"name"</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_hello</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">getoption</span><span class="p">(</span><span class="s2">"name"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"Hello </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">!"</span>
+
+    <span class="k">return</span> <span class="n">_hello</span>
+</pre></div>
+</div>
+<p>Now the <code class="docutils literal notranslate"><span class="pre">pytester</span></code> fixture provides a convenient API for creating temporary
+<code class="docutils literal notranslate"><span class="pre">conftest.py</span></code> files and test files. It also allows us to run the tests and
+return a result object, with which we can assert the tests’ outcomes.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">test_hello</span><span class="p">(</span><span class="n">pytester</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Make sure that our plugin works."""</span>
+
+    <span class="c1"># create a temporary conftest.py file</span>
+    <span class="n">pytester</span><span class="o">.</span><span class="n">makeconftest</span><span class="p">(</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        import pytest</span>
+
+<span class="sd">        @pytest.fixture(params=[</span>
+<span class="sd">            "Brianna",</span>
+<span class="sd">            "Andreas",</span>
+<span class="sd">            "Floris",</span>
+<span class="sd">        ])</span>
+<span class="sd">        def name(request):</span>
+<span class="sd">            return request.param</span>
+<span class="sd">    """</span>
+    <span class="p">)</span>
+
+    <span class="c1"># create a temporary pytest test file</span>
+    <span class="n">pytester</span><span class="o">.</span><span class="n">makepyfile</span><span class="p">(</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        def test_hello_default(hello):</span>
+<span class="sd">            assert hello() == "Hello World!"</span>
+
+<span class="sd">        def test_hello_name(hello, name):</span>
+<span class="sd">            assert hello(name) == "Hello {0}!".format(name)</span>
+<span class="sd">    """</span>
+    <span class="p">)</span>
+
+    <span class="c1"># run all tests with pytest</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">pytester</span><span class="o">.</span><span class="n">runpytest</span><span class="p">()</span>
+
+    <span class="c1"># check that all 4 tests passed</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">assert_outcomes</span><span class="p">(</span><span class="n">passed</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Additionally it is possible to copy examples to the <code class="docutils literal notranslate"><span class="pre">pytester</span></code>’s isolated environment
+before running pytest on it. This way we can abstract the tested logic to separate files,
+which is especially useful for longer tests and/or longer <code class="docutils literal notranslate"><span class="pre">conftest.py</span></code> files.</p>
+<p>Note that for <code class="docutils literal notranslate"><span class="pre">pytester.copy_example</span></code> to work we need to set <code class="docutils literal notranslate"><span class="pre">pytester_example_dir</span></code>
+in our <code class="docutils literal notranslate"><span class="pre">pytest.ini</span></code> to tell pytest where to look for example files.</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="c1"># content of pytest.ini</span>
+<span class="k">[pytest]</span>
+<span class="na">pytester_example_dir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">.</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># content of test_example.py</span>
+
+
+<span class="k">def</span> <span class="nf">test_plugin</span><span class="p">(</span><span class="n">pytester</span><span class="p">):</span>
+    <span class="n">pytester</span><span class="o">.</span><span class="n">copy_example</span><span class="p">(</span><span class="s2">"test_example.py"</span><span class="p">)</span>
+    <span class="n">pytester</span><span class="o">.</span><span class="n">runpytest</span><span class="p">(</span><span class="s2">"-k"</span><span class="p">,</span> <span class="s2">"test_example"</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">test_example</span><span class="p">():</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+<div class="highlight-pytest notranslate"><div class="highlight"><pre><span></span>$ pytest
+<span class="-Color -Color-Bold">=========================== test session starts ============================</span>
+platform linux -- Python 3.x.y, pytest-7.x.y, pluggy-1.x.y
+rootdir: /home/sweet/project
+configfile: pytest.ini
+collected 2 items
+
+test_example.py <span class="-Color -Color-Green">..</span>                                                   <span class="-Color -Color-Green">[100%]</span>
+
+<span class="-Color -Color-Green">============================ </span><span class="-Color -Color-Bold -Color-Bold-Green">2 passed</span><span class="-Color -Color-Green"> in 0.12s =============================</span>
+</pre></div>
+</div>
+<p>For more information about the result object that <code class="docutils literal notranslate"><span class="pre">runpytest()</span></code> returns, and
+the methods that it provides please check out the <a class="reference internal" href="../reference/reference.html#pytest.RunResult" title="_pytest.pytester.RunResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">RunResult</span></code></a> documentation.</p>
+</section>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+<span id="sidebar-top"></span>
+<div class="clearer"></div>
+</div>
+<div class="footer" role="contentinfo">
+        © Copyright 2015, holger krekel and pytest-dev team.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    </div>
+<script src="../_static/version_warning_offset.js"></script>
+</body>
+</html>

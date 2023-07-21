@@ -1,0 +1,2088 @@
+<html><!-- Online page at https://redis.io/docs/data-types/streams-tutorial/ --><head><meta charset="utf-8"><title>Redis Streams tutorial</title><link rel="stylesheet" href="../../css_1.css" type="text/css"><link rel="stylesheet" href="../../css_2.css" type="text/css"><link rel="stylesheet" href="../../css_3.css" type="text/css"><link rel="stylesheet" href="../../css_4.css" type="text/css"><link rel="stylesheet" href="../../css_5.css" type="text/css"><script type="text/javascript" src="../../js_1.js"></script><script type="text/javascript" src="../../js_10.js"></script><script type="text/javascript" src="../../js_3.js"></script><script type="text/javascript" src="../../js_4.js"></script><script type="text/javascript" src="../../js_5.js"></script><script type="text/javascript" src="../../js_6.js"></script><script type="text/javascript" src="../../js_7.js"></script><script type="text/javascript" src="../../js_8.js"></script><style>
+        [data-scroll-disabled="on"], 
+        [data-scroll-disabled="on"] body {
+          touch-action: none;
+          overscroll-behavior: none;
+          -webkit-overflow-scrolling: auto;
+          overflow: hidden;
+        }
+  
+        [data-scroll-disabled="on"] .sticky {
+          position: fixed;
+        }
+      </style><style>
+        [data-scroll-disabled="on"], 
+        [data-scroll-disabled="on"] body {
+          touch-action: none;
+          overscroll-behavior: none;
+          -webkit-overflow-scrolling: auto;
+          overflow: hidden;
+        }
+  
+        [data-scroll-disabled="on"] .sticky {
+          position: fixed;
+        }
+      </style><style>
+        [data-scroll-disabled="on"], 
+        [data-scroll-disabled="on"] body {
+          touch-action: none;
+          overscroll-behavior: none;
+          -webkit-overflow-scrolling: auto;
+          overflow: hidden;
+        }
+  
+        [data-scroll-disabled="on"] .sticky {
+          position: fixed;
+        }
+      </style><style>
+        [data-scroll-disabled="on"], 
+        [data-scroll-disabled="on"] body {
+          touch-action: none;
+          overscroll-behavior: none;
+          -webkit-overflow-scrolling: auto;
+          overflow: hidden;
+        }
+  
+        [data-scroll-disabled="on"] .sticky {
+          position: fixed;
+        }
+      </style><style>
+        [data-scroll-disabled="on"], 
+        [data-scroll-disabled="on"] body {
+          touch-action: none;
+          overscroll-behavior: none;
+          -webkit-overflow-scrolling: auto;
+          overflow: hidden;
+        }
+  
+        [data-scroll-disabled="on"] .sticky {
+          position: fixed;
+        }
+      </style><style>
+        [data-scroll-disabled="on"], 
+        [data-scroll-disabled="on"] body {
+          touch-action: none;
+          overscroll-behavior: none;
+          -webkit-overflow-scrolling: auto;
+          overflow: hidden;
+        }
+  
+        [data-scroll-disabled="on"] .sticky {
+          position: fixed;
+        }
+      </style><style>
+        [data-scroll-disabled="on"], 
+        [data-scroll-disabled="on"] body {
+          touch-action: none;
+          overscroll-behavior: none;
+          -webkit-overflow-scrolling: auto;
+          overflow: hidden;
+        }
+  
+        [data-scroll-disabled="on"] .sticky {
+          position: fixed;
+        }
+      </style><style>
+        [data-scroll-disabled="on"], 
+        [data-scroll-disabled="on"] body {
+          touch-action: none;
+          overscroll-behavior: none;
+          -webkit-overflow-scrolling: auto;
+          overflow: hidden;
+        }
+  
+        [data-scroll-disabled="on"] .sticky {
+          position: fixed;
+        }
+      </style><style>
+        [data-scroll-disabled="on"], 
+        [data-scroll-disabled="on"] body {
+          touch-action: none;
+          overscroll-behavior: none;
+          -webkit-overflow-scrolling: auto;
+          overflow: hidden;
+        }
+  
+        [data-scroll-disabled="on"] .sticky {
+          position: fixed;
+        }
+      </style><style>
+        [data-scroll-disabled="on"], 
+        [data-scroll-disabled="on"] body {
+          touch-action: none;
+          overscroll-behavior: none;
+          -webkit-overflow-scrolling: auto;
+          overflow: hidden;
+        }
+  
+        [data-scroll-disabled="on"] .sticky {
+          position: fixed;
+        }
+      </style><style>
+        [data-scroll-disabled="on"], 
+        [data-scroll-disabled="on"] body {
+          touch-action: none;
+          overscroll-behavior: none;
+          -webkit-overflow-scrolling: auto;
+          overflow: hidden;
+        }
+  
+        [data-scroll-disabled="on"] .sticky {
+          position: fixed;
+        }
+      </style><style>
+        [data-scroll-disabled="on"], 
+        [data-scroll-disabled="on"] body {
+          touch-action: none;
+          overscroll-behavior: none;
+          -webkit-overflow-scrolling: auto;
+          overflow: hidden;
+        }
+  
+        [data-scroll-disabled="on"] .sticky {
+          position: fixed;
+        }
+      </style><style>
+        [data-scroll-disabled="on"], 
+        [data-scroll-disabled="on"] body {
+          touch-action: none;
+          overscroll-behavior: none;
+          -webkit-overflow-scrolling: auto;
+          overflow: hidden;
+        }
+  
+        [data-scroll-disabled="on"] .sticky {
+          position: fixed;
+        }
+      </style><style>
+        [data-scroll-disabled="on"], 
+        [data-scroll-disabled="on"] body {
+          touch-action: none;
+          overscroll-behavior: none;
+          -webkit-overflow-scrolling: auto;
+          overflow: hidden;
+        }
+  
+        [data-scroll-disabled="on"] .sticky {
+          position: fixed;
+        }
+      </style><style>
+        [data-scroll-disabled="on"], 
+        [data-scroll-disabled="on"] body {
+          touch-action: none;
+          overscroll-behavior: none;
+          -webkit-overflow-scrolling: auto;
+          overflow: hidden;
+        }
+  
+        [data-scroll-disabled="on"] .sticky {
+          position: fixed;
+        }
+      </style><style>
+        [data-scroll-disabled="on"], 
+        [data-scroll-disabled="on"] body {
+          touch-action: none;
+          overscroll-behavior: none;
+          -webkit-overflow-scrolling: auto;
+          overflow: hidden;
+        }
+  
+        [data-scroll-disabled="on"] .sticky {
+          position: fixed;
+        }
+      </style><style>
+        [data-scroll-disabled="on"], 
+        [data-scroll-disabled="on"] body {
+          touch-action: none;
+          overscroll-behavior: none;
+          -webkit-overflow-scrolling: auto;
+          overflow: hidden;
+        }
+  
+        [data-scroll-disabled="on"] .sticky {
+          position: fixed;
+        }
+      </style><style>
+        [data-scroll-disabled="on"], 
+        [data-scroll-disabled="on"] body {
+          touch-action: none;
+          overscroll-behavior: none;
+          -webkit-overflow-scrolling: auto;
+          overflow: hidden;
+        }
+  
+        [data-scroll-disabled="on"] .sticky {
+          position: fixed;
+        }
+      </style><style>
+        [data-scroll-disabled="on"], 
+        [data-scroll-disabled="on"] body {
+          touch-action: none;
+          overscroll-behavior: none;
+          -webkit-overflow-scrolling: auto;
+          overflow: hidden;
+        }
+  
+        [data-scroll-disabled="on"] .sticky {
+          position: fixed;
+        }
+      </style></head><body class="antialiased tracking-[-0.01em]">
+    <noscript>&amp;amp;amp;amp;amp;amp;amp;amp;amp;amp;amp;amp;amp;amp;amp;amp;amp;amp;amp;lt;iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T4MTBKP"
+        height="0" width="0" style="display:none;visibility:hidden"&amp;amp;amp;amp;amp;amp;amp;amp;amp;amp;amp;amp;amp;amp;amp;amp;amp;amp;amp;gt;&amp;amp;amp;amp;amp;amp;amp;amp;amp;amp;amp;amp;amp;amp;amp;amp;amp;amp;amp;lt;/iframe&amp;amp;amp;amp;amp;amp;amp;amp;amp;amp;amp;amp;amp;amp;amp;amp;amp;amp;amp;gt;</noscript>
+    <header class="sticky top-0 z-50 flex items-center w-full text-xs lg:text-sm font-semibold lg:font-medium text-white shadow bg-midnight-700">
+      <div class="flex items-center w-full h-16 container max-w-[85rem] mx-auto px-4 sm:px-8">
+  <a class="relative z-50 mr-auto" href="../../../redis.io.html">
+    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 368.69 125.59" class="w-auto h-8">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: none;
+      }
+
+      .cls-2 {
+        clip-path: url(#clip-path);
+      }
+
+      .cls-3 {
+        fill: #a32422;
+      }
+
+      .cls-4 {
+        fill: #dc382c;
+      }
+
+      .cls-5 {
+        fill: #fff;
+      }
+
+      .cls-6 {
+        fill: #741113;
+      }
+
+      .cls-7 {
+        fill: #ac2724;
+      }
+    </style>
+    <clipPath id="clip-path" transform="translate(0.01 0.01)">
+      <rect class="cls-1" width="146.42" height="125.48"></rect>
+    </clipPath>
+  </defs>
+  <g id="Layer_2" data-name="Layer 2">
+    <g id="Layer_1-2" data-name="Layer 1">
+      <g class="cls-2">
+        <path class="cls-3" d="M140.66,96.74c-7.8,4.08-48.28,20.73-57,25.3s-13.39,4.44-20.21,1.18S13.7,102.5,5.92,98.78C2,96.94,0,95.37,0,93.9V79.09S56.08,66.92,65.13,63.64,77.31,60.28,85,63.1,138.79,74.24,146.4,77V91.6c0,1.52-1.75,3-5.74,5.13Z" transform="translate(0.01 0.01)"></path>
+        <path class="cls-4" d="M140.66,82c-7.8,4.06-48.28,20.71-57,25.2s-13.39,4.45-20.21,1.2S13.7,87.69,5.92,84s-7.93-6.27-.3-9.25S56.08,55,65.13,51.7,77.31,48.33,85,51.16,133,70,140.57,72.79s7.92,5.08.09,9.13Z" transform="translate(0.01 0.01)"></path>
+        <path class="cls-3" d="M140.66,72.62c-7.8,4.07-48.28,20.71-57,25.2S70.31,102.27,63.49,99,13.7,78.37,5.92,74.66C2,72.8,0,71.24,0,69.76V55S56.08,42.79,65.13,39.51,77.31,36.14,85,39,138.79,50.1,146.4,52.88v14.6C146.4,69,144.65,70.52,140.66,72.62Z" transform="translate(0.01 0.01)"></path>
+        <path class="cls-4" d="M140.66,57.81c-7.8,4.08-48.28,20.72-57,25.21s-13.39,4.46-20.21,1.2S13.7,63.57,5.92,59.85-2,53.6,5.62,50.62s50.46-19.79,59.51-23S77.31,24.21,85,27,133,45.94,140.57,48.65s7.92,5.09.09,9.13Z" transform="translate(0.01 0.01)"></path>
+        <path class="cls-3" d="M140.66,47.59c-7.8,4.08-48.28,20.73-57,25.21S70.31,77.25,63.49,74,13.7,53.34,5.92,49.63C2,47.79,0,46.22,0,44.74V29.93S56.08,17.76,65.13,14.49,77.31,11.12,85,13.94s53.77,11.14,61.38,13.92v14.6C146.4,44,144.65,45.5,140.66,47.59Z" transform="translate(0.01 0.01)"></path>
+        <path class="cls-4" d="M140.66,32.8c-7.8,4-48.28,20.75-57,25.2s-13.39,4.44-20.21,1.2S13.7,38.53,5.92,34.83s-7.93-6.27-.3-9.25S56.08,5.8,65.13,2.54,77.31-.82,85,2,133,20.85,140.57,23.63s7.92,5.09.09,9.14Z" transform="translate(0.01 0.01)"></path>
+      </g>
+      <polygon class="cls-5" points="75.51 11.78 85.17 8.61 82.55 14.87 92.38 18.55 79.71 19.87 76.86 26.71 72.28 19.08 57.63 17.76 68.57 13.82 65.28 7.76 75.51 11.78 75.51 11.78 75.51 11.78"></polygon>
+      <polygon class="cls-5" points="76.12 51.71 52.44 41.88 86.36 36.67 76.12 51.71 76.12 51.71 76.12 51.71"></polygon>
+      <path class="cls-5" d="M43.28,22.34c10,0,18.13,3.15,18.13,7s-8.15,7-18.13,7-18.14-3.15-18.14-7S33.27,22.34,43.28,22.34Z" transform="translate(0.01 0.01)"></path>
+      <polygon class="cls-6" points="107.39 20.42 127.46 28.35 107.41 36.28 107.39 20.42 107.39 20.42 107.39 20.42"></polygon>
+      <polygon class="cls-7" points="107.39 20.42 107.41 36.28 105.23 37.13 85.17 29.2 107.39 20.42 107.39 20.42 107.39 20.42"></polygon>
+      <path class="cls-5" d="M193,41.4a17.36,17.36,0,0,1,6.23-4.34,20,20,0,0,1,7.3-1.61,6.71,6.71,0,0,1,5,1.61,5,5,0,0,1,1.52,3.79,5.39,5.39,0,0,1-1.52,3.79,4.9,4.9,0,0,1-3.79,1.63c-6.24.55-14.9,6.77-14.9,15.22V80.67a5.57,5.57,0,0,1-5.42,5.41,4.92,4.92,0,0,1-3.87-1.67,5.36,5.36,0,0,1-1.62-3.79v-40a5.35,5.35,0,0,1,1.62-3.79,7.2,7.2,0,0,1,4.07-1.36,5.52,5.52,0,0,1,5.41,5.4Z" transform="translate(0.01 0.01)"></path>
+      <path class="cls-5" d="M258.71,59a5.25,5.25,0,0,1-1.35,3.54,6.11,6.11,0,0,1-3.79,1.62h-32a10.31,10.31,0,0,0,3.47,6.56,14.46,14.46,0,0,0,9.48,4.57,14.07,14.07,0,0,0,10.56-2.44,5.52,5.52,0,0,1,4.07-1.63,4.65,4.65,0,0,1,3.51,1.36,4.41,4.41,0,0,1,.26,6.24c-.08.09-.17.17-.26.26a24.49,24.49,0,0,1-17.59,6.5A23,23,0,0,1,217.5,78a26.67,26.67,0,0,1-7.3-17.9,24.31,24.31,0,0,1,7.3-17.88,22.59,22.59,0,0,1,17.06-7.31,22,22,0,0,1,16.74,6.78,24.78,24.78,0,0,1,7.61,16.74v.53Zm-24.1-14.35a14.2,14.2,0,0,0-9.13,3.53,13.17,13.17,0,0,0-4.33,7h28.43a12.39,12.39,0,0,0-4.88-6.76,17.3,17.3,0,0,0-10-3.81" transform="translate(0.01 0.01)"></path>
+      <path class="cls-5" d="M309.66,80.12a5.57,5.57,0,0,1-5.41,5.42,5.85,5.85,0,0,1-5.42-4.34A23.23,23.23,0,0,1,285,85.54a23.57,23.57,0,0,1-17.33-7.31,24.14,24.14,0,0,1-7.05-17.88,25.75,25.75,0,0,1,7.05-17.87A23.85,23.85,0,0,1,285,34.87a22.34,22.34,0,0,1,13.53,4.34V20.28a4.92,4.92,0,0,1,1.63-3.79A5.37,5.37,0,0,1,304,14.86a4.92,4.92,0,0,1,3.79,1.63,5.36,5.36,0,0,1,1.63,3.79V80.12ZM285.31,74.7a12,12,0,0,0,9.47-4.32,14.4,14.4,0,0,0,0-20A13,13,0,0,0,285.31,46a11.65,11.65,0,0,0-9.48,4.34,14.4,14.4,0,0,0,0,20,12.49,12.49,0,0,0,9.48,4.32" transform="translate(0.01 0.01)"></path>
+      <path class="cls-5" d="M325.67,20.28v2.18A5.5,5.5,0,0,1,324,26.58a4.64,4.64,0,0,1-3.79,1.35,4.86,4.86,0,0,1-3.78-1.61,5.44,5.44,0,0,1-1.63-4.06v-2a5.28,5.28,0,0,1,1.63-3.79,5.33,5.33,0,0,1,3.78-1.63A5,5,0,0,1,324,16.49a4.9,4.9,0,0,1,1.66,3.79m-9.13,16.53a5.28,5.28,0,0,1,3.79-1.63,4.85,4.85,0,0,1,3.79,1.63,5.48,5.48,0,0,1,1.55,4V80.42A4.55,4.55,0,0,1,324,84.21a5.33,5.33,0,0,1-3.78,1.63,4.9,4.9,0,0,1-3.79-1.63,5.28,5.28,0,0,1-1.63-3.79V40.85a5.39,5.39,0,0,1,1.63-4" transform="translate(0.01 0.01)"></path>
+      <path class="cls-5" d="M364.08,40.6a5.29,5.29,0,0,1,2.17,3.24,7.17,7.17,0,0,1-.54,4.06,5.4,5.4,0,0,1-3.25,2.16,5.61,5.61,0,0,1-4.07-.81c-3.79-2.43-6.75-3.78-9.2-3.78a8.74,8.74,0,0,0-6,1.88c-1.08.82-1.62,1.36-1.62,1.9a2,2,0,0,0,.27,1.36,3.74,3.74,0,0,0,1.08.81,16.19,16.19,0,0,0,7.32,2.43h0a37.75,37.75,0,0,1,9.74,3,13.57,13.57,0,0,1,6.5,5.7,13.46,13.46,0,0,1-4.06,18.67,21.79,21.79,0,0,1-13,4.06c-6.23,0-12.18-2.43-17.87-7a5.77,5.77,0,0,1-1.9-3.53,5.2,5.2,0,0,1,8.4-4.56,15.73,15.73,0,0,0,11.1,4.33,11.61,11.61,0,0,0,6.77-1.9c1.08-1.08,1.9-1.89,1.9-2.71s0-1.08-.27-1.35c0-.28-.55-.81-1.36-1.08a20.15,20.15,0,0,0-8.13-2.86h0a28.26,28.26,0,0,1-9.2-3,16.56,16.56,0,0,1-6.5-5.67,12.61,12.61,0,0,1-1.61-6.23,13.3,13.3,0,0,1,5.95-11.11,21.82,21.82,0,0,1,12.45-3.79c4.56.28,9.48,2.16,14.89,5.69" transform="translate(0.01 0.01)"></path>
+    </g>
+  </g>
+</svg>
+  </a>
+
+	<nav data-menu="" class="hidden lg:flex items-center justify-center content-start lg:content-center lg:gap-y-4 flex-1 z-40 fixed inset-0 lg:static bg-slate-900 lg:bg-transparent text-sm max-h-screen lg:max-w-none pt-20 pb-8 lg:py-0 overflow-y-auto lg:overflow-y-visible">
+    
+    
+      
+
+        
+        <a href="../getting-started.html" class="hidden uppercase rounded-sm lg:flex items-center justify-items-center first:ml-auto ml-1 px-3 py-2 rounded bg-transparent hover:text-white/50 focus:text-white/50 whitespace-nowrap transition-colors">
+          
+          
+          Get started
+        </a>
+
+        
+        <a href="../getting-started.html" class="flex lg:hidden items-center mt-1.5">
+          Get started
+        </a>
+      
+    
+      
+        
+        
+        <dl class="hidden lg:flex group relative first:ml-auto ml-1 mt-3 mb-0 px-3 pt-2 pb-5 cursor-pointer">
+          <dt class="sr-only uppercase lg:not-sr-only flex items-center justify-items-center group-hover:text-white/50 group-focus-within:text-white/50 whitespace-nowrap transition-colors" href="#">
+            
+            Docs
+          </dt>
+          <dd class="hidden lg:grid text-[0.8rem] lg:text-sm text-redis-neutral-800 absolute top-full -mt-1 right-[1000rem] p-2 group-hover:right-[unset] group-hover:-left-3 group-focus-within:right-[unset] group-focus-within:-left-3 bg-white rounded-lg border border-slate-500/10 bg-clip-padding shadow-md">
+            
+              
+                <div class="-my-2 pr-3 py-4 col-start-1  pl-3 ">
+                  <a href="../about.html" class=" font-semibold text-[0.9375rem] text-slate-900 flex items-center whitespace-nowrap min-w-[10rem] hover:text-slate-600 focus:text-slate-600 transition-colors">
+                    
+                      <span class="grid place-items-center w-5 h-5 mr-2.5">
+                        
+                        <svg viewBox="0 0 147 126" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M140.708 96.7107c-7.81 4.0703-48.2904 20.7203-57.0004 25.2903C74.9976 126.571 70.3176 126.441 63.4976 123.191s-49.8-20.73-57.57002-24.4403C2.04758 96.9007.00756836 95.3407.00756836 93.8607V79.0508S56.0876 66.8807 65.1376 63.6107 77.3176 60.2406 85.0276 63.0606C92.7376 65.8806 138.798 74.2007 146.408 76.9807V91.5606C146.408 93.0806 144.658 94.5606 140.668 96.6907L140.708 96.7107z" fill="#a32422"></path><path d="M140.708 81.9108C132.898 85.9808 92.4176 102.631 83.7076 107.121 74.9976 111.611 70.3176 111.561 63.4976 108.321c-6.82-3.24-49.8-20.6703-57.57001-24.3703-7.77-3.7-7.92999-6.27-.30999-9.25s50.47-19.78 59.52-23S77.3176 48.3408 85.0276 51.1708C92.7376 54.0008 132.968 70.0108 140.578 72.7908 148.188 75.5708 148.488 77.8808 140.668 81.9208L140.708 81.9108z" fill="#dc382c"></path><path d="M140.708 72.5807C132.898 76.6507 92.4176 93.3008 83.7076 97.7908 74.9976 102.281 70.3176 102.231 63.4976 98.9907 56.6776 95.7507 13.6976 78.3407 5.92758 74.6207 2.04758 72.7707.00756836 71.2007.00756836 69.7207V54.9306S56.0876 42.7607 65.1376 39.4707 77.3176 36.1107 85.0276 38.9407C92.7376 41.7707 138.798 50.0607 146.408 52.8507v14.64C146.488 68.9607 144.698 70.4907 140.708 72.5807z" fill="#a32422"></path><path d="M140.708 57.7808c-7.81 4.08-48.2904 20.7099-57.0004 25.1999S70.3176 87.4407 63.4976 84.1807s-49.8-20.65-57.57001-24.36C-1.84241 56.1107-2.0024 53.5607 5.6176 50.5807s50.47-19.78 59.52-23S77.3176 24.2208 85.0276 27.0308C92.7376 29.8408 132.968 45.9508 140.578 48.6608 148.188 51.3708 148.488 53.7408 140.668 57.7908L140.708 57.7808z" fill="#dc382c"></path><path d="M140.708 47.5508c-7.81 4.08-48.2904 20.73-57.0004 25.22C74.9976 77.2608 70.3176 77.2107 63.4976 73.9507 56.6776 70.6907 13.6976 53.3007 5.92758 49.5907c-3.88-1.84-5.92001164-3.41-5.92001164-4.89V29.9008S56.0876 17.7207 65.1376 14.4507c9.05-3.27 12.18-3.3599 19.89-.549899999999999C92.7376 16.7108 138.798 25.0407 146.408 27.8307V42.4208C146.488 43.9408 144.698 45.4908 140.708 47.5508z" fill="#a32422"></path><path d="M140.708 32.7607c-7.81 4-48.2904 20.7599-57.0004 25.1999s-13.39 4.4401-20.21 1.2001-49.8-20.66-57.57001-24.36c-7.77-3.7-7.92999-6.27-.30999-9.26 7.62-2.99 50.47-19.77998 59.52-22.99998 9.05-3.219996 12.18-3.360025 19.89-.53003C92.7376 4.84069 132.968 20.8507 140.578 23.6407 148.188 26.4307 148.488 28.7207 140.668 32.7707L140.708 32.7607z" fill="#dc382c"></path><path d="M140.708 96.7107c-7.81 4.0703-48.2904 20.7203-57.0004 25.2903C74.9976 126.571 70.3176 126.441 63.4976 123.191s-49.8-20.73-57.57002-24.4403C2.04758 96.9007.00756836 95.3407.00756836 93.8607V79.0508S56.0876 66.8807 65.1376 63.6107 77.3176 60.2406 85.0276 63.0606C92.7376 65.8806 138.798 74.2007 146.408 76.9807V91.5606C146.408 93.0806 144.658 94.5606 140.668 96.6907L140.708 96.7107z" fill="#a32422"></path><path d="M140.708 81.9108C132.898 85.9808 92.4176 102.631 83.7076 107.121 74.9976 111.611 70.3176 111.561 63.4976 108.321c-6.82-3.24-49.8-20.6703-57.57001-24.3703-7.77-3.7-7.92999-6.27-.30999-9.25s50.47-19.78 59.52-23S77.3176 48.3408 85.0276 51.1708C92.7376 54.0008 132.968 70.0108 140.578 72.7908 148.188 75.5708 148.488 77.8808 140.668 81.9208L140.708 81.9108z" fill="#dc382c"></path><path d="M140.708 72.5807C132.898 76.6507 92.4176 93.3008 83.7076 97.7908 74.9976 102.281 70.3176 102.231 63.4976 98.9907 56.6776 95.7507 13.6976 78.3407 5.92758 74.6207 2.04758 72.7707.00756836 71.2007.00756836 69.7207V54.9306S56.0876 42.7607 65.1376 39.4707 77.3176 36.1107 85.0276 38.9407C92.7376 41.7707 138.798 50.0607 146.408 52.8507v14.64C146.488 68.9607 144.698 70.4907 140.708 72.5807z" fill="#a32422"></path><path d="M140.708 57.7808c-7.81 4.08-48.2904 20.7099-57.0004 25.1999S70.3176 87.4407 63.4976 84.1807s-49.8-20.65-57.57001-24.36C-1.84241 56.1107-2.0024 53.5607 5.6176 50.5807s50.47-19.78 59.52-23S77.3176 24.2208 85.0276 27.0308C92.7376 29.8408 132.968 45.9508 140.578 48.6608 148.188 51.3708 148.488 53.7408 140.668 57.7908L140.708 57.7808z" fill="#dc382c"></path><path d="M140.708 47.5508c-7.81 4.08-48.2904 20.73-57.0004 25.22C74.9976 77.2608 70.3176 77.2107 63.4976 73.9507 56.6776 70.6907 13.6976 53.3007 5.92758 49.5907c-3.88-1.84-5.92001164-3.41-5.92001164-4.89V29.9008S56.0876 17.7207 65.1376 14.4507c9.05-3.27 12.18-3.3599 19.89-.549899999999999C92.7376 16.7108 138.798 25.0407 146.408 27.8307V42.4208C146.488 43.9408 144.698 45.4908 140.708 47.5508z" fill="#a32422"></path><path d="M140.708 32.7607c-7.81 4-48.2904 20.7599-57.0004 25.1999s-13.39 4.4401-20.21 1.2001-49.8-20.66-57.57001-24.36c-7.77-3.7-7.92999-6.27-.30999-9.26 7.62-2.99 50.47-19.77998 59.52-22.99998 9.05-3.219996 12.18-3.360025 19.89-.53003C92.7376 4.84069 132.968 20.8507 140.578 23.6407 148.188 26.4307 148.488 28.7207 140.668 32.7707L140.708 32.7607z" fill="#dc382c"></path><path d="M75.5476 11.7307l9.66-3.17-2.62 6.26 9.83 3.68-12.67 1.32L76.8976 26.6607l-4.58-7.63-14.65-1.32 10.94-3.94L65.3176 7.71069l10.23 4.02001z" fill="#fff"></path><path d="M76.1575 51.6607l-23.68-9.83 33.92-5.2-10.24 15.03z" fill="#fff"></path><path d="M43.3276 22.3008c10 0 18.12 3.15 18.12 7s-8.14 7-18.12 7c-9.98.0-18.14-3.15000000000001-18.14-7s8.13-7 18.14-7z" fill="#fff"></path><path d="M107.428 20.3707l20.07 7.93-20.05 7.93L107.428 20.3707z" fill="#741113"></path><path d="M107.428 20.3707 107.448 36.2307 105.268 37.0807l-20.0605-7.93 22.2205-8.78z" fill="#ac2724"></path></svg>
+                      </span>
+                    
+                    Redis
+                  </a>
+                  
+                    <a href="../getting-started.html" class=" pl-[1.875rem] flex items-center whitespace-nowrap rounded min-w-[10rem] pt-2 text-slate-500 hover:text-indigo-600 focus:text-slate-900 transition-colors">
+                      
+                      Get started
+                    </a>
+                  
+                    <a href="../data-types.html" class=" pl-[1.875rem] flex items-center whitespace-nowrap rounded min-w-[10rem] pt-2 text-slate-500 hover:text-indigo-600 focus:text-slate-900 transition-colors">
+                      
+                      Data types
+                    </a>
+                  
+                    <a href="../ui/cli.html" class=" pl-[1.875rem] flex items-center whitespace-nowrap rounded min-w-[10rem] pt-2 text-slate-500 hover:text-indigo-600 focus:text-slate-900 transition-colors">
+                      
+                      Redis CLI
+                    </a>
+                  
+                    <a href="../clients.html" class=" pl-[1.875rem] flex items-center whitespace-nowrap rounded min-w-[10rem] pt-2 text-slate-500 hover:text-indigo-600 focus:text-slate-900 transition-colors">
+                      
+                      Redis clients
+                    </a>
+                  
+                    <a href="../management/persistence.html" class=" pl-[1.875rem] flex items-center whitespace-nowrap rounded min-w-[10rem] pt-2 text-slate-500 hover:text-indigo-600 focus:text-slate-900 transition-colors">
+                      
+                      Persistence
+                    </a>
+                  
+                    <a href="../management/scaling.html" class=" pl-[1.875rem] flex items-center whitespace-nowrap rounded min-w-[10rem] pt-2 text-slate-500 hover:text-indigo-600 focus:text-slate-900 transition-colors">
+                      
+                      Scaling
+                    </a>
+                  
+                </div>
+              
+            
+              
+                <div class="-my-2 pr-3 py-4 col-start-2  border-l pl-5 ">
+                  <a href="../stack.html" class=" font-semibold text-[0.9375rem] text-slate-900 flex items-center whitespace-nowrap min-w-[10rem] hover:text-slate-600 focus:text-slate-600 transition-colors">
+                    
+                      <span class="grid place-items-center w-5 h-5 mr-2.5">
+                        
+                        <svg viewBox="0 0 39 31" fill="none"><path d="M21.7371 15.2903C21.5759 15.2895 21.4198 15.2337 21.2947 15.1321 21.1695 15.0305 21.0828 14.8892 21.049 14.7316S21.0362 14.4096 21.1086 14.2655C21.1811 14.1215 21.3005 14.0066 21.4472 13.9397L35.7199 7.47338 21.4578 1.34289C21.2943 1.26329 21.1678 1.12377 21.1045.953307 21.0412.78285 21.046.594558 21.1179.427547 21.1898.260535 21.3233.127641 21.4906.0564719 21.6579-.0146977 21.8462-.0186728 22.0164.045373L37.7492 6.80518C37.8747 6.8605 37.9814 6.95112 38.0563 7.06599S38.171 7.31503 38.171 7.45216 38.1312 7.72347 38.0563 7.83834C37.9814 7.95321 37.8747 8.04383 37.7492 8.09915L22.0306 15.2266C21.9388 15.2698 21.8385 15.2916 21.7371 15.2903z" fill="#db2e2e"></path><path d="M16.4339 15.2903C16.3379 15.2906 16.2429 15.2714 16.1546 15.2337L.421813 8.47393C.296339 8.41861.18966 8.32799.114767 8.21312.0398745 8.09825.0 7.96407.0 7.82694.0 7.68981.0398745 7.55564.114767 7.44077.18966 7.3259.296339 7.23528.421813 7.17995L16.1546.052465C16.3235-.0111265 16.5104-.00772359 16.6768.0619772 16.8433.131678 16.9768.2624 17.0501.427363 17.1233.592325 17.1306.779042 17.0706.949259 17.0106 1.11948 16.8878 1.26031 16.7274 1.34291L2.44763 7.80573 16.7132 13.9362C16.8612 14.0015 16.9823 14.1154 17.0565 14.2592 17.1306 14.4029 17.1532 14.5677 17.1205 14.7261 17.0878 14.8845 17.0019 15.0269 16.8769 15.1295 16.752 15.2322 16.5956 15.2889 16.4339 15.2903z" fill="#db2e2e"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M29.1651 17.4328c3.1288-1.2763 6.2047-2.5279 7.1875-3.0617L37.1163 13.9539C37.3908 13.8108 37.6564 13.6514 37.9118 13.4766 37.972 13.8833 37.972 14.2967 37.9118 14.7034 37.8022 15.1312 37.4875 15.4847 36.289 16.061 35.4617 16.4605 33.1531 17.408 30.5792 18.4687c-3.6167 1.4884-7.778 3.1819-9.0826 3.889C19.2587 23.4183 18.0284 23.4183 16.3137 22.644 15.4864 22.2021 12.4918 20.9117 9.39476 19.5611c-3.3198-1.446-6.75627-2.945-7.77802-3.4753C.22377 15.3575.153061 15.1948.160132 14.8271V13.8655L.513678 14.0564c1.311652.6647 7.219412 3.1819 11.486722 5.0204 2.1142.898 3.8112 1.6298 4.3769 1.8844C18.092 21.7319 19.3082 21.8733 21.5603 20.6748 22.7022 20.0808 25.9619 18.7409 29.1651 17.4328z" fill="#494c4d"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M29.1651 24.5037c3.1288-1.2763 6.2047-2.5279 7.1875-3.0617L37.1163 21.0248C37.3908 20.8817 37.6564 20.7223 37.9118 20.5475 37.972 20.9542 37.972 21.3676 37.9118 21.7743 37.8022 22.2021 37.4875 22.5557 36.289 23.1319 35.4617 23.5314 33.1531 24.4789 30.5792 25.5396c-3.6167 1.4884-7.778 3.1819-9.0826 3.889-2.2379 1.0606-3.4682 1.0606-5.1829.2864C15.4864 29.2801 12.4918 27.9755 9.39476 26.625c-3.3198-1.446-6.75627-2.9451-7.77802-3.4754C.22377 22.4213.153061 22.2587.160132 21.891V20.9364L.513678 21.1273C1.82533 21.792 7.73309 24.3092 12.0004 26.1477c2.1001.898 3.8006 1.6298 4.3663 1.8844C18.0814 28.8028 19.2976 28.9442 21.5497 27.7457 22.7022 27.1518 25.9619 25.8118 29.1651 24.5037z" fill="#494c4d"></path></svg>
+                      </span>
+                    
+                    Redis Stack
+                  </a>
+                  
+                    <a href="../stack/get-started.html" class=" pl-[1.875rem] flex items-center whitespace-nowrap rounded min-w-[10rem] pt-2 text-slate-500 hover:text-indigo-600 focus:text-slate-900 transition-colors">
+                      
+                      Get started
+                    </a>
+                  
+                    <a href="../stack/get-started/clients.html" class=" pl-[1.875rem] flex items-center whitespace-nowrap rounded min-w-[10rem] pt-2 text-slate-500 hover:text-indigo-600 focus:text-slate-900 transition-colors">
+                      
+                      Stack clients
+                    </a>
+                  
+                    <a href="../ui/insight.html" class=" pl-[1.875rem] flex items-center whitespace-nowrap rounded min-w-[10rem] pt-2 text-slate-500 hover:text-indigo-600 focus:text-slate-900 transition-colors">
+                      
+                      RedisInsight
+                    </a>
+                  
+                    <a href="../stack/json.html" class=" pl-[1.875rem] flex items-center whitespace-nowrap rounded min-w-[10rem] pt-2 text-slate-500 hover:text-indigo-600 focus:text-slate-900 transition-colors">
+                      
+                      JSON
+                    </a>
+                  
+                    <a href="../stack/search.html" class=" pl-[1.875rem] flex items-center whitespace-nowrap rounded min-w-[10rem] pt-2 text-slate-500 hover:text-indigo-600 focus:text-slate-900 transition-colors">
+                      
+                      Search
+                    </a>
+                  
+                    <a href="../stack/bloom.html" class=" pl-[1.875rem] flex items-center whitespace-nowrap rounded min-w-[10rem] pt-2 text-slate-500 hover:text-indigo-600 focus:text-slate-900 transition-colors">
+                      
+                      Probabilistic
+                    </a>
+                  
+                </div>
+              
+            
+          </dd>
+        </dl>
+        
+        
+        <dl class="lg:hidden">
+          <dt class="sr-only">
+            Docs
+          </dt>
+          <dd class="lg:hidden flex flex-col">
+            
+              
+                <a href="../about.html" class="flex items-center mt-2">
+                  Redis
+                </a>
+                
+                  <a href="../getting-started.html" class="mt-2">
+                    Get started
+                  </a>
+                
+                  <a href="../data-types.html" class="mt-2">
+                    Data types
+                  </a>
+                
+                  <a href="../ui/cli.html" class="mt-2">
+                    Redis CLI
+                  </a>
+                
+                  <a href="../clients.html" class="mt-2">
+                    Redis clients
+                  </a>
+                
+                  <a href="../management/persistence.html" class="mt-2">
+                    Persistence
+                  </a>
+                
+                  <a href="../management/scaling.html" class="mt-2">
+                    Scaling
+                  </a>
+                
+                <hr class="opacity-10 mt-4 mb-2">
+              
+            
+              
+                <a href="../stack.html" class="flex items-center mt-2">
+                  Redis Stack
+                </a>
+                
+                  <a href="../stack/get-started.html" class="mt-2">
+                    Get started
+                  </a>
+                
+                  <a href="../stack/get-started/clients.html" class="mt-2">
+                    Stack clients
+                  </a>
+                
+                  <a href="../ui/insight.html" class="mt-2">
+                    RedisInsight
+                  </a>
+                
+                  <a href="../stack/json.html" class="mt-2">
+                    JSON
+                  </a>
+                
+                  <a href="../stack/search.html" class="mt-2">
+                    Search
+                  </a>
+                
+                  <a href="../stack/bloom.html" class="mt-2">
+                    Probabilistic
+                  </a>
+                
+                <hr class="opacity-10 mt-4 mb-2">
+              
+            
+          </dd>
+        </dl>
+      
+    
+      
+
+        
+        <a href="../../commands.html" class="hidden uppercase rounded-sm lg:flex items-center justify-items-center first:ml-auto ml-1 px-3 py-2 rounded bg-transparent hover:text-white/50 focus:text-white/50 whitespace-nowrap transition-colors">
+          
+          
+          Commands
+        </a>
+
+        
+        <a href="../../commands.html" class="flex lg:hidden items-center mt-1.5">
+          Commands
+        </a>
+      
+    
+      
+        
+        
+        <dl class="hidden lg:flex group relative first:ml-auto ml-1 mt-3 mb-0 px-3 pt-2 pb-5 cursor-pointer">
+          <dt class="sr-only uppercase lg:not-sr-only flex items-center justify-items-center group-hover:text-white/50 group-focus-within:text-white/50 whitespace-nowrap transition-colors" href="#">
+            
+            Resources
+          </dt>
+          <dd class="hidden lg:grid text-[0.8rem] lg:text-sm text-redis-neutral-800 absolute top-full -mt-1 right-[1000rem] p-2 group-hover:right-[unset] group-hover:-left-3 group-focus-within:right-[unset] group-focus-within:-left-3 bg-white rounded-lg border border-slate-500/10 bg-clip-padding shadow-md">
+            
+              
+              <a href="../../resources/clients.html" class=" px-3 flex items-center whitespace-nowrap rounded min-w-[10rem] py-1 text-slate-500 hover:text-slate-900 focus:text-slate-900 transition-colors">
+                
+                Clients
+              </a>
+              
+            
+              
+              <a href="../../resources/libraries.html" class=" px-3 flex items-center whitespace-nowrap rounded min-w-[10rem] py-1 text-slate-500 hover:text-slate-900 focus:text-slate-900 transition-colors">
+                
+                Libraries
+              </a>
+              
+            
+              
+              <a href="../../resources/tools.html" class=" px-3 flex items-center whitespace-nowrap rounded min-w-[10rem] py-1 text-slate-500 hover:text-slate-900 focus:text-slate-900 transition-colors">
+                
+                Tools
+              </a>
+              
+            
+              
+              <a href="../../resources/modules.html" class=" px-3 flex items-center whitespace-nowrap rounded min-w-[10rem] py-1 text-slate-500 hover:text-slate-900 focus:text-slate-900 transition-colors">
+                
+                Modules
+              </a>
+              
+            
+          </dd>
+        </dl>
+        
+        
+        <dl class="lg:hidden">
+          <dt class="sr-only">
+            Resources
+          </dt>
+          <dd class="lg:hidden flex flex-col">
+            
+              
+              <a href="../../resources/clients.html" class="mt-2">
+                Clients
+              </a>
+              
+            
+              
+              <a href="../../resources/libraries.html" class="mt-2">
+                Libraries
+              </a>
+              
+            
+              
+              <a href="../../resources/tools.html" class="mt-2">
+                Tools
+              </a>
+              
+            
+              
+              <a href="../../resources/modules.html" class="mt-2">
+                Modules
+              </a>
+              
+            
+          </dd>
+        </dl>
+      
+    
+      
+
+        
+        <a href="../../community.html" class="hidden uppercase rounded-sm lg:flex items-center justify-items-center first:ml-auto ml-1 px-3 py-2 rounded bg-transparent hover:text-white/50 focus:text-white/50 whitespace-nowrap transition-colors">
+          
+          
+          Community
+        </a>
+
+        
+        <a href="../../community.html" class="flex lg:hidden items-center mt-1.5">
+          Community
+        </a>
+      
+    
+      
+
+        
+        <a href="../../support.html" class="hidden uppercase rounded-sm lg:flex items-center justify-items-center first:ml-auto ml-1 px-3 py-2 rounded bg-transparent hover:text-white/50 focus:text-white/50 whitespace-nowrap transition-colors">
+          
+          
+          Support
+        </a>
+
+        
+        <a href="../../support.html" class="flex lg:hidden items-center mt-1.5">
+          Support
+        </a>
+      
+    
+    
+    <div class="flex flex-col lg:flex-row lg:ml-auto lg:space-x-2">
+      <button id="search-button" type="button" class="rounded-sm w-full lg:w-auto transition-colors shrink-0 flex-1 lg:flex-none lg:ml-2 lg:mr-0 mt-4 lg:mt-0 inline-flex items-center px-4 py-2 text-sm font-medium rounded border focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 border-white/50 hover:text-indigo-600 focus:text-indigo-600 hover:bg-white focus:bg-white focus:ring-white">
+        <svg class="w-[0.875rem] h-[0.875rem] mr-0.5" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+        <span class="sr-only">Quick search&amp;hellip…</span>
+        <span class="lg:hidden xl:block flex-auto ml-1 mr-4" aria-hidden="">Search…</span>
+        <script>
+          if (navigator.appVersion.indexOf("Win") != -1 || navigator.appVersion.indexOf("Linux") != -1) {
+            document.querySelector('[title="Command"]').textContent = "&#8963;";
+          } 
+        </script>
+        <kbd class="font-sans font-semibold">
+          <abbr title="Command" class="no-underline">⌘</abbr>&nbsp;K
+        </kbd>
+      </button>
+      
+        <a class="rounded-sm transition-colors shrink-0 inline-flex items-center justify-center mt-2 lg:mt-0 px-4 py-2 text-sm font-medium rounded border focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900
+         border-transparent bg-indigo-500 hover:bg-indigo-600 focus:bg-indigo-600 focus:ring-indigo-600
+        " href="../../download.html">
+          Download
+        </a>
+      
+        <a class="rounded-sm transition-colors shrink-0 inline-flex items-center justify-center mt-2 lg:mt-0 px-4 py-2 text-sm font-medium rounded border focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900
+        
+         border-white/50 hover:text-indigo-600 focus:text-indigo-600 hover:bg-white focus:bg-white focus:ring-white" href="http://redis.com/try-free/">
+          Try Redis Cloud
+        </a>
+      
+    </div>
+	</nav>
+
+  <button data-menu-toggle="" aria-expanded="false" class="menu-toggle block ml-auto lg:hidden relative z-50"> 
+    <span class="sr-only">Open main menu</span> 
+    <svg aria-hidden="true" role="img" viewBox="0 0 24 24" style="pointer-events: none; width: 24px; height: 24px;" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="4" y1="6" x2="20" y2="6"></line>
+      <line x1="4" y1="12" x2="20" y2="12"></line>
+      <line x1="4" y1="18" x2="20" y2="18"></line>
+    </svg>
+  </button>
+</div>
+    </header>
+
+    
+  <main class="docs w-full max-w-[85rem] mx-auto px-4 sm:px-6 lg:px-8 md:flex gap-16">
+    
+
+<div class="hidden md:block w-52 h-full shrink-0">
+  <nav class="w-52 z-40 bg-white hidden md:block fixed top-28 pb-16 h-full max-h-[calc(100vh-7rem)] text-[0.8125rem] leading-7 font">
+    <div class="absolute right-0 -top-28 z-[-1] h-screen border-r border-slate-200/50 bg-gradient-to-bl from-slate-50 via-slate-50 to-indigo-100 w-[17rem] xl:w-[calc(50vw-23rem)]"></div>
+    <ul class="h-full max-h-[calc(100vh-7rem)] overflow-y-auto pr-6">
+      
+    <li>
+      <a class="flex justify-between items-center truncate font-semibold text-slate-900" href="../../docs.html">
+          <span>Documentation</span>
+          
+      </a>
+        <ul class="">
+          
+    <li>
+      <a class="flex justify-between items-center truncate text-slate-600 hover:text-indigo-600" href="../about.html">
+          <span>About</span>
+          
+            
+            <svg class="shrink-0 h-[1.0rem] w-[1.0rem] stroke-slate-400" viewBox="0 0 20 20" fill="currentColor">
+    <path d="M13.5355 10L6.46447 2.92893"></path>
+    <path d="M6.46447 17.0711L13.5355 10"></path>
+</svg>
+            
+          
+      </a>
+        <ul class="child-list">
+          
+        </ul>
+    </li>
+    <li>
+      <a class="flex justify-between items-center truncate text-slate-600 hover:text-indigo-600" href="../getting-started.html">
+          <span>Getting started</span>
+          
+            
+            <svg class="shrink-0 h-[1.0rem] w-[1.0rem] stroke-slate-400" viewBox="0 0 20 20" fill="currentColor">
+    <path d="M13.5355 10L6.46447 2.92893"></path>
+    <path d="M6.46447 17.0711L13.5355 10"></path>
+</svg>
+            
+          
+      </a>
+        <ul class="child-list">
+          
+        </ul>
+    </li>
+    <li>
+      <a class="flex justify-between items-center truncate text-slate-600 hover:text-indigo-600" href="../ui.html">
+          <span>User interfaces</span>
+          
+            
+            <svg class="shrink-0 h-[1.0rem] w-[1.0rem] stroke-slate-400" viewBox="0 0 20 20" fill="currentColor">
+    <path d="M13.5355 10L6.46447 2.92893"></path>
+    <path d="M6.46447 17.0711L13.5355 10"></path>
+</svg>
+            
+          
+      </a>
+        <ul class="child-list">
+          
+        </ul>
+    </li>
+    <li>
+      <a class="flex justify-between items-center truncate text-slate-600 hover:text-indigo-600" href="../data-types.html">
+          <span>Data types</span>
+          
+            
+            
+            <svg class="shrink-0 h-[1.0rem] w-[1.0rem] stroke-slate-400 rotate-90" viewBox="0 0 20 20" fill="currentColor">
+    <path d="M13.5355 10L6.46447 2.92893"></path>
+    <path d="M6.46447 17.0711L13.5355 10"></path>
+</svg>
+            
+          
+      </a>
+        <ul class="child-list">
+          
+    <li>
+      <a class="flex justify-between items-center truncate text-slate-600 hover:text-indigo-600" href="./tutorial.html">
+          <span>Tutorial</span>
+          
+      </a>
+    </li>
+    <li>
+      <a class="flex justify-between items-center truncate text-slate-600 hover:text-indigo-600" href="./strings.html">
+          <span>Strings</span>
+          
+      </a>
+    </li>
+    <li>
+      <a class="flex justify-between items-center truncate text-slate-600 hover:text-indigo-600" href="./lists.html">
+          <span>Lists</span>
+          
+      </a>
+    </li>
+    <li>
+      <a class="flex justify-between items-center truncate text-slate-600 hover:text-indigo-600" href="./sets.html">
+          <span>Sets</span>
+          
+      </a>
+    </li>
+    <li>
+      <a class="flex justify-between items-center truncate text-slate-600 hover:text-indigo-600" href="./hashes.html">
+          <span>Hashes</span>
+          
+      </a>
+    </li>
+    <li>
+      <a class="flex justify-between items-center truncate text-slate-600 hover:text-indigo-600" href="./sorted-sets.html">
+          <span>Sorted sets</span>
+          
+      </a>
+    </li>
+    <li>
+      <a class="flex justify-between items-center truncate text-slate-600 hover:text-indigo-600" href="./streams.html">
+          <span>Streams</span>
+          
+      </a>
+    </li>
+    <li>
+      <a class="flex justify-between items-center truncate active text-indigo-600" href="./streams-tutorial.html">
+          <span>Streams tutorial</span>
+          
+      </a>
+    </li>
+    <li>
+      <a class="flex justify-between items-center truncate text-slate-600 hover:text-indigo-600" href="./geospatial.html">
+          <span>Geospatial</span>
+          
+      </a>
+    </li>
+    <li>
+      <a class="flex justify-between items-center truncate text-slate-600 hover:text-indigo-600" href="./hyperloglogs.html">
+          <span>HyperLogLog</span>
+          
+      </a>
+    </li>
+    <li>
+      <a class="flex justify-between items-center truncate text-slate-600 hover:text-indigo-600" href="./bitmaps.html">
+          <span>Bitmaps</span>
+          
+      </a>
+    </li>
+    <li>
+      <a class="flex justify-between items-center truncate text-slate-600 hover:text-indigo-600" href="./bitfields.html">
+          <span>Bitfields</span>
+          
+      </a>
+    </li>
+        </ul>
+    </li>
+    <li>
+      <a class="flex justify-between items-center truncate text-slate-600 hover:text-indigo-600" href="../clients.html">
+          <span>Client quickstarts</span>
+          
+            
+            <svg class="shrink-0 h-[1.0rem] w-[1.0rem] stroke-slate-400" viewBox="0 0 20 20" fill="currentColor">
+    <path d="M13.5355 10L6.46447 2.92893"></path>
+    <path d="M6.46447 17.0711L13.5355 10"></path>
+</svg>
+            
+          
+      </a>
+        <ul class="child-list">
+          
+        </ul>
+    </li>
+    <li>
+      <a class="flex justify-between items-center truncate text-slate-600 hover:text-indigo-600" href="../manual.html">
+          <span>Using Redis</span>
+          
+            
+            <svg class="shrink-0 h-[1.0rem] w-[1.0rem] stroke-slate-400" viewBox="0 0 20 20" fill="currentColor">
+    <path d="M13.5355 10L6.46447 2.92893"></path>
+    <path d="M6.46447 17.0711L13.5355 10"></path>
+</svg>
+            
+          
+      </a>
+        <ul class="child-list">
+          
+        </ul>
+    </li>
+    <li>
+      <a class="flex justify-between items-center truncate text-slate-600 hover:text-indigo-600" href="../management.html">
+          <span>Managing Redis</span>
+          
+            
+            <svg class="shrink-0 h-[1.0rem] w-[1.0rem] stroke-slate-400" viewBox="0 0 20 20" fill="currentColor">
+    <path d="M13.5355 10L6.46447 2.92893"></path>
+    <path d="M6.46447 17.0711L13.5355 10"></path>
+</svg>
+            
+          
+      </a>
+        <ul class="child-list">
+          
+        </ul>
+    </li>
+    <li>
+      <a class="flex justify-between items-center truncate text-slate-600 hover:text-indigo-600" href="../reference.html">
+          <span>Reference</span>
+          
+            
+            <svg class="shrink-0 h-[1.0rem] w-[1.0rem] stroke-slate-400" viewBox="0 0 20 20" fill="currentColor">
+    <path d="M13.5355 10L6.46447 2.92893"></path>
+    <path d="M6.46447 17.0711L13.5355 10"></path>
+</svg>
+            
+          
+      </a>
+        <ul class="child-list">
+          
+        </ul>
+    </li>
+    <li>
+      <a class="flex justify-between items-center truncate text-slate-600 hover:text-indigo-600" href="../stack.html">
+          <span>Redis Stack</span>
+          
+            
+            <svg class="shrink-0 h-[1.0rem] w-[1.0rem] stroke-slate-400" viewBox="0 0 20 20" fill="currentColor">
+    <path d="M13.5355 10L6.46447 2.92893"></path>
+    <path d="M6.46447 17.0711L13.5355 10"></path>
+</svg>
+            
+          
+      </a>
+        <ul class="child-list">
+          
+        </ul>
+    </li>
+        </ul>
+    </li>
+    </ul>
+  </nav>
+</div>
+    <div class="w-full max-w-[47rem] py-12">
+      <nav class="flex" aria-label="Breadcrumb">
+  <ol role="list" class="flex items-center space-x-2">
+    
+  
+    
+  
+    
+  
+    
+  
+  <li class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700">
+    
+      <a class="text-gray-400 hover:text-gray-500" href="../../../redis.io.html">
+        <svg class="flex-shrink-0 h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
+        </svg>
+        <span class="sr-only">Home</span>
+      </a>
+    
+  </li>
+
+  
+  <li class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700">
+    
+      <svg class="flex-shrink-0 h-5 w-5 mr-2 text-slate-300" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+      </svg>
+      <a class="" href="../../docs.html">
+        Documentation
+      </a>
+    
+  </li>
+
+  
+  <li class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700">
+    
+      <svg class="flex-shrink-0 h-5 w-5 mr-2 text-slate-300" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+      </svg>
+      <a class="" href="../data-types.html">
+        Redis data types
+      </a>
+    
+  </li>
+
+  
+  <li class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 pointer-events-none">
+    
+      <svg class="flex-shrink-0 h-5 w-5 mr-2 text-slate-300" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+      </svg>
+      <a class="" href="./streams-tutorial.html">
+        Redis Streams tutorial
+      </a>
+    
+  </li>
+
+  </ol>
+</nav>
+
+
+      <section class="prose prose-slate w-full max-w-[47rem] py-12">
+        <h1>Redis Streams tutorial</h1>
+        <p class="text-lg -mt-5 mb-10">A comprehensive tutorial on Redis streams</p>
+        <p>If you're new to streams, see the <a href="./streams.html">Redis Streams introduction</a>. For a more comprehensive tutorial, read on.</p>
+<a class="dashAnchor" name="//apple_ref/Section/Introduction"></a><h2 id="introduction">Introduction</h2>
+<p>The Redis stream data type was introduced in Redis 5.0. Streams model a log data structure but also implement several operations to overcome some of the limits of a typical append-only log. These include random access in O(1) time and complex consumption strategies, such as consumer groups.</p>
+<a class="dashAnchor" name="//apple_ref/Section/Streams%20basics"></a><h2 id="streams-basics">Streams basics</h2>
+<p>Streams are an append-only data structure. The fundamental write command, called <a href="../../commands/xadd.html">XADD</a>, appends a new entry to the specified stream.</p>
+<p>Each stream entry consists of one or more field-value pairs, somewhat like a record or a Redis hash:</p>
+<pre tabindex="0"><code>&gt; XADD mystream * sensor-id 1234 temperature 19.8
+1518951480106-0
+</code></pre><p>The above call to the <a href="../../commands/xadd.html"><code>XADD</code></a> command adds an entry <code>sensor-id: 1234, temperature: 19.8</code> to the stream at key <code>mystream</code>, using an auto-generated entry ID, which is the one returned by the command, specifically <code>1518951480106-0</code>. It gets as its first argument the key name <code>mystream</code>, the second argument is the entry ID that identifies every entry inside a stream. However, in this case, we passed <code>*</code> because we want the server to generate a new ID for us. Every new ID will be monotonically increasing, so in more simple terms, every new entry added will have a higher ID compared to all the past entries. Auto-generation of IDs by the server is almost always what you want, and the reasons for specifying an ID explicitly are very rare. We'll talk more about this later. The fact that each Stream entry has an ID is another similarity with log files, where line numbers, or the byte offset inside the file, can be used in order to identify a given entry. Returning back at our <a href="../../commands/xadd.html"><code>XADD</code></a> example, after the key name and ID, the next arguments are the field-value pairs composing our stream entry.</p>
+<p>It is possible to get the number of items inside a Stream just using the <a href="../../commands/xlen.html"><code>XLEN</code></a> command:</p>
+<pre tabindex="0"><code>&gt; XLEN mystream
+(integer) 1
+</code></pre><h3 id="entry-ids">Entry IDs</h3>
+<p>The entry ID returned by the <a href="../../commands/xadd.html"><code>XADD</code></a> command, and identifying univocally each entry inside a given stream, is composed of two parts:</p>
+<pre tabindex="0"><code>&lt;millisecondsTime&gt;-&lt;sequenceNumber&gt;
+</code></pre><p>The milliseconds time part is actually the local time in the local Redis node generating the stream ID, however if the current milliseconds time happens to be smaller than the previous entry time, then the previous entry time is used instead, so if a clock jumps backward the monotonically incrementing ID property still holds. The sequence number is used for entries created in the same millisecond. Since the sequence number is 64 bit wide, in practical terms there is no limit to the number of entries that can be generated within the same millisecond.</p>
+<p>The format of such IDs may look strange at first, and the gentle reader may wonder why the time is part of the ID. The reason is that Redis streams support range queries by ID. Because the ID is related to the time the entry is generated, this gives the ability to query for time ranges basically for free. We will see this soon while covering the <a href="../../commands/xrange.html"><code>XRANGE</code></a> command.</p>
+<p>If for some reason the user needs incremental IDs that are not related to time but are actually associated to another external system ID, as previously mentioned, the <a href="../../commands/xadd.html"><code>XADD</code></a> command can take an explicit ID instead of the <code>*</code> wildcard ID that triggers auto-generation, like in the following examples:</p>
+<pre tabindex="0"><code>&gt; XADD somestream 0-1 field value
+0-1
+&gt; XADD somestream 0-2 foo bar
+0-2
+</code></pre><p>Note that in this case, the minimum ID is 0-1 and that the command will not accept an ID equal or smaller than a previous one:</p>
+<pre tabindex="0"><code>&gt; XADD somestream 0-1 foo bar
+(error) ERR The ID specified in XADD is equal or smaller than the target stream top item
+</code></pre><p>If you're running Redis 7 or later, you can also provide an explicit ID consisting of the milliseconds part only. In this case, the sequence portion of the ID will be automatically generated. To do this, use the syntax below:</p>
+<pre tabindex="0"><code>&gt; XADD somestream 0-* baz qux
+0-3
+</code></pre><a class="dashAnchor" name="//apple_ref/Section/Getting%20data%20from%20Streams"></a><h2 id="getting-data-from-streams">Getting data from Streams</h2>
+<p>Now we are finally able to append entries in our stream via <a href="../../commands/xadd.html"><code>XADD</code></a>. However, while appending data to a stream is quite obvious, the way streams can be queried in order to extract data is not so obvious. If we continue with the analogy of the log file, one obvious way is to mimic what we normally do with the Unix command <code>tail -f</code>, that is, we may start to listen in order to get the new messages that are appended to the stream. Note that unlike the blocking list operations of Redis, where a given element will reach a single client which is blocking in a <em>pop style</em> operation like <a href="../../commands/blpop.html"><code>BLPOP</code></a>, with streams we want multiple consumers to see the new messages appended to the stream (the same way many <code>tail -f</code> processes can see what is added to a log). Using the traditional terminology we want the streams to be able to <em>fan out</em> messages to multiple clients.</p>
+<p>However, this is just one potential access mode. We could also see a stream in quite a different way: not as a messaging system, but as a <em>time series store</em>. In this case, maybe it's also useful to get the new messages appended, but another natural query mode is to get messages by ranges of time, or alternatively to iterate the messages using a cursor to incrementally check all the history. This is definitely another useful access mode.</p>
+<p>Finally, if we see a stream from the point of view of consumers, we may want to access the stream in yet another way, that is, as a stream of messages that can be partitioned to multiple consumers that are processing such messages, so that groups of consumers can only see a subset of the messages arriving in a single stream. In this way, it is possible to scale the message processing across different consumers, without single consumers having to process all the messages: each consumer will just get different messages to process. This is basically what Kafka (TM) does with consumer groups. Reading messages via consumer groups is yet another interesting mode of reading from a Redis Stream.</p>
+<p>Redis Streams support all three of the query modes described above via different commands. The next sections will show them all, starting from the simplest and most direct to use: range queries.</p>
+<h3 id="querying-by-range-xrange-and-xrevrange">Querying by range: XRANGE and XREVRANGE</h3>
+<p>To query the stream by range we are only required to specify two IDs, <em>start</em> and <em>end</em>. The range returned will include the elements having start or end as ID, so the range is inclusive. The two special IDs <code>-</code> and <code>+</code> respectively mean the smallest and the greatest ID possible.</p>
+<pre tabindex="0"><code>&gt; XRANGE mystream - +
+1) 1) 1518951480106-0
+   2) 1) "sensor-id"
+      2) "1234"
+      3) "temperature"
+      4) "19.8"
+2) 1) 1518951482479-0
+   2) 1) "sensor-id"
+      2) "9999"
+      3) "temperature"
+      4) "18.2"
+</code></pre><p>Each entry returned is an array of two items: the ID and the list of field-value pairs. We already said that the entry IDs have a relation with the time, because the part at the left of the <code>-</code> character is the Unix time in milliseconds of the local node that created the stream entry, at the moment the entry was created (however note that streams are replicated with fully specified <a href="../../commands/xadd.html"><code>XADD</code></a> commands, so the replicas will have identical IDs to the master). This means that I could query a range of time using <a href="../../commands/xrange.html"><code>XRANGE</code></a>. In order to do so, however, I may want to omit the sequence part of the ID: if omitted, in the start of the range it will be assumed to be 0, while in the end part it will be assumed to be the maximum sequence number available. This way, querying using just two milliseconds Unix times, we get all the entries that were generated in that range of time, in an inclusive way. For instance, if I want to query a two milliseconds period I could use:</p>
+<pre tabindex="0"><code>&gt; XRANGE mystream 1518951480106 1518951480107
+1) 1) 1518951480106-0
+   2) 1) "sensor-id"
+      2) "1234"
+      3) "temperature"
+      4) "19.8"
+</code></pre><p>I have only a single entry in this range, however in real data sets, I could query for ranges of hours, or there could be many items in just two milliseconds, and the result returned could be huge. For this reason, <a href="../../commands/xrange.html"><code>XRANGE</code></a> supports an optional <strong>COUNT</strong> option at the end. By specifying a count, I can just get the first <em>N</em> items. If I want more, I can get the last ID returned, increment the sequence part by one, and query again. Let's see this in the following example. We start adding 10 items with <a href="../../commands/xadd.html"><code>XADD</code></a> (I won't show that, lets assume that the stream <code>mystream</code> was populated with 10 items). To start my iteration, getting 2 items per command, I start with the full range, but with a count of 2.</p>
+<pre tabindex="0"><code>&gt; XRANGE mystream - + COUNT 2
+1) 1) 1519073278252-0
+   2) 1) "foo"
+      2) "value_1"
+2) 1) 1519073279157-0
+   2) 1) "foo"
+      2) "value_2"
+</code></pre><p>In order to continue the iteration with the next two items, I have to pick the last ID returned, that is <code>1519073279157-0</code> and add the prefix <code>(</code> to it. The resulting exclusive range interval, that is <code>(1519073279157-0</code> in this case, can now be used as the new <em>start</em> argument for the next <a href="../../commands/xrange.html"><code>XRANGE</code></a> call:</p>
+<pre tabindex="0"><code>&gt; XRANGE mystream (1519073279157-0 + COUNT 2
+1) 1) 1519073280281-0
+   2) 1) "foo"
+      2) "value_3"
+2) 1) 1519073281432-0
+   2) 1) "foo"
+      2) "value_4"
+</code></pre><p>And so forth. Since <a href="../../commands/xrange.html"><code>XRANGE</code></a> complexity is <em>O(log(N))</em> to seek, and then <em>O(M)</em> to return M elements, with a small count the command has a logarithmic time complexity, which means that each step of the iteration is fast. So <a href="../../commands/xrange.html"><code>XRANGE</code></a> is also the de facto <em>streams iterator</em> and does not require an <strong>XSCAN</strong> command.</p>
+<p>The command <a href="../../commands/xrevrange.html"><code>XREVRANGE</code></a> is the equivalent of <a href="../../commands/xrange.html"><code>XRANGE</code></a> but returning the elements in inverted order, so a practical use for <a href="../../commands/xrevrange.html"><code>XREVRANGE</code></a> is to check what is the last item in a Stream:</p>
+<pre tabindex="0"><code>&gt; XREVRANGE mystream + - COUNT 1
+1) 1) 1519073287312-0
+   2) 1) "foo"
+      2) "value_10"
+</code></pre><p>Note that the <a href="../../commands/xrevrange.html"><code>XREVRANGE</code></a> command takes the <em>start</em> and <em>stop</em> arguments in reverse order.</p>
+<a class="dashAnchor" name="//apple_ref/Section/Listening%20for%20new%20items%20with%20XREAD"></a><h2 id="listening-for-new-items-with-xread">Listening for new items with XREAD</h2>
+<p>When we do not want to access items by a range in a stream, usually what we want instead is to <em>subscribe</em> to new items arriving to the stream. This concept may appear related to Redis Pub/Sub, where you subscribe to a channel, or to Redis blocking lists, where you wait for a key to get new elements to fetch, but there are fundamental differences in the way you consume a stream:</p>
+<ol>
+<li>A stream can have multiple clients (consumers) waiting for data. Every new item, by default, will be delivered to <em>every consumer</em> that is waiting for data in a given stream. This behavior is different than blocking lists, where each consumer will get a different element. However, the ability to <em>fan out</em> to multiple consumers is similar to Pub/Sub.</li>
+<li>While in Pub/Sub messages are <em>fire and forget</em> and are never stored anyway, and while when using blocking lists, when a message is received by the client it is <em>popped</em> (effectively removed) from the list, streams work in a fundamentally different way. All the messages are appended in the stream indefinitely (unless the user explicitly asks to delete entries): different consumers will know what is a new message from its point of view by remembering the ID of the last message received.</li>
+<li>Streams Consumer Groups provide a level of control that Pub/Sub or blocking lists cannot achieve, with different groups for the same stream, explicit acknowledgment of processed items, ability to inspect the pending items, claiming of unprocessed messages, and coherent history visibility for each single client, that is only able to see its private past history of messages.</li>
+</ol>
+<p>The command that provides the ability to listen for new messages arriving into a stream is called <a href="../../commands/xread.html"><code>XREAD</code></a>. It's a bit more complex than <a href="../../commands/xrange.html"><code>XRANGE</code></a>, so we'll start showing simple forms, and later the whole command layout will be provided.</p>
+<pre tabindex="0"><code>&gt; XREAD COUNT 2 STREAMS mystream 0
+1) 1) "mystream"
+   2) 1) 1) 1519073278252-0
+         2) 1) "foo"
+            2) "value_1"
+      2) 1) 1519073279157-0
+         2) 1) "foo"
+            2) "value_2"
+</code></pre><p>The above is the non-blocking form of <a href="../../commands/xread.html"><code>XREAD</code></a>. Note that the <strong>COUNT</strong> option is not mandatory, in fact the only mandatory option of the command is the <strong>STREAMS</strong> option, that specifies a list of keys together with the corresponding maximum ID already seen for each stream by the calling consumer, so that the command will provide the client only with messages with an ID greater than the one we specified.</p>
+<p>In the above command we wrote <code>STREAMS mystream 0</code> so we want all the messages in the Stream <code>mystream</code> having an ID greater than <code>0-0</code>. As you can see in the example above, the command returns the key name, because actually it is possible to call this command with more than one key to read from different streams at the same time. I could write, for instance: <code>STREAMS mystream otherstream 0 0</code>. Note how after the <strong>STREAMS</strong> option we need to provide the key names, and later the IDs. For this reason, the <strong>STREAMS</strong> option must always be the last option.
+Any other options must come before the <strong>STREAMS</strong> option.</p>
+<p>Apart from the fact that <a href="../../commands/xread.html"><code>XREAD</code></a> can access multiple streams at once, and that we are able to specify the last ID we own to just get newer messages, in this simple form the command is not doing something so different compared to <a href="../../commands/xrange.html"><code>XRANGE</code></a>. However, the interesting part is that we can turn <a href="../../commands/xread.html"><code>XREAD</code></a> into a <em>blocking command</em> easily, by specifying the <strong>BLOCK</strong> argument:</p>
+<pre tabindex="0"><code>&gt; XREAD BLOCK 0 STREAMS mystream $
+</code></pre><p>Note that in the example above, other than removing <strong>COUNT</strong>, I specified the new <strong>BLOCK</strong> option with a timeout of 0 milliseconds (that means to never timeout). Moreover, instead of passing a normal ID for the stream <code>mystream</code> I passed the special ID <code>$</code>. This special ID means that <a href="../../commands/xread.html"><code>XREAD</code></a> should use as last ID the maximum ID already stored in the stream <code>mystream</code>, so that we will receive only <em>new</em> messages, starting from the time we started listening. This is similar to the <code>tail -f</code> Unix command in some way.</p>
+<p>Note that when the <strong>BLOCK</strong> option is used, we do not have to use the special ID <code>$</code>. We can use any valid ID. If the command is able to serve our request immediately without blocking, it will do so, otherwise it will block. Normally if we want to consume the stream starting from new entries, we start with the ID <code>$</code>, and after that we continue using the ID of the last message received to make the next call, and so forth.</p>
+<p>The blocking form of <a href="../../commands/xread.html"><code>XREAD</code></a> is also able to listen to multiple Streams, just by specifying multiple key names. If the request can be served synchronously because there is at least one stream with elements greater than the corresponding ID we specified, it returns with the results. Otherwise, the command will block and will return the items of the first stream which gets new data (according to the specified ID).</p>
+<p>Similarly to blocking list operations, blocking stream reads are <em>fair</em> from the point of view of clients waiting for data, since the semantics is FIFO style. The first client that blocked for a given stream will be the first to be unblocked when new items are available.</p>
+<p><a href="../../commands/xread.html"><code>XREAD</code></a> has no other options than <strong>COUNT</strong> and <strong>BLOCK</strong>, so it's a pretty basic command with a specific purpose to attach consumers to one or multiple streams. More powerful features to consume streams are available using the consumer groups API, however reading via consumer groups is implemented by a different command called <a href="../../commands/xreadgroup.html"><code>XREADGROUP</code></a>, covered in the next section of this guide.</p>
+<a class="dashAnchor" name="//apple_ref/Section/Consumer%20groups"></a><h2 id="consumer-groups">Consumer groups</h2>
+<p>When the task at hand is to consume the same stream from different clients, then <a href="../../commands/xread.html"><code>XREAD</code></a> already offers a way to <em>fan-out</em> to N clients, potentially also using replicas in order to provide more read scalability. However in certain problems what we want to do is not to provide the same stream of messages to many clients, but to provide a <em>different subset</em> of messages from the same stream to many clients. An obvious case where this is useful is that of messages which are slow to process: the ability to have N different workers that will receive different parts of the stream allows us to scale message processing, by routing different messages to different workers that are ready to do more work.</p>
+<p>In practical terms, if we imagine having three consumers C1, C2, C3, and a stream that contains the messages 1, 2, 3, 4, 5, 6, 7 then what we want is to serve the messages according to the following diagram:</p>
+<pre tabindex="0"><code>1 -&gt; C1
+2 -&gt; C2
+3 -&gt; C3
+4 -&gt; C1
+5 -&gt; C2
+6 -&gt; C3
+7 -&gt; C1
+</code></pre><p>In order to achieve this, Redis uses a concept called <em>consumer groups</em>. It is very important to understand that Redis consumer groups have nothing to do, from an implementation standpoint, with Kafka (TM) consumer groups. Yet they are similar in functionality, so I decided to keep Kafka's (TM) terminology, as it originally popularized this idea.</p>
+<p>A consumer group is like a <em>pseudo consumer</em> that gets data from a stream, and actually serves multiple consumers, providing certain guarantees:</p>
+<ol>
+<li>Each message is served to a different consumer so that it is not possible that the same message will be delivered to multiple consumers.</li>
+<li>Consumers are identified, within a consumer group, by a name, which is a case-sensitive string that the clients implementing consumers must choose. This means that even after a disconnect, the stream consumer group retains all the state, since the client will claim again to be the same consumer. However, this also means that it is up to the client to provide a unique identifier.</li>
+<li>Each consumer group has the concept of the <em>first ID never consumed</em> so that, when a consumer asks for new messages, it can provide just messages that were not previously delivered.</li>
+<li>Consuming a message, however, requires an explicit acknowledgment using a specific command. Redis interprets the acknowledgment as: this message was correctly processed so it can be evicted from the consumer group.</li>
+<li>A consumer group tracks all the messages that are currently pending, that is, messages that were delivered to some consumer of the consumer group, but are yet to be acknowledged as processed. Thanks to this feature, when accessing the message history of a stream, each consumer <em>will only see messages that were delivered to it</em>.</li>
+</ol>
+<p>In a way, a consumer group can be imagined as some <em>amount of state</em> about a stream:</p>
+<pre tabindex="0"><code>+----------------------------------------+
+| consumer_group_name: mygroup           |
+| consumer_group_stream: somekey         |
+| last_delivered_id: 1292309234234-92    |
+|                                        |
+| consumers:                             |
+|    "consumer-1" with pending messages  |
+|       1292309234234-4                  |
+|       1292309234232-8                  |
+|    "consumer-42" with pending messages |
+|       ... (and so forth)               |
++----------------------------------------+
+</code></pre><p>If you see this from this point of view, it is very simple to understand what a consumer group can do, how it is able to just provide consumers with their history of pending messages, and how consumers asking for new messages will just be served with message IDs greater than <code>last_delivered_id</code>. At the same time, if you look at the consumer group as an auxiliary data structure for Redis streams, it is obvious that a single stream can have multiple consumer groups, that have a different set of consumers. Actually, it is even possible for the same stream to have clients reading without consumer groups via <a href="../../commands/xread.html"><code>XREAD</code></a>, and clients reading via <a href="../../commands/xreadgroup.html"><code>XREADGROUP</code></a> in different consumer groups.</p>
+<p>Now it's time to zoom in to see the fundamental consumer group commands. They are the following:</p>
+<ul>
+<li><a href="../../commands/xgroup.html"><code>XGROUP</code></a> is used in order to create, destroy and manage consumer groups.</li>
+<li><a href="../../commands/xreadgroup.html"><code>XREADGROUP</code></a> is used to read from a stream via a consumer group.</li>
+<li><a href="../../commands/xack.html"><code>XACK</code></a> is the command that allows a consumer to mark a pending message as correctly processed.</li>
+</ul>
+<a class="dashAnchor" name="//apple_ref/Section/Creating%20a%20consumer%20group"></a><h2 id="creating-a-consumer-group">Creating a consumer group</h2>
+<p>Assuming I have a key <code>mystream</code> of type stream already existing, in order to create a consumer group I just need to do the following:</p>
+<pre tabindex="0"><code>&gt; XGROUP CREATE mystream mygroup $
+OK
+</code></pre><p>As you can see in the command above when creating the consumer group we have to specify an ID, which in the example is just <code>$</code>. This is needed because the consumer group, among the other states, must have an idea about what message to serve next at the first consumer connecting, that is, what was the <em>last message ID</em> when the group was just created. If we provide <code>$</code> as we did, then only new messages arriving in the stream from now on will be provided to the consumers in the group. If we specify <code>0</code> instead the consumer group will consume <em>all</em> the messages in the stream history to start with. Of course, you can specify any other valid ID. What you know is that the consumer group will start delivering messages that are greater than the ID you specify. Because <code>$</code> means the current greatest ID in the stream, specifying <code>$</code> will have the effect of consuming only new messages.</p>
+<p><a href="../../commands/xgroup-create.html"><code>XGROUP CREATE</code></a> also supports creating the stream automatically, if it doesn't exist, using the optional <code>MKSTREAM</code> subcommand as the last argument:</p>
+<pre tabindex="0"><code>&gt; XGROUP CREATE newstream mygroup $ MKSTREAM
+OK
+</code></pre><p>Now that the consumer group is created we can immediately try to read messages via the consumer group using the <a href="../../commands/xreadgroup.html"><code>XREADGROUP</code></a> command. We'll read from consumers, that we will call Alice and Bob, to see how the system will return different messages to Alice or Bob.</p>
+<p><a href="../../commands/xreadgroup.html"><code>XREADGROUP</code></a> is very similar to <a href="../../commands/xread.html"><code>XREAD</code></a> and provides the same <strong>BLOCK</strong> option, otherwise it is a synchronous command. However there is a <em>mandatory</em> option that must be always specified, which is <strong>GROUP</strong> and has two arguments: the name of the consumer group, and the name of the consumer that is attempting to read. The option <strong>COUNT</strong> is also supported and is identical to the one in <a href="../../commands/xread.html"><code>XREAD</code></a>.</p>
+<p>Before reading from the stream, let's put some messages inside:</p>
+<pre tabindex="0"><code>&gt; XADD mystream * message apple
+1526569495631-0
+&gt; XADD mystream * message orange
+1526569498055-0
+&gt; XADD mystream * message strawberry
+1526569506935-0
+&gt; XADD mystream * message apricot
+1526569535168-0
+&gt; XADD mystream * message banana
+1526569544280-0
+</code></pre><p>Note: <em>here message is the field name, and the fruit is the associated value, remember that stream items are small dictionaries.</em></p>
+<p>It is time to try reading something using the consumer group:</p>
+<pre tabindex="0"><code>&gt; XREADGROUP GROUP mygroup Alice COUNT 1 STREAMS mystream &gt;
+1) 1) "mystream"
+   2) 1) 1) 1526569495631-0
+         2) 1) "message"
+            2) "apple"
+</code></pre><p><a href="../../commands/xreadgroup.html"><code>XREADGROUP</code></a> replies are just like <a href="../../commands/xread.html"><code>XREAD</code></a> replies. Note however the <code>GROUP &lt;group-name&gt; &lt;consumer-name&gt;</code> provided above. It states that I want to read from the stream using the consumer group <code>mygroup</code> and I'm the consumer <code>Alice</code>. Every time a consumer performs an operation with a consumer group, it must specify its name, uniquely identifying this consumer inside the group.</p>
+<p>There is another very important detail in the command line above, after the mandatory <strong>STREAMS</strong> option the ID requested for the key <code>mystream</code> is the special ID <code>&gt;</code>. This special ID is only valid in the context of consumer groups, and it means: <strong>messages never delivered to other consumers so far</strong>.</p>
+<p>This is almost always what you want, however it is also possible to specify a real ID, such as <code>0</code> or any other valid ID, in this case, however, what happens is that we request from <a href="../../commands/xreadgroup.html"><code>XREADGROUP</code></a> to just provide us with the <strong>history of pending messages</strong>, and in such case, will never see new messages in the group. So basically <a href="../../commands/xreadgroup.html"><code>XREADGROUP</code></a> has the following behavior based on the ID we specify:</p>
+<ul>
+<li>If the ID is the special ID <code>&gt;</code> then the command will return only new messages never delivered to other consumers so far, and as a side effect, will update the consumer group's <em>last ID</em>.</li>
+<li>If the ID is any other valid numerical ID, then the command will let us access our <em>history of pending messages</em>. That is, the set of messages that were delivered to this specified consumer (identified by the provided name), and never acknowledged so far with <a href="../../commands/xack.html"><code>XACK</code></a>.</li>
+</ul>
+<p>We can test this behavior immediately specifying an ID of 0, without any <strong>COUNT</strong> option: we'll just see the only pending message, that is, the one about apples:</p>
+<pre tabindex="0"><code>&gt; XREADGROUP GROUP mygroup Alice STREAMS mystream 0
+1) 1) "mystream"
+   2) 1) 1) 1526569495631-0
+         2) 1) "message"
+            2) "apple"
+</code></pre><p>However, if we acknowledge the message as processed, it will no longer be part of the pending messages history, so the system will no longer report anything:</p>
+<pre tabindex="0"><code>&gt; XACK mystream mygroup 1526569495631-0
+(integer) 1
+&gt; XREADGROUP GROUP mygroup Alice STREAMS mystream 0
+1) 1) "mystream"
+   2) (empty list or set)
+</code></pre><p>Don't worry if you yet don't know how <a href="../../commands/xack.html"><code>XACK</code></a> works, the idea is just that processed messages are no longer part of the history that we can access.</p>
+<p>Now it's Bob's turn to read something:</p>
+<pre tabindex="0"><code>&gt; XREADGROUP GROUP mygroup Bob COUNT 2 STREAMS mystream &gt;
+1) 1) "mystream"
+   2) 1) 1) 1526569498055-0
+         2) 1) "message"
+            2) "orange"
+      2) 1) 1526569506935-0
+         2) 1) "message"
+            2) "strawberry"
+</code></pre><p>Bob asked for a maximum of two messages and is reading via the same group <code>mygroup</code>. So what happens is that Redis reports just <em>new</em> messages. As you can see the "apple" message is not delivered, since it was already delivered to Alice, so Bob gets orange and strawberry, and so forth.</p>
+<p>This way Alice, Bob, and any other consumer in the group, are able to read different messages from the same stream, to read their history of yet to process messages, or to mark messages as processed. This allows creating different topologies and semantics for consuming messages from a stream.</p>
+<p>There are a few things to keep in mind:</p>
+<ul>
+<li>Consumers are auto-created the first time they are mentioned, no need for explicit creation.</li>
+<li>Even with <a href="../../commands/xreadgroup.html"><code>XREADGROUP</code></a> you can read from multiple keys at the same time, however for this to work, you need to create a consumer group with the same name in every stream. This is not a common need, but it is worth mentioning that the feature is technically available.</li>
+<li><a href="../../commands/xreadgroup.html"><code>XREADGROUP</code></a> is a <em>write command</em> because even if it reads from the stream, the consumer group is modified as a side effect of reading, so it can only be called on master instances.</li>
+</ul>
+<p>An example of a consumer implementation, using consumer groups, written in the Ruby language could be the following. The Ruby code is aimed to be readable by virtually any experienced programmer, even if they do not know Ruby:</p>
+<div class="highlight"><pre class="chroma"><code class="language-ruby" data-lang="ruby"><span class="line"><span class="cl"><span class="nb">require</span> <span class="s1">'redis'</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="no">ARGV</span><span class="o">.</span><span class="n">length</span> <span class="o">==</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">puts</span> <span class="s2">"Please specify a consumer name"</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">exit</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="no">ConsumerName</span> <span class="o">=</span> <span class="no">ARGV</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="no">GroupName</span> <span class="o">=</span> <span class="s2">"mygroup"</span>
+</span></span><span class="line"><span class="cl"><span class="n">r</span> <span class="o">=</span> <span class="no">Redis</span><span class="o">.</span><span class="n">new</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">process_message</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span><span class="n">msg</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">puts</span> <span class="s2">"[</span><span class="si">#{</span><span class="no">ConsumerName</span><span class="si">}</span><span class="s2">] </span><span class="si">#{</span><span class="nb">id</span><span class="si">}</span><span class="s2"> = </span><span class="si">#{</span><span class="n">msg</span><span class="o">.</span><span class="n">inspect</span><span class="si">}</span><span class="s2">"</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="vg">$lastid</span> <span class="o">=</span> <span class="s1">'0-0'</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">puts</span> <span class="s2">"Consumer </span><span class="si">#{</span><span class="no">ConsumerName</span><span class="si">}</span><span class="s2"> starting..."</span>
+</span></span><span class="line"><span class="cl"><span class="n">check_backlog</span> <span class="o">=</span> <span class="kp">true</span>
+</span></span><span class="line"><span class="cl"><span class="k">while</span> <span class="kp">true</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># Pick the ID based on the iteration: the first time we want to</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># read our pending messages, in case we crashed and are recovering.</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># Once we consumed our history, we can start getting new messages.</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">check_backlog</span>
+</span></span><span class="line"><span class="cl">        <span class="n">myid</span> <span class="o">=</span> <span class="vg">$lastid</span>
+</span></span><span class="line"><span class="cl">    <span class="k">else</span>
+</span></span><span class="line"><span class="cl">        <span class="n">myid</span> <span class="o">=</span> <span class="s1">'&gt;'</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">items</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">xreadgroup</span><span class="p">(</span><span class="s1">'GROUP'</span><span class="p">,</span><span class="no">GroupName</span><span class="p">,</span><span class="no">ConsumerName</span><span class="p">,</span><span class="s1">'BLOCK'</span><span class="p">,</span><span class="s1">'2000'</span><span class="p">,</span><span class="s1">'COUNT'</span><span class="p">,</span><span class="s1">'10'</span><span class="p">,</span><span class="s1">'STREAMS'</span><span class="p">,</span><span class="ss">:my_stream_key</span><span class="p">,</span><span class="n">myid</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">items</span> <span class="o">==</span> <span class="kp">nil</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">puts</span> <span class="s2">"Timeout!"</span>
+</span></span><span class="line"><span class="cl">        <span class="k">next</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># If we receive an empty reply, it means we were consuming our history</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># and that the history is now empty. Let's start to consume new messages.</span>
+</span></span><span class="line"><span class="cl">    <span class="n">check_backlog</span> <span class="o">=</span> <span class="kp">false</span> <span class="k">if</span> <span class="n">items</span><span class="o">[</span><span class="mi">0</span><span class="o">][</span><span class="mi">1</span><span class="o">].</span><span class="n">length</span> <span class="o">==</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">items</span><span class="o">[</span><span class="mi">0</span><span class="o">][</span><span class="mi">1</span><span class="o">].</span><span class="n">each</span><span class="p">{</span><span class="o">|</span><span class="n">i</span><span class="o">|</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">id</span><span class="p">,</span><span class="n">fields</span> <span class="o">=</span> <span class="n">i</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># Process the message</span>
+</span></span><span class="line"><span class="cl">        <span class="n">process_message</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span><span class="n">fields</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># Acknowledge the message as processed</span>
+</span></span><span class="line"><span class="cl">        <span class="n">r</span><span class="o">.</span><span class="n">xack</span><span class="p">(</span><span class="ss">:my_stream_key</span><span class="p">,</span><span class="no">GroupName</span><span class="p">,</span><span class="nb">id</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="vg">$lastid</span> <span class="o">=</span> <span class="nb">id</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span></code></pre></div><p>As you can see the idea here is to start by consuming the history, that is, our list of pending messages. This is useful because the consumer may have crashed before, so in the event of a restart we want to re-read messages that were delivered to us without getting acknowledged. Note that we might process a message multiple times or one time (at least in the case of consumer failures, but there are also the limits of Redis persistence and replication involved, see the specific section about this topic).</p>
+<p>Once the history was consumed, and we get an empty list of messages, we can switch to using the <code>&gt;</code> special ID in order to consume new messages.</p>
+<a class="dashAnchor" name="//apple_ref/Section/Recovering%20from%20permanent%20failures"></a><h2 id="recovering-from-permanent-failures">Recovering from permanent failures</h2>
+<p>The example above allows us to write consumers that participate in the same consumer group, each taking a subset of messages to process, and when recovering from failures re-reading the pending messages that were delivered just to them. However in the real world consumers may permanently fail and never recover. What happens to the pending messages of the consumer that never recovers after stopping for any reason?</p>
+<p>Redis consumer groups offer a feature that is used in these situations in order to <em>claim</em> the pending messages of a given consumer so that such messages will change ownership and will be re-assigned to a different consumer. The feature is very explicit. A consumer has to inspect the list of pending messages, and will have to claim specific messages using a special command, otherwise the server will leave the messages pending forever and assigned to the old consumer. In this way different applications can choose if to use such a feature or not, and exactly how to use it.</p>
+<p>The first step of this process is just a command that provides observability of pending entries in the consumer group and is called <a href="../../commands/xpending.html"><code>XPENDING</code></a>.
+This is a read-only command which is always safe to call and will not change ownership of any message.
+In its simplest form, the command is called with two arguments, which are the name of the stream and the name of the consumer group.</p>
+<pre tabindex="0"><code>&gt; XPENDING mystream mygroup
+1) (integer) 2
+2) 1526569498055-0
+3) 1526569506935-0
+4) 1) 1) "Bob"
+      2) "2"
+</code></pre><p>When called in this way, the command outputs the total number of pending messages in the consumer group (two in this case), the lower and higher message ID among the pending messages, and finally a list of consumers and the number of pending messages they have.
+We have only Bob with two pending messages because the single message that Alice requested was acknowledged using <a href="../../commands/xack.html"><code>XACK</code></a>.</p>
+<p>We can ask for more information by giving more arguments to <a href="../../commands/xpending.html"><code>XPENDING</code></a>, because the full command signature is the following:</p>
+<pre tabindex="0"><code>XPENDING &lt;key&gt; &lt;groupname&gt; [[IDLE &lt;min-idle-time&gt;] &lt;start-id&gt; &lt;end-id&gt; &lt;count&gt; [&lt;consumer-name&gt;]]
+</code></pre><p>By providing a start and end ID (that can be just <code>-</code> and <code>+</code> as in <a href="../../commands/xrange.html"><code>XRANGE</code></a>) and a count to control the amount of information returned by the command, we are able to know more about the pending messages. The optional final argument, the consumer name, is used if we want to limit the output to just messages pending for a given consumer, but won't use this feature in the following example.</p>
+<pre tabindex="0"><code>&gt; XPENDING mystream mygroup - + 10
+1) 1) 1526569498055-0
+   2) "Bob"
+   3) (integer) 74170458
+   4) (integer) 1
+2) 1) 1526569506935-0
+   2) "Bob"
+   3) (integer) 74170458
+   4) (integer) 1
+</code></pre><p>Now we have the details for each message: the ID, the consumer name, the <em>idle time</em> in milliseconds, which is how many milliseconds have passed since the last time the message was delivered to some consumer, and finally the number of times that a given message was delivered.
+We have two messages from Bob, and they are idle for 74170458 milliseconds, about 20 hours.</p>
+<p>Note that nobody prevents us from checking what the first message content was by just using <a href="../../commands/xrange.html"><code>XRANGE</code></a>.</p>
+<pre tabindex="0"><code>&gt; XRANGE mystream 1526569498055-0 1526569498055-0
+1) 1) 1526569498055-0
+   2) 1) "message"
+      2) "orange"
+</code></pre><p>We have just to repeat the same ID twice in the arguments. Now that we have some ideas, Alice may decide that after 20 hours of not processing messages, Bob will probably not recover in time, and it's time to <em>claim</em> such messages and resume the processing in place of Bob. To do so, we use the <a href="../../commands/xclaim.html"><code>XCLAIM</code></a> command.</p>
+<p>This command is very complex and full of options in its full form, since it is used for replication of consumer groups changes, but we'll use just the arguments that we need normally. In this case it is as simple as:</p>
+<pre tabindex="0"><code>XCLAIM &lt;key&gt; &lt;group&gt; &lt;consumer&gt; &lt;min-idle-time&gt; &lt;ID-1&gt; &lt;ID-2&gt; ... &lt;ID-N&gt;
+</code></pre><p>Basically we say, for this specific key and group, I want that the message IDs specified will change ownership, and will be assigned to the specified consumer name <code>&lt;consumer&gt;</code>. However, we also provide a minimum idle time, so that the operation will only work if the idle time of the mentioned messages is greater than the specified idle time. This is useful because maybe two clients are retrying to claim a message at the same time:</p>
+<pre tabindex="0"><code>Client 1: XCLAIM mystream mygroup Alice 3600000 1526569498055-0
+Client 2: XCLAIM mystream mygroup Lora 3600000 1526569498055-0
+</code></pre><p>However, as a side effect, claiming a message will reset its idle time and will increment its number of deliveries counter, so the second client will fail claiming it. In this way we avoid trivial re-processing of messages (even if in the general case you cannot obtain exactly once processing).</p>
+<p>This is the result of the command execution:</p>
+<pre tabindex="0"><code>&gt; XCLAIM mystream mygroup Alice 3600000 1526569498055-0
+1) 1) 1526569498055-0
+   2) 1) "message"
+      2) "orange"
+</code></pre><p>The message was successfully claimed by Alice, who can now process the message and acknowledge it, and move things forward even if the original consumer is not recovering.</p>
+<p>It is clear from the example above that as a side effect of successfully claiming a given message, the <a href="../../commands/xclaim.html"><code>XCLAIM</code></a> command also returns it. However this is not mandatory. The <strong>JUSTID</strong> option can be used in order to return just the IDs of the message successfully claimed. This is useful if you want to reduce the bandwidth used between the client and the server (and also the performance of the command) and you are not interested in the message because your consumer is implemented in a way that it will rescan the history of pending messages from time to time.</p>
+<p>Claiming may also be implemented by a separate process: one that just checks the list of pending messages, and assigns idle messages to consumers that appear to be active. Active consumers can be obtained using one of the observability features of Redis streams. This is the topic of the next section.</p>
+<a class="dashAnchor" name="//apple_ref/Section/Automatic%20claiming"></a><h2 id="automatic-claiming">Automatic claiming</h2>
+<p>The <a href="../../commands/xautoclaim.html"><code>XAUTOCLAIM</code></a> command, added in Redis 6.2, implements the claiming process that we've described above.
+<a href="../../commands/xpending.html"><code>XPENDING</code></a> and <a href="../../commands/xclaim.html"><code>XCLAIM</code></a> provide the basic building blocks for different types of recovery mechanisms.
+This command optimizes the generic process by having Redis manage it and offers a simple solution for most recovery needs.</p>
+<p><a href="../../commands/xautoclaim.html"><code>XAUTOCLAIM</code></a> identifies idle pending messages and transfers ownership of them to a consumer.
+The command's signature looks like this:</p>
+<pre tabindex="0"><code>XAUTOCLAIM &lt;key&gt; &lt;group&gt; &lt;consumer&gt; &lt;min-idle-time&gt; &lt;start&gt; [COUNT count] [JUSTID]
+</code></pre><p>So, in the example above, I could have used automatic claiming to claim a single message like this:</p>
+<pre tabindex="0"><code>&gt; XAUTOCLAIM mystream mygroup Alice 3600000 0-0 COUNT 1
+1) 1526569498055-0
+2) 1) 1526569498055-0
+   2) 1) "message"
+      2) "orange"
+</code></pre><p>Like <a href="../../commands/xclaim.html"><code>XCLAIM</code></a>, the command replies with an array of the claimed messages, but it also returns a stream ID that allows iterating the pending entries.
+The stream ID is a cursor, and I can use it in my next call to continue in claiming idle pending messages:</p>
+<pre tabindex="0"><code>&gt; XAUTOCLAIM mystream mygroup Lora 3600000 1526569498055-0 COUNT 1
+1) 0-0
+2) 1) 1526569506935-0
+   2) 1) "message"
+      2) "strawberry"
+</code></pre><p>When <a href="../../commands/xautoclaim.html"><code>XAUTOCLAIM</code></a> returns the "0-0" stream ID as a cursor, that means that it reached the end of the consumer group pending entries list.
+That doesn't mean that there are no new idle pending messages, so the process continues by calling <a href="../../commands/xautoclaim.html"><code>XAUTOCLAIM</code></a> from the beginning of the stream.</p>
+<a class="dashAnchor" name="//apple_ref/Section/Claiming%20and%20the%20delivery%20counter"></a><h2 id="claiming-and-the-delivery-counter">Claiming and the delivery counter</h2>
+<p>The counter that you observe in the <a href="../../commands/xpending.html"><code>XPENDING</code></a> output is the number of deliveries of each message. The counter is incremented in two ways: when a message is successfully claimed via <a href="../../commands/xclaim.html"><code>XCLAIM</code></a> or when an <a href="../../commands/xreadgroup.html"><code>XREADGROUP</code></a> call is used in order to access the history of pending messages.</p>
+<p>When there are failures, it is normal that messages will be delivered multiple times, but eventually they usually get processed and acknowledged. However there might be a problem processing some specific message, because it is corrupted or crafted in a way that triggers a bug in the processing code. In such a case what happens is that consumers will continuously fail to process this particular message. Because we have the counter of the delivery attempts, we can use that counter to detect messages that for some reason are not processable. So once the deliveries counter reaches a given large number that you chose, it is probably wiser to put such messages in another stream and send a notification to the system administrator. This is basically the way that Redis Streams implements the <em>dead letter</em> concept.</p>
+<a class="dashAnchor" name="//apple_ref/Section/Streams%20observability"></a><h2 id="streams-observability">Streams observability</h2>
+<p>Messaging systems that lack observability are very hard to work with. Not knowing who is consuming messages, what messages are pending, the set of consumer groups active in a given stream, makes everything opaque. For this reason, Redis Streams and consumer groups have different ways to observe what is happening. We already covered <a href="../../commands/xpending.html"><code>XPENDING</code></a>, which allows us to inspect the list of messages that are under processing at a given moment, together with their idle time and number of deliveries.</p>
+<p>However we may want to do more than that, and the <a href="../../commands/xinfo.html"><code>XINFO</code></a> command is an observability interface that can be used with sub-commands in order to get information about streams or consumer groups.</p>
+<p>This command uses subcommands in order to show different information about the status of the stream and its consumer groups. For instance <strong>XINFO STREAM <key></key></strong> reports information about the stream itself.</p>
+<pre tabindex="0"><code>&gt; XINFO STREAM mystream
+ 1) "length"
+ 2) (integer) 2
+ 3) "radix-tree-keys"
+ 4) (integer) 1
+ 5) "radix-tree-nodes"
+ 6) (integer) 2
+ 7) "last-generated-id"
+ 8) "1638125141232-0"
+ 9) "max-deleted-entryid"
+10) "0-0"
+11) "entries-added"
+12) (integer) 2
+13) "groups"
+14) (integer) 1
+15) "first-entry"
+16) 1) "1638125133432-0"
+    2) 1) "message"
+       2) "apple"
+17) "last-entry"
+18) 1) "1638125141232-0"
+    2) 1) "message"
+       2) "banana"
+</code></pre><p>The output shows information about how the stream is encoded internally, and also shows the first and last message in the stream. Another piece of information available is the number of consumer groups associated with this stream. We can dig further asking for more information about the consumer groups.</p>
+<pre tabindex="0"><code>&gt; XINFO GROUPS mystream
+1)  1) "name"
+    2) "mygroup"
+    3) "consumers"
+    4) (integer) 2
+    5) "pending"
+    6) (integer) 2
+    7) "last-delivered-id"
+    8) "1638126030001-0"
+    9) "entries-read"
+   10) (integer) 2
+   11) "lag"
+   12) (integer) 0
+2)  1) "name"
+    2) "some-other-group"
+    3) "consumers"
+    4) (integer) 1
+    5) "pending"
+    6) (integer) 0
+    7) "last-delivered-id"
+    8) "1638126028070-0"
+    9) "entries-read"
+   10) (integer) 1
+   11) "lag"
+   12) (integer) 1
+</code></pre><p>As you can see in this and in the previous output, the <a href="../../commands/xinfo.html"><code>XINFO</code></a> command outputs a sequence of field-value items. Because it is an observability command this allows the human user to immediately understand what information is reported, and allows the command to report more information in the future by adding more fields without breaking compatibility with older clients. Other commands that must be more bandwidth efficient, like <a href="../../commands/xpending.html"><code>XPENDING</code></a>, just report the information without the field names.</p>
+<p>The output of the example above, where the <strong>GROUPS</strong> subcommand is used, should be clear observing the field names. We can check in more detail the state of a specific consumer group by checking the consumers that are registered in the group.</p>
+<pre tabindex="0"><code>&gt; XINFO CONSUMERS mystream mygroup
+1) 1) name
+   2) "Alice"
+   3) pending
+   4) (integer) 1
+   5) idle
+   6) (integer) 9104628
+2) 1) name
+   2) "Bob"
+   3) pending
+   4) (integer) 1
+   5) idle
+   6) (integer) 83841983
+</code></pre><p>In case you do not remember the syntax of the command, just ask the command itself for help:</p>
+<pre tabindex="0"><code>&gt; XINFO HELP
+1) XINFO &lt;subcommand&gt; [&lt;arg&gt; [value] [opt] ...]. Subcommands are:
+2) CONSUMERS &lt;key&gt; &lt;groupname&gt;
+3)     Show consumers of &lt;groupname&gt;.
+4) GROUPS &lt;key&gt;
+5)     Show the stream consumer groups.
+6) STREAM &lt;key&gt; [FULL [COUNT &lt;count&gt;]
+7)     Show information about the stream.
+8) HELP
+9)     Prints this help.
+</code></pre><a class="dashAnchor" name="//apple_ref/Section/Differences%20with%20Kafka%20%28TM%29%20partitions"></a><h2 id="differences-with-kafka-tm-partitions">Differences with Kafka (TM) partitions</h2>
+<p>Consumer groups in Redis streams may resemble in some way Kafka (TM) partitioning-based consumer groups, however note that Redis streams are, in practical terms, very different. The partitions are only <em>logical</em> and the messages are just put into a single Redis key, so the way the different clients are served is based on who is ready to process new messages, and not from which partition clients are reading. For instance, if the consumer C3 at some point fails permanently, Redis will continue to serve C1 and C2 all the new messages arriving, as if now there are only two <em>logical</em> partitions.</p>
+<p>Similarly, if a given consumer is much faster at processing messages than the other consumers, this consumer will receive proportionally more messages in the same unit of time. This is possible since Redis tracks all the unacknowledged messages explicitly, and remembers who received which message and the ID of the first message never delivered to any consumer.</p>
+<p>However, this also means that in Redis if you really want to partition messages in the same stream into multiple Redis instances, you have to use multiple keys and some sharding system such as Redis Cluster or some other application-specific sharding system. A single Redis stream is not automatically partitioned to multiple instances.</p>
+<p>We could say that schematically the following is true:</p>
+<ul>
+<li>If you use 1 stream -&gt; 1 consumer, you are processing messages in order.</li>
+<li>If you use N streams with N consumers, so that only a given consumer hits a subset of the N streams, you can scale the above model of 1 stream -&gt; 1 consumer.</li>
+<li>If you use 1 stream -&gt; N consumers, you are load balancing to N consumers, however in that case, messages about the same logical item may be consumed out of order, because a given consumer may process message 3 faster than another consumer is processing message 4.</li>
+</ul>
+<p>So basically Kafka partitions are more similar to using N different Redis keys, while Redis consumer groups are a server-side load balancing system of messages from a given stream to N different consumers.</p>
+<a class="dashAnchor" name="//apple_ref/Section/Capped%20Streams"></a><h2 id="capped-streams">Capped Streams</h2>
+<p>Many applications do not want to collect data into a stream forever. Sometimes it is useful to have at maximum a given number of items inside a stream, other times once a given size is reached, it is useful to move data from Redis to a storage which is not in memory and not as fast but suited to store the history for, potentially, decades to come. Redis streams have some support for this. One is the <strong>MAXLEN</strong> option of the <a href="../../commands/xadd.html"><code>XADD</code></a> command. This option is very simple to use:</p>
+<pre tabindex="0"><code>&gt; XADD mystream MAXLEN 2 * value 1
+1526654998691-0
+&gt; XADD mystream MAXLEN 2 * value 2
+1526654999635-0
+&gt; XADD mystream MAXLEN 2 * value 3
+1526655000369-0
+&gt; XLEN mystream
+(integer) 2
+&gt; XRANGE mystream - +
+1) 1) 1526654999635-0
+   2) 1) "value"
+      2) "2"
+2) 1) 1526655000369-0
+   2) 1) "value"
+      2) "3"
+</code></pre><p>Using <strong>MAXLEN</strong> the old entries are automatically evicted when the specified length is reached, so that the stream is left at a constant size. There is currently no option to tell the stream to just retain items that are not older than a given period, because such command, in order to run consistently, would potentially block for a long time in order to evict items. Imagine for example what happens if there is an insertion spike, then a long pause, and another insertion, all with the same maximum time. The stream would block to evict the data that became too old during the pause. So it is up to the user to do some planning and understand what is the maximum stream length desired. Moreover, while the length of the stream is proportional to the memory used, trimming by time is less simple to control and anticipate: it depends on the insertion rate which often changes over time (and when it does not change, then to just trim by size is trivial).</p>
+<p>However trimming with <strong>MAXLEN</strong> can be expensive: streams are represented by macro nodes into a radix tree, in order to be very memory efficient. Altering the single macro node, consisting of a few tens of elements, is not optimal. So it's possible to use the command in the following special form:</p>
+<pre tabindex="0"><code>XADD mystream MAXLEN ~ 1000 * ... entry fields here ...
+</code></pre><p>The <code>~</code> argument between the <strong>MAXLEN</strong> option and the actual count means, I don't really need this to be exactly 1000 items. It can be 1000 or 1010 or 1030, just make sure to save at least 1000 items. With this argument, the trimming is performed only when we can remove a whole node. This makes it much more efficient, and it is usually what you want.</p>
+<p>There is also the <a href="../../commands/xtrim.html"><code>XTRIM</code></a> command, which performs something very similar to what the <strong>MAXLEN</strong> option does above, except that it can be run by itself:</p>
+<pre tabindex="0"><code>&gt; XTRIM mystream MAXLEN 10
+</code></pre><p>Or, as for the <a href="../../commands/xadd.html"><code>XADD</code></a> option:</p>
+<pre tabindex="0"><code>&gt; XTRIM mystream MAXLEN ~ 10
+</code></pre><p>However, <a href="../../commands/xtrim.html"><code>XTRIM</code></a> is designed to accept different trimming strategies. Another trimming strategy is <strong>MINID</strong>, that evicts entries with IDs lower than the one specified.</p>
+<p>As <a href="../../commands/xtrim.html"><code>XTRIM</code></a> is an explicit command, the user is expected to know about the possible shortcomings of different trimming strategies.</p>
+<p>Another useful eviction strategy that may be added to <a href="../../commands/xtrim.html"><code>XTRIM</code></a> in the future, is to remove by a range of IDs to ease use of <a href="../../commands/xrange.html"><code>XRANGE</code></a> and <a href="../../commands/xtrim.html"><code>XTRIM</code></a> to move data from Redis to other storage systems if needed.</p>
+<a class="dashAnchor" name="//apple_ref/Section/Special%20IDs%20in%20the%20streams%20API"></a><h2 id="special-ids-in-the-streams-api">Special IDs in the streams API</h2>
+<p>You may have noticed that there are several special IDs that can be used in the Redis API. Here is a short recap, so that they can make more sense in the future.</p>
+<p>The first two special IDs are <code>-</code> and <code>+</code>, and are used in range queries with the <a href="../../commands/xrange.html"><code>XRANGE</code></a> command. Those two IDs respectively mean the smallest ID possible (that is basically <code>0-1</code>) and the greatest ID possible (that is <code>18446744073709551615-18446744073709551615</code>). As you can see it is a lot cleaner to write <code>-</code> and <code>+</code> instead of those numbers.</p>
+<p>Then there are APIs where we want to say, the ID of the item with the greatest ID inside the stream. This is what <code>$</code> means. So for instance if I want only new entries with <a href="../../commands/xreadgroup.html"><code>XREADGROUP</code></a> I use this ID to signify I already have all the existing entries, but not the new ones that will be inserted in the future. Similarly when I create or set the ID of a consumer group, I can set the last delivered item to <code>$</code> in order to just deliver new entries to the consumers in the group.</p>
+<p>As you can see <code>$</code> does not mean <code>+</code>, they are two different things, as <code>+</code> is the greatest ID possible in every possible stream, while <code>$</code> is the greatest ID in a given stream containing given entries. Moreover APIs will usually only understand <code>+</code> or <code>$</code>, yet it was useful to avoid loading a given symbol with multiple meanings.</p>
+<p>Another special ID is <code>&gt;</code>, that is a special meaning only related to consumer groups and only when the <a href="../../commands/xreadgroup.html"><code>XREADGROUP</code></a> command is used. This special ID means that we want only entries that were never delivered to other consumers so far. So basically the <code>&gt;</code> ID is the <em>last delivered ID</em> of a consumer group.</p>
+<p>Finally the special ID <code>*</code>, that can be used only with the <a href="../../commands/xadd.html"><code>XADD</code></a> command, means to auto select an ID for us for the new entry.</p>
+<p>So we have <code>-</code>, <code>+</code>, <code>$</code>, <code>&gt;</code> and <code>*</code>, and all have a different meaning, and most of the time, can be used in different contexts.</p>
+<a class="dashAnchor" name="//apple_ref/Section/Persistence%2C%20replication%20and%20message%20safety"></a><h2 id="persistence-replication-and-message-safety">Persistence, replication and message safety</h2>
+<p>A Stream, like any other Redis data structure, is asynchronously replicated to replicas and persisted into AOF and RDB files. However what may not be so obvious is that also the consumer groups full state is propagated to AOF, RDB and replicas, so if a message is pending in the master, also the replica will have the same information. Similarly, after a restart, the AOF will restore the consumer groups' state.</p>
+<p>However note that Redis streams and consumer groups are persisted and replicated using the Redis default replication, so:</p>
+<ul>
+<li>AOF must be used with a strong fsync policy if persistence of messages is important in your application.</li>
+<li>By default the asynchronous replication will not guarantee that <a href="../../commands/xadd.html"><code>XADD</code></a> commands or consumer groups state changes are replicated: after a failover something can be missing depending on the ability of replicas to receive the data from the master.</li>
+<li>The <a href="../../commands/wait.html"><code>WAIT</code></a> command may be used in order to force the propagation of the changes to a set of replicas. However note that while this makes it very unlikely that data is lost, the Redis failover process as operated by Sentinel or Redis Cluster performs only a <em>best effort</em> check to failover to the replica which is the most updated, and under certain specific failure conditions may promote a replica that lacks some data.</li>
+</ul>
+<p>So when designing an application using Redis streams and consumer groups, make sure to understand the semantical properties your application should have during failures, and configure things accordingly, evaluating whether it is safe enough for your use case.</p>
+<a class="dashAnchor" name="//apple_ref/Section/Removing%20single%20items%20from%20a%20stream"></a><h2 id="removing-single-items-from-a-stream">Removing single items from a stream</h2>
+<p>Streams also have a special command for removing items from the middle of a stream, just by ID. Normally for an append only data structure this may look like an odd feature, but it is actually useful for applications involving, for instance, privacy regulations. The command is called <a href="../../commands/xdel.html"><code>XDEL</code></a> and receives the name of the stream followed by the IDs to delete:</p>
+<pre tabindex="0"><code>&gt; XRANGE mystream - + COUNT 2
+1) 1) 1526654999635-0
+   2) 1) "value"
+      2) "2"
+2) 1) 1526655000369-0
+   2) 1) "value"
+      2) "3"
+&gt; XDEL mystream 1526654999635-0
+(integer) 1
+&gt; XRANGE mystream - + COUNT 2
+1) 1) 1526655000369-0
+   2) 1) "value"
+      2) "3"
+</code></pre><p>However in the current implementation, memory is not really reclaimed until a macro node is completely empty, so you should not abuse this feature.</p>
+<a class="dashAnchor" name="//apple_ref/Section/Zero%20length%20streams"></a><h2 id="zero-length-streams">Zero length streams</h2>
+<p>A difference between streams and other Redis data structures is that when the other data structures no longer have any elements, as a side effect of calling commands that remove elements, the key itself will be removed. So for instance, a sorted set will be completely removed when a call to <a href="../../commands/zrem.html"><code>ZREM</code></a> will remove the last element in the sorted set. Streams, on the other hand, are allowed to stay at zero elements, both as a result of using a <strong>MAXLEN</strong> option with a count of zero (<a href="../../commands/xadd.html"><code>XADD</code></a> and <a href="../../commands/xtrim.html"><code>XTRIM</code></a> commands), or because <a href="../../commands/xdel.html"><code>XDEL</code></a> was called.</p>
+<p>The reason why such an asymmetry exists is because Streams may have associated consumer groups, and we do not want to lose the state that the consumer groups defined just because there are no longer any items in the stream. Currently the stream is not deleted even when it has no associated consumer groups.</p>
+<a class="dashAnchor" name="//apple_ref/Section/Total%20latency%20of%20consuming%20a%20message"></a><h2 id="total-latency-of-consuming-a-message">Total latency of consuming a message</h2>
+<p>Non blocking stream commands like <a href="../../commands/xrange.html"><code>XRANGE</code></a> and <a href="../../commands/xread.html"><code>XREAD</code></a> or <a href="../../commands/xreadgroup.html"><code>XREADGROUP</code></a> without the BLOCK option are served synchronously like any other Redis command, so to discuss latency of such commands is meaningless: it is more interesting to check the time complexity of the commands in the Redis documentation. It should be enough to say that stream commands are at least as fast as sorted set commands when extracting ranges, and that <a href="../../commands/xadd.html"><code>XADD</code></a> is very fast and can easily insert from half a million to one million items per second in an average machine if pipelining is used.</p>
+<p>However latency becomes an interesting parameter if we want to understand the delay of processing a message, in the context of blocking consumers in a consumer group, from the moment the message is produced via <a href="../../commands/xadd.html"><code>XADD</code></a>, to the moment the message is obtained by the consumer because <a href="../../commands/xreadgroup.html"><code>XREADGROUP</code></a> returned with the message.</p>
+<a class="dashAnchor" name="//apple_ref/Section/How%20serving%20blocked%20consumers%20works"></a><h2 id="how-serving-blocked-consumers-works">How serving blocked consumers works</h2>
+<p>Before providing the results of performed tests, it is interesting to understand what model Redis uses in order to route stream messages (and in general actually how any blocking operation waiting for data is managed).</p>
+<ul>
+<li>The blocked client is referenced in a hash table that maps keys for which there is at least one blocking consumer, to a list of consumers that are waiting for such key. This way, given a key that received data, we can resolve all the clients that are waiting for such data.</li>
+<li>When a write happens, in this case when the <a href="../../commands/xadd.html"><code>XADD</code></a> command is called, it calls the <code>signalKeyAsReady()</code> function. This function will put the key into a list of keys that need to be processed, because such keys may have new data for blocked consumers. Note that such <em>ready keys</em> will be processed later, so in the course of the same event loop cycle, it is possible that the key will receive other writes.</li>
+<li>Finally, before returning into the event loop, the <em>ready keys</em> are finally processed. For each key the list of clients waiting for data is scanned, and if applicable, such clients will receive the new data that arrived. In the case of streams the data is the messages in the applicable range requested by the consumer.</li>
+</ul>
+<p>As you can see, basically, before returning to the event loop both the client calling <a href="../../commands/xadd.html"><code>XADD</code></a> and the clients blocked to consume messages, will have their reply in the output buffers, so the caller of <a href="../../commands/xadd.html"><code>XADD</code></a> should receive the reply from Redis at about the same time the consumers will receive the new messages.</p>
+<p>This model is <em>push-based</em>, since adding data to the consumers buffers will be performed directly by the action of calling <a href="../../commands/xadd.html"><code>XADD</code></a>, so the latency tends to be quite predictable.</p>
+<a class="dashAnchor" name="//apple_ref/Section/Latency%20tests%20results"></a><h2 id="latency-tests-results">Latency tests results</h2>
+<p>In order to check these latency characteristics a test was performed using multiple instances of Ruby programs pushing messages having as an additional field the computer millisecond time, and Ruby programs reading the messages from the consumer group and processing them. The message processing step consisted of comparing the current computer time with the message timestamp, in order to understand the total latency.</p>
+<p>Results obtained:</p>
+<pre tabindex="0"><code>Processed between 0 and 1 ms -&gt; 74.11%
+Processed between 1 and 2 ms -&gt; 25.80%
+Processed between 2 and 3 ms -&gt; 0.06%
+Processed between 3 and 4 ms -&gt; 0.01%
+Processed between 4 and 5 ms -&gt; 0.02%
+</code></pre><p>So 99.9% of requests have a latency &lt;= 2 milliseconds, with the outliers that remain still very close to the average.</p>
+<p>Adding a few million unacknowledged messages to the stream does not change the gist of the benchmark, with most queries still processed with very short latency.</p>
+<p>A few remarks:</p>
+<ul>
+<li>Here we processed up to 10k messages per iteration, this means that the <code>COUNT</code> parameter of <a href="../../commands/xreadgroup.html"><code>XREADGROUP</code></a> was set to 10000. This adds a lot of latency but is needed in order to allow the slow consumers to be able to keep with the message flow. So you can expect a real world latency that is a lot smaller.</li>
+<li>The system used for this benchmark is very slow compared to today's standards.</li>
+</ul>
+
+          
+  <form class="page-feedback" method="POST" name="page-feedback"><input type="hidden" name="form-name" value="page-feedback">
+    <input name="origin" value="https://redis.io/docs/data-types/streams-tutorial/" class="hidden">
+  <div class="grid justify-center mt-10 pt-10 border-t-2">
+    <span class="font-bold font-small">Rate this page</span>
+    <div class="star-rating">
+      
+      <input type="radio" id="5-stars" name="rating" value="5" onchange="document.querySelector('#feedback-form').classList.remove('hidden')">
+      <label for="5-stars" class="star">★</label>
+      
+      <input type="radio" id="4-stars" name="rating" value="4" onchange="document.querySelector('#feedback-form').classList.remove('hidden')">
+      <label for="4-stars" class="star">★</label>
+      
+      <input type="radio" id="3-stars" name="rating" value="3" onchange="document.querySelector('#feedback-form').classList.remove('hidden')">
+      <label for="3-stars" class="star">★</label>
+      
+      <input type="radio" id="2-stars" name="rating" value="2" onchange="document.querySelector('#feedback-form').classList.remove('hidden')">
+      <label for="2-stars" class="star">★</label>
+      
+      <input type="radio" id="1-stars" name="rating" value="1" onchange="document.querySelector('#feedback-form').classList.remove('hidden')">
+      <label for="1-stars" class="star">★</label>
+      
+    </div>  
+  </div>
+  <div id="feedback-form" class="hidden">
+    <div class="feedback-submit">
+      <textarea name="comment" placeholder="Why did you choose this rating?" class="border border-neutral-500 p-2 mt-1 block w-full h-24" rows="3"></textarea>
+      <button class="button button-indigo w-min justify-self-end" type="submit">
+        Submit
+      </button>
+    </div>
+  </div>
+</form>
+      </section>
+    </div>
+    
+
+  <section class="hidden xl:block w-52 h-full shrink-0">
+    <div class="w-52 z-40 hidden bg-white/75 md:block overflow-auto fixed top-28 h-full max-h-[calc(100vh-15rem)] text-[0.8125rem]">
+      
+
+
+
+
+
+<nav class="flex flex-col gap-1 mb-6 pb-2 border-b-2">
+  <a href="https://github.com/redis/redis-doc/edit/master/docs/data-types/streams-tutorial.md" target="_blank" class="group inline-flex items-center gap-1 text-sm text-slate-700 hover:text-indigo-600 mt-auto self-start">
+    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+      <path d="M11 44q-1.2 0-2.1-.9Q8 42.2 8 41V7q0-1.2.9-2.1Q9.8 4 11 4h17l12 12v7.8h-3V18H26V7H11v34h15v3Zm0-3V7v34Zm26.8-11.15 1.4 1.4-8.2 8.2V42h2.55l8.2-8.2 1.4 1.4-8.8 8.8H29v-5.35Zm5.35 5.35-5.35-5.35 3.05-3.05q.45-.45 1.05-.45.6 0 1.05.45l3.25 3.25q.45.45.45 1.05 0 .6-.45 1.05Z" fill="currentColor"></path>
+    </svg>
+    Edit this page
+  </a>
+  <a href="https://github.com/redis/redis-doc/issues/new?title=Redis%20Streams%20tutorial" target="_blank" class="group inline-flex items-center gap-1 text-sm text-slate-700 hover:text-indigo-600 mt-auto self-start">
+    <svg class="w-4 h-4" viewBox="0 0 98 96" xmlns="http://www.w3.org/2000/svg">
+      <path fill-rule="evenodd" clip-rule="evenodd" d="M48.854 0C21.839 0 0 22 0 49.217c0 21.756 13.993 40.172 33.405 46.69 2.427.49 3.316-1.059 3.316-2.362 0-1.141-.08-5.052-.08-9.127-13.59 2.934-16.42-5.867-16.42-5.867-2.184-5.704-5.42-7.17-5.42-7.17-4.448-3.015.324-3.015.324-3.015 4.934.326 7.523 5.052 7.523 5.052 4.367 7.496 11.404 5.378 14.235 4.074.404-3.178 1.699-5.378 3.074-6.6-10.839-1.141-22.243-5.378-22.243-24.283 0-5.378 1.94-9.778 5.014-13.2-.485-1.222-2.184-6.275.486-13.038 0 0 4.125-1.304 13.426 5.052a46.97 46.97 0 0 1 12.214-1.63c4.125 0 8.33.571 12.213 1.63 9.302-6.356 13.427-5.052 13.427-5.052 2.67 6.763.97 11.816.485 13.038 3.155 3.422 5.015 7.822 5.015 13.2 0 18.905-11.404 23.06-22.324 24.283 1.78 1.548 3.316 4.481 3.316 9.126 0 6.6-.08 11.897-.08 13.526 0 1.304.89 2.853 3.316 2.364 19.412-6.52 33.405-24.935 33.405-46.691C97.707 22 75.788 0 48.854 0z" fill="currentColor"></path>
+    </svg>
+    Create an issue
+  </a>
+</nav>
+
+
+      
+        <h1 class="font-semibold my-3">On This Page</h1>
+        <nav class="text-slate-700">
+          <nav id="TableOfContents">
+  <ul>
+    <li><a href="#introduction">Introduction</a></li>
+    <li><a href="#streams-basics">Streams basics</a>
+      <ul>
+        <li><a href="#entry-ids">Entry IDs</a></li>
+      </ul>
+    </li>
+    <li><a href="#getting-data-from-streams">Getting data from Streams</a>
+      <ul>
+        <li><a href="#querying-by-range-xrange-and-xrevrange">Querying by range: XRANGE and XREVRANGE</a></li>
+      </ul>
+    </li>
+    <li><a href="#listening-for-new-items-with-xread">Listening for new items with XREAD</a></li>
+    <li><a href="#consumer-groups">Consumer groups</a></li>
+    <li><a href="#creating-a-consumer-group">Creating a consumer group</a></li>
+    <li><a href="#recovering-from-permanent-failures">Recovering from permanent failures</a></li>
+    <li><a href="#automatic-claiming">Automatic claiming</a></li>
+    <li><a href="#claiming-and-the-delivery-counter">Claiming and the delivery counter</a></li>
+    <li><a href="#streams-observability">Streams observability</a></li>
+    <li><a href="#differences-with-kafka-tm-partitions">Differences with Kafka (TM) partitions</a></li>
+    <li><a href="#capped-streams">Capped Streams</a></li>
+    <li><a href="#special-ids-in-the-streams-api">Special IDs in the streams API</a></li>
+    <li><a href="#persistence-replication-and-message-safety">Persistence, replication and message safety</a></li>
+    <li><a href="#removing-single-items-from-a-stream">Removing single items from a stream</a></li>
+    <li><a href="#zero-length-streams">Zero length streams</a></li>
+    <li><a href="#total-latency-of-consuming-a-message">Total latency of consuming a message</a></li>
+    <li><a href="#how-serving-blocked-consumers-works">How serving blocked consumers works</a></li>
+    <li><a href="#latency-tests-results">Latency tests results</a></li>
+  </ul>
+</nav>
+        </nav>
+        
+    </div>
+  </section>
+
+
+  </main>
+
+
+    <footer class="bg-midnight-700 relative z-50">
+      <p class="container max-w-[85rem] mx-auto px-4 sm:px-8 py-8 text-slate-400 text-sm text-center">
+  This is a community website sponsored by <a href="https://redis.com/" class="text-white underline underline-offset-1 decoration-transparent hover:decoration-slate-500 transition-colors">Redis Ltd.</a> © 2023. Redis and the cube logo are registered trademarks of Redis Ltd. <a href="../../terms.html" class="text-white underline underline-offset-1 decoration-transparent hover:decoration-slate-500 transition-colors">Terms of use &amp; privacy policy</a>.
+</p>
+
+      <script>
+  
+  document.addEventListener('DOMContentLoaded', () => {
+
+    const TableOfContents = {
+      container: document.querySelector('#TableOfContents'),
+      links: null,
+      headings: null,
+      intersectionOptions: {
+        rootMargin: '0px',
+        threshold: 1
+      },
+      previousSection: null,
+      observer: null,
+
+      init() {
+        if (!this.container) return false
+
+        this.handleObserver = this.handleObserver.bind(this)
+        this.setUpObserver()
+        this.findLinksAndHeadings()
+        this.observeSections()
+      },
+
+      handleObserver(entries, observer) {
+        entries.forEach(entry => {
+          let href = `#${entry.target.getAttribute('id')}`
+          let link = this.links.find(l => l.getAttribute('href') === href)
+
+          if (entry.isIntersecting && entry.intersectionRatio >= 1) {
+            link.classList.add('visible')
+            this.previousSection = entry.target.getAttribute('id')
+          } else {
+            link.classList.remove('visible')
+          }
+
+          this.highlightFirstActive()
+        })
+      },
+
+      highlightFirstActive() {
+        let firstVisibleLink = this.container.querySelector('.visible')
+
+        this.links.forEach(link => {
+          link.classList.remove('active')
+        })
+
+        if (firstVisibleLink) {
+          firstVisibleLink.classList.add('active')
+        }
+
+        if (!firstVisibleLink && this.previousSection) {
+          this.container.querySelector(
+            `a[href="#${this.previousSection}"]`
+          ).classList.add('active')
+        }
+      },
+
+      observeSections() {
+        this.headings.forEach(heading => {
+          this.observer.observe(heading)
+        })
+      },
+
+      setUpObserver() {
+        this.observer = new IntersectionObserver(
+          this.handleObserver,
+          this.intersectionOptions
+        )
+      },
+
+      findLinksAndHeadings() {
+        this.links = [...this.container.querySelectorAll('a')]
+        this.headings = this.links.map(link => {
+          let id = link.getAttribute('href')
+          return document.querySelector(id)
+        })
+      }
+    }
+
+    TableOfContents.init()
+
+})
+</script>
+    </footer>
+
+    
+<div class="sr-only w-screen h-screen fixed z-[200] top-0 left-0 cursor-auto flex flex-col bg-slate-900/75 p-4 sm:p-6 md:p-[10vh] lg:p-[12vh]" id="search-container" role="button" aria-expanded="true" aria-haspopup="listbox" aria-labelledby="search-label" tabindex="0">
+  <div class="search-modal">
+    <header class="search-bar">
+      <form id="search-form" class="search-form">
+        <label class="search-magnifier-label" for="search-input" id="search-label">
+          <svg width="20" height="20" class="search-icon" viewBox="0 0 20 20">
+            <path d="M14.386 14.386l4.0877 4.0877-4.0877-4.0877c-2.9418 2.9419-7.7115 2.9419-10.6533 0-2.9419-2.9418-2.9419-7.7115 0-10.6533 2.9418-2.9419 7.7115-2.9419 10.6533 0 2.9419 2.9418 2.9419 7.7115 0 10.6533z" stroke="currentColor" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+        </label>
+        <div class="search-loading-indicator">
+          <svg viewBox="0 0 38 38" stroke="currentColor" stroke-opacity=".5">
+            <g fill="none" fill-rule="evenodd">
+              <g transform="translate(1 1)" stroke-width="2">
+                <circle stroke-opacity=".3" cx="18" cy="18" r="18"></circle>
+                <path d="M36 18c0-9.94-8.06-18-18-18">
+                  <animateTransform attributeName="transform" type="rotate" from="0 18 18" to="360 18 18" dur="1s" repeatCount="indefinite"></animateTransform>
+                </path>
+              </g>
+            </g>
+          </svg>
+        </div>
+        <input class="search-input" aria-autocomplete="both" aria-labelledby="search-label" id="search-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search…" maxlength="64" type="search" value="">
+        <button type="reset" title="Clear the query" class="search-reset" aria-label="Clear the query" hidden="">
+          <svg width="20" height="20" viewBox="0 0 20 20">
+            <path d="M10 10l5.09-5.09L10 10l5.09 5.09L10 10zm0 0L4.91 4.91 10 10l-5.09 5.09L10 10z" stroke="currentColor" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+        </button>
+      </form>
+      <button id="search-cancel" type="reset" aria-label="Cancel">
+        Cancel
+      </button>
+    </header>
+    <dl id="search-results" class="search-results" role="listbox"></dl>
+    <footer class="search-footer">
+      <a href="../stack/search.html" target="_blank" rel="noopener noreferrer">
+        <span class="logo-label">Powered by Redis Stack</span>
+        
+        <svg viewBox="0 0 39 31" fill="none"><path d="M21.7371 15.2903C21.5759 15.2895 21.4198 15.2337 21.2947 15.1321 21.1695 15.0305 21.0828 14.8892 21.049 14.7316S21.0362 14.4096 21.1086 14.2655C21.1811 14.1215 21.3005 14.0066 21.4472 13.9397L35.7199 7.47338 21.4578 1.34289C21.2943 1.26329 21.1678 1.12377 21.1045.953307 21.0412.78285 21.046.594558 21.1179.427547 21.1898.260535 21.3233.127641 21.4906.0564719 21.6579-.0146977 21.8462-.0186728 22.0164.045373L37.7492 6.80518C37.8747 6.8605 37.9814 6.95112 38.0563 7.06599S38.171 7.31503 38.171 7.45216 38.1312 7.72347 38.0563 7.83834C37.9814 7.95321 37.8747 8.04383 37.7492 8.09915L22.0306 15.2266C21.9388 15.2698 21.8385 15.2916 21.7371 15.2903z" fill="#db2e2e"></path><path d="M16.4339 15.2903C16.3379 15.2906 16.2429 15.2714 16.1546 15.2337L.421813 8.47393C.296339 8.41861.18966 8.32799.114767 8.21312.0398745 8.09825.0 7.96407.0 7.82694.0 7.68981.0398745 7.55564.114767 7.44077.18966 7.3259.296339 7.23528.421813 7.17995L16.1546.052465C16.3235-.0111265 16.5104-.00772359 16.6768.0619772 16.8433.131678 16.9768.2624 17.0501.427363 17.1233.592325 17.1306.779042 17.0706.949259 17.0106 1.11948 16.8878 1.26031 16.7274 1.34291L2.44763 7.80573 16.7132 13.9362C16.8612 14.0015 16.9823 14.1154 17.0565 14.2592 17.1306 14.4029 17.1532 14.5677 17.1205 14.7261 17.0878 14.8845 17.0019 15.0269 16.8769 15.1295 16.752 15.2322 16.5956 15.2889 16.4339 15.2903z" fill="#db2e2e"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M29.1651 17.4328c3.1288-1.2763 6.2047-2.5279 7.1875-3.0617L37.1163 13.9539C37.3908 13.8108 37.6564 13.6514 37.9118 13.4766 37.972 13.8833 37.972 14.2967 37.9118 14.7034 37.8022 15.1312 37.4875 15.4847 36.289 16.061 35.4617 16.4605 33.1531 17.408 30.5792 18.4687c-3.6167 1.4884-7.778 3.1819-9.0826 3.889C19.2587 23.4183 18.0284 23.4183 16.3137 22.644 15.4864 22.2021 12.4918 20.9117 9.39476 19.5611c-3.3198-1.446-6.75627-2.945-7.77802-3.4753C.22377 15.3575.153061 15.1948.160132 14.8271V13.8655L.513678 14.0564c1.311652.6647 7.219412 3.1819 11.486722 5.0204 2.1142.898 3.8112 1.6298 4.3769 1.8844C18.092 21.7319 19.3082 21.8733 21.5603 20.6748 22.7022 20.0808 25.9619 18.7409 29.1651 17.4328z" fill="#494c4d"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M29.1651 24.5037c3.1288-1.2763 6.2047-2.5279 7.1875-3.0617L37.1163 21.0248C37.3908 20.8817 37.6564 20.7223 37.9118 20.5475 37.972 20.9542 37.972 21.3676 37.9118 21.7743 37.8022 22.2021 37.4875 22.5557 36.289 23.1319 35.4617 23.5314 33.1531 24.4789 30.5792 25.5396c-3.6167 1.4884-7.778 3.1819-9.0826 3.889-2.2379 1.0606-3.4682 1.0606-5.1829.2864C15.4864 29.2801 12.4918 27.9755 9.39476 26.625c-3.3198-1.446-6.75627-2.9451-7.77802-3.4754C.22377 22.4213.153061 22.2587.160132 21.891V20.9364L.513678 21.1273C1.82533 21.792 7.73309 24.3092 12.0004 26.1477c2.1001.898 3.8006 1.6298 4.3663 1.8844C18.0814 28.8028 19.2976 28.9442 21.5497 27.7457 22.7022 27.1518 25.9619 25.8118 29.1651 24.5037z" fill="#494c4d"></path></svg>
+      </a>
+    </footer>
+  </div>
+</div>
+
+<script>
+  const searchModal = (() => {
+    const searchButton = document.querySelector('#search-button')
+    const searchContainer = document.querySelector('#search-container')
+    const searchInput = searchContainer.querySelector('#search-input')
+    const resultsContainer = searchContainer.querySelector('#search-results')
+    const style = document.createElement('style')
+    
+    let keys = {}
+    let focusable
+    let firstFocusable
+    let lastFocusable
+  
+    function next (elem, selector) {
+      let nextElem = elem.nextElementSibling
+      if (!selector) return nextElem
+      if (nextElem && nextElem.matches(selector)) return nextElem
+      return null
+    }
+  
+    function debounce(callback, delay) {
+      let timeout
+      
+      return function() {
+        clearTimeout(timeout)
+        timeout = setTimeout(callback, delay)
+      }
+    }
+  
+    function searchSubmit(form) {
+      if (form.id !== 'search-form') return false
+  
+      const searchTerm = searchInput.value
+  
+      if (searchTerm.length < 1) {
+        resultsContainer.innerHTML = ''
+        return
+      }
+  
+      function search(url) {
+        let promise = new Promise((resolve, reject) => {
+          const req = new XMLHttpRequest()
+          req.open('GET', url)
+          req.onload = function() {
+            if (req.status === 200) {
+              resolve(JSON.parse(req.response))
+            } else {
+              reject(Error(req.status))
+            }
+          }
+          req.send()
+        })
+  
+        return promise
+      }
+  
+      function sortData(data) {
+        
+        const getCategories = (data) =>
+          data.reduce((a, c) => {
+            if (!a.includes(c.hierarchy[0])) {
+              a.push(c.hierarchy[0])
+            }
+  
+            return a
+          }, [])
+
+        
+        const constructSectionTitle = (record) => {
+          if (record.hierarchy && record.hierarchy.length > 2) {
+            return record.hierarchy[1]
+          } else {
+            return record.title
+          }
+        }
+
+        
+        const mergeData = (data, categories) =>
+          categories.map((category) => {
+            const obj = {}
+            obj.category = category
+  
+            data.forEach((record) => {
+              if (record.hierarchy[0] === category) {
+                obj[record.title] = {
+                  path: constructSectionTitle(record),
+                  url: record.url,
+                }
+              }
+            })
+  
+            return obj
+          })
+  
+        return mergeData(data.results, getCategories(data.results))
+      }
+  
+      function escape_evil_chars(str_in) {
+        return str_in.replaceAll('>','&gt;').replaceAll('<', '&lt;').replaceAll('&', '&amp;').replaceAll('"','&quot;').replaceAll("'",'&#x27;')
+      }   
+      
+      function displayData(data) {
+        resultsContainer.innerHTML = ''
+        
+        if (data.results.length < 1) {
+          escapedSearchTerm = escape_evil_chars(searchTerm)
+          resultsContainer.insertAdjacentHTML(
+            'beforeend',
+            `<dt class="sr-only">${escapedSearchTerm}:</dt>
+            <dd class="search-no-results">
+              No results for \"<span class="search-title">${escapedSearchTerm}</span>\"
+            </dd>`
+          )
+        } else {
+          sortData(data).forEach((result) => {
+            resultsContainer.insertAdjacentHTML(
+              'beforeend', 
+              `<dt class="search-item-source">
+                ${result.category}
+              </dt>`
+            )
+    
+            delete result.category
+    
+            Object.keys(result).forEach((key, index) => {
+              resultsContainer.insertAdjacentHTML(
+                'beforeend',
+                `<dd class="search-item" role="option">
+                  <a href="${result[key].url}">
+                    <span class="search-item-icon"></span>
+                    <span class="search-item-content">
+                      ${result[key].path ? `<span class="search-item-path">${result[key].path}</span>` : ''}
+                      <span class="search-item-title">${key.replace(new RegExp(`(^|)(${searchTerm})(|$)`, 'ig'), '$1<b class="search-term-match">$2</b>$3')}</span>
+                    </span>
+                    <span class="search-item-action"></span>
+                  </a>
+                </dd>`
+              )
+            })
+            
+            if (!resultsContainer.querySelector('[aria-selected]')) resultsContainer.querySelector('.search-item').setAttribute('aria-selected', '')
+          })
+        }
+        return
+      }
+  
+      function displayError(error) {
+        console.log(error)
+      }
+  
+      search(`https://search-service.redislabs.com/search?q=${searchTerm}*&site=https://redis.io`)
+        .then(displayData)
+        .catch(displayError)
+    }
+  
+    function loadHandler(event) {
+      style.innerHTML = `
+        [data-scroll-disabled="on"], 
+        [data-scroll-disabled="on"] body {
+          touch-action: none;
+          overscroll-behavior: none;
+          -webkit-overflow-scrolling: auto;
+          overflow: hidden;
+        }
+  
+        [data-scroll-disabled="on"] .sticky {
+          position: fixed;
+        }
+      `
+  
+      document.head.appendChild(style)
+      document.documentElement.dataset.searchState = 'off'
+    }
+  
+    function getNextSibling(elem, selector, direction) {
+      let sibling = direction === 'down' ? elem.nextElementSibling : elem.previousElementSibling
+    
+      while (sibling) {
+        if (sibling.matches(selector)) return sibling
+        sibling = direction === 'down' ? sibling.nextElementSibling : sibling.previousElementSibling
+      }
+    }
+  
+    function tabSelection(direction) {
+      const currentSelection = resultsContainer.querySelector('[aria-selected]')
+      if (!currentSelection || direction === 'down' && !currentSelection.nextElementSibling || direction === 'up' && !currentSelection.previousElementSibling) return false
+        
+      const nextSelection = getNextSibling(currentSelection, '.search-item', direction)
+      if (!nextSelection) return false
+      
+      nextSelection.setAttribute('aria-selected', '')
+      currentSelection.removeAttribute('aria-selected')
+      resultsContainer.scrollTop = nextSelection.offsetTop - resultsContainer.offsetTop
+    }
+    
+    function keyDownHandler(event) {
+      switch (event.key) {
+  
+        // Arrow keys
+        case 'ArrowDown':
+          if (document.documentElement.dataset.searchState === 'off' || !document.querySelector('.search-item')) return false
+          event.preventDefault()
+          tabSelection('down')
+          break
+  
+        case 'ArrowUp':
+          if (document.documentElement.dataset.searchState === 'off' || !document.querySelector('.search-item')) return false
+          event.preventDefault()
+          tabSelection('up')
+          break
+  
+        // Tab
+        case 'Tab':
+          if (document.documentElement.dataset.searchState === 'off') return false
+  
+          if (focusable.length === 1) {
+            event.preventDefault()
+            break
+          }
+  
+          // If shift is fired, tab backward
+          if (event.shiftKey) {
+            if (document.activeElement === firstFocusable) {
+              event.preventDefault()
+              lastFocusable.focus()
+            }
+  
+            // Otherwise tab forward
+          } else {
+            if (document.activeElement === lastFocusable) {
+              event.preventDefault()
+              firstFocusable.focus()
+            }
+          }
+          break
+  
+        // Esc
+        case 'Escape':
+          if (document.documentElement.dataset.searchState === 'off') return false
+          stopSearch()
+          break
+        
+        // Enter
+        case 'Enter':
+          if (!document.querySelector('.search-item:focus-within') && document.querySelector('.search-item[aria-selected]')) {
+            event.preventDefault()
+            document.querySelector('.search-item[aria-selected] a').click()
+          }
+          break
+  
+        // Forward slash
+        case '/':
+          if (document.documentElement.dataset.searchState === 'on') return false
+          event.preventDefault()
+          startSearch()
+          break
+      
+        // Default
+        default:
+          return false
+          break
+      }
+    }
+  
+    function keyUpHandler(event) {
+      if (document.documentElement.dataset.searchState === 'off' || !document.activeElement.matches('.search-input')) return false
+      
+      switch (event.key) {
+        case 'ArrowDown':
+          return false
+          break
+        case 'ArrowUp':
+          return false
+          break
+        case 'ArrowLeft':
+          return false
+          break
+        case 'ArrowRight':
+          return false
+          break
+        case 'Tab':
+          return false
+          break
+        case 'Escape':
+          return false
+          break
+        case 'Enter':
+          return false
+          break
+        case '/':
+          return false
+          break
+        default:
+          searchSubmit(document.activeElement.closest('form'))
+          break
+      }
+    }
+  
+    function multiKeyHandler(event) {
+      if (document.documentElement.dataset.searchState === 'on') return false
+  
+      let { key, type } = event
+      let isKeyDown = (type == 'keydown')
+      keys[key] = isKeyDown
+  
+      // Both (cmd || cntrl) & k pressed
+      if (isKeyDown && (keys.Control || keys.Meta) && keys.k) {
+        event.preventDefault()
+        startSearch()
+      }
+    }
+  
+    // Click handler function
+    function clickHandler(event) {
+      if (event.target.closest('#search-button')) {
+        startSearch()
+      } else if (event.target.closest('#search-cancel') || event.target.matches('#search-container')) {
+        stopSearch()
+      }
+    }
+  
+    function startSearch() {
+      sessionStorage.setItem('scroll-position', document.documentElement.scrollTop)
+      document.documentElement.dataset.scrollDisabled = 'on'
+      document.documentElement.dataset.searchState = 'on'
+      allowFocus(searchContainer, true)
+      trapFocus(searchContainer)
+      searchInput.focus()
+    }
+  
+    function stopSearch() {
+      document.documentElement.dataset.searchState = 'off'
+      document.documentElement.dataset.scrollDisabled = 'off'
+      document.documentElement.scrollTop = sessionStorage.getItem('scroll-position')
+      allowFocus(searchContainer, false)
+      document.activeElement.blur()
+      resultsContainer.innerHTML = ''
+      searchInput.value = ''
+      keys = {}
+    }
+  
+    function submitHandler(event) {
+      if (event.target.id === 'search-form') {
+        event.preventDefault()
+        return false
+      }
+    }
+  
+    function allowFocus(selector, state) {
+      const focusable = selector.querySelectorAll('button, [href], input, select, textarea')
+      focusable.forEach(el => el.setAttribute('tabindex', state ? '' : '-1'))
+      selector.classList.toggle('sr-only')
+    }
+  
+    function trapFocus(selector) {
+      focusable = selector.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"]')
+      firstFocusable = focusable[0]
+      lastFocusable = focusable[focusable.length - 1]
+    }
+  
+    // Attach event listeners
+    document.addEventListener('DOMContentLoaded', loadHandler)
+    document.addEventListener('click', clickHandler)
+    document.addEventListener('keydown', event => debounce(keyDownHandler(event), 100))
+    document.addEventListener('keyup', event => debounce(keyUpHandler(event), 100))
+    document.addEventListener('keydown', multiKeyHandler)
+    document.addEventListener('keyup', multiKeyHandler)
+    document.addEventListener('submit', submitHandler)
+  })()
+</script>
+  
+
+</body></html>

@@ -3,43 +3,41 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>pytest-2.3.3: integration fixes, py24 support, */** shown in traceback &#8212; pytest documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments_pytest.css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <link rel="shortcut icon" href="../_static/favicon.png"/>
-    <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="pytest-2.3.2: some fixes and more traceback-printing speed" href="release-2.3.2.html" />
     <link rel="prev" title="pytest-2.3.4: stabilization, more flexible selection via “-k expr”" href="release-2.3.4.html" />
-  <script>DOCUMENTATION_OPTIONS.URL_ROOT = '../';</script>
+  <script>DOCUMENTATION_OPTIONS.URL_ROOT = '';</script>
    
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
+             >modules</a></li>
         <li class="right" >
           <a href="release-2.3.2.html" title="pytest-2.3.2: some fixes and more traceback-printing speed"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="release-2.3.4.html" title="pytest-2.3.4: stabilization, more flexible selection via “-k expr”"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../contents.html">pytest-6.2</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../contents.html">pytest-7.3</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Release announcements</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">pytest-2.3.3: integration fixes, py24 support, <code class="docutils literal notranslate"><span class="pre">*/**</span></code> shown in traceback</a></li> 
       </ul>
@@ -49,8 +47,8 @@
       <div class="documentwrapper">
           <div class="body" role="main">
             
-  <div class="section" id="pytest-2-3-3-integration-fixes-py24-support-shown-in-traceback">
-<h1>pytest-2.3.3: integration fixes, py24 support, <code class="docutils literal notranslate"><span class="pre">*/**</span></code> shown in traceback<a class="headerlink" href="#pytest-2-3-3-integration-fixes-py24-support-shown-in-traceback" title="Permalink to this headline">¶</a></h1>
+  <section id="pytest-2-3-3-integration-fixes-py24-support-shown-in-traceback">
+<h1>pytest-2.3.3: integration fixes, py24 support, <code class="docutils literal notranslate"><span class="pre">*/**</span></code> shown in traceback<a class="headerlink" href="#pytest-2-3-3-integration-fixes-py24-support-shown-in-traceback" title="Permalink to this heading">¶</a></h1>
 <p>pytest-2.3.3 is another stabilization release of the py.test tool
 which offers uebersimple assertions, scalable fixture mechanisms
 and deep customization for testing with Python.  Particularly,
@@ -74,8 +72,8 @@ easy_install -U pytest</p>
 </div></blockquote>
 <p>best,
 holger krekel</p>
-<div class="section" id="changes-between-2-3-2-and-2-3-3">
-<h2>Changes between 2.3.2 and 2.3.3<a class="headerlink" href="#changes-between-2-3-2-and-2-3-3" title="Permalink to this headline">¶</a></h2>
+<section id="changes-between-2-3-2-and-2-3-3">
+<h2>Changes between 2.3.2 and 2.3.3<a class="headerlink" href="#changes-between-2-3-2-and-2-3-3" title="Permalink to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>fix issue214 - parse modules that contain special objects like e. g.
 flask’s request object which blows up on getattr access if no request
@@ -97,8 +95,8 @@ you need either mock-1.0.1 or the python3.3 builtin unittest.mock.</p></li>
 <li><p>fix issue127 - improve documentation for pytest_addoption() and
 add a <code class="docutils literal notranslate"><span class="pre">config.getoption(name)</span></code> helper function for consistency.</p></li>
 </ul>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -109,8 +107,8 @@ add a <code class="docutils literal notranslate"><span class="pre">config.getopt
     </div>
   
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2015–2020, holger krekel and pytest-dev team.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
+        &#169; Copyright 2015, holger krekel and pytest-dev team.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
     </div>
   <script src="../_static/version_warning_offset.js"></script>
 

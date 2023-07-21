@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<!-- Mirrored from docs.sqlalchemy.org/en/20/_modules/examples/dogpile_caching/local_session_caching.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 06 Jul 2023 08:05:56 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=UTF-8" /><!-- /Added by HTTrack -->
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>
+        
+        
+    
+    examples.dogpile_caching.local_session_caching
+ </title>
+
+    
+
+    
+
+    <link href='../../../../../../fonts.googleapis.com/cssa2b2.css?family=Lato:400,700|Roboto+Slab:400,700' rel='stylesheet' type='text/css'/>
+
+    
+        <!-- begin iterate through SQLA css_files -->
+            <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+        <!-- end iterate through SQLA css_files -->
+
+        <!-- begin iterate through sphinx environment local css_files -->
+            <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+            <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+            <link rel="stylesheet" href="../../../_static/copybutton.css" type="text/css" />
+            <link rel="stylesheet" href="../../../_static/docs.css" type="text/css" />
+            <link rel="stylesheet" href="../../../_static/changelog.css" type="text/css" />
+            <link rel="stylesheet" href="../../../_static/sphinx_paramlinks.css" type="text/css" />
+        <!-- end iterate through sphinx environment local css_files -->
+
+        <link rel="stylesheet" type="text/css" media="all" href="../../../../../../www.sqlalchemy.org/css/bootstrap.min.css"/>
+	    <link rel="stylesheet" type="text/css" media="all" href="../../../../../../www.sqlalchemy.org/css/site.css"/>
+        <link rel="stylesheet" type="text/css" media="all" href="../../../../../../www.sqlalchemy.org/css/sidebar_extra.css"/>
+        <link rel="stylesheet" type="text/css" media="print" href="../../../../../../www.sqlalchemy.org/css/print.css"/>
+
+        <!-- begin iterate through sphinx environment remote css_files -->
+        <!-- end iterate through sphinx environment remote css_files -->
+    
+
+    
+
+    
+
+    
+
+
+    
+        <link rel="canonical" href="http://docs.sqlalchemy.org/en/latest/_modules/examples/dogpile_caching/local_session_caching.html" />
+
+    <script type="text/javascript">
+        var doc_version = "latest";
+        var doc_slug = "sqlalchemy";
+        var static_root = "../../../_static"
+
+        // copied from:
+        // https://github.com/rtfd/readthedocs.org/commit/edbbb4c753454cf20c128d4eb2fef60d740debaa#diff-2f70e8d9361202bfe3f378d2ff2c510bR8
+        var READTHEDOCS_DATA = {
+            project: "sqlalchemy",
+            version: "latest",
+            page: "_modules/examples/dogpile_caching/local_session_caching",
+            theme: ""
+          };
+
+
+    </script>
+    <!-- end RTD <head> via SQLAlchemy adapter -->
+
+    
+
+    <!-- begin layout.mako headers -->
+
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+        <link rel="copyright" title="Copyright" href="../../../copyright.html" />
+    <link rel="top" title="SQLAlchemy 2.0 Documentation" href="../../../index-2.html" />
+        <link rel="up" title="Module code" href="../../index.html" />
+    <!-- end layout.mako headers -->
+
+
+
+
+    
+
+    <!-- sqlalchemy.org docs base head -->
+    
+<link rel="shortcut icon" href="../../../../../../www.sqlalchemy.org/favicon.ico" type="image/x-icon"/>
+<link href='../../../../../../fonts.googleapis.com/css118a.css?family=Source+Sans+Pro:400,600,400italic' rel='stylesheet' type='text/css'/>
+
+<script type="text/javascript">
+var site_base='//www.sqlalchemy.org';
+var docs_base='//docs.sqlalchemy.org';
+</script>
+
+
+    <!-- end sqlalchemy.org docs base head -->
+
+</head>
+
+<body>
+
+<div id="wrap" class="container-xxl wrap px-0">
+
+
+
+
+
+<nav class="navbar navbar-light logo">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="http://www.sqlalchemy.org/">
+            <img src="../../../../../../www.sqlalchemy.org/img/sqla_logo.png" width="240" alt="SQLAlchemy">
+        </a>
+        <div class="navbar-brand align-self-end dbtoolkit">
+            <img src="../../../../../../www.sqlalchemy.org/img/dbtoolkit6.gif" width="180" height="12" alt="The Database Toolkit for Python">
+        </div>
+    </div>
+</nav>
+<nav class="navbar navbar-expand-md navbar-dark bg-sa-green py-0 navigation">
+    <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavigation" aria-controls="navbarNavigation" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <span class="navbar-brand d-md-block d-md-none" href="#">The Database Toolkit for Python</span>
+        <div class="collapse navbar-collapse" id="navbarNavigation">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link "  href="http://www.sqlalchemy.org/">home</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle "  href="#" id="feature-dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        features
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark bg-sa-green" aria-labelledby="feature-dropdown">
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/philosophy.html">Philosophy Statement</a></li>
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/features.html">Feature Overview</a></li>
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/quotes.html">Testimonials</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link "  href="http://www.sqlalchemy.org/blog/">news</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle active" aria-current="page"
+                    href="#" id="docs-dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        documentation
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark bg-sa-green" aria-labelledby="docs-dropdown">
+                        <li><a class="dropdown-item" href="http://docs.sqlalchemy.org/">Current Documentation (version 2.0)</a></li>
+
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/library.html#reference">Documentation by Version</a></li>
+                        
+        <li>
+            <a class="dropdown-item" href="../../../index.html">
+                <span class="ps-2">Version 2.0</span>
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="http://docs.sqlalchemy.org/en/14/">
+                <span class="ps-2">Version 1.4</span>
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="http://docs.sqlalchemy.org/en/13/">
+                <span class="ps-2">Version 1.3</span>
+            </a>
+        </li>
+
+                        <li><hr class="dropdown-divider"></li>
+
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/library.html#talks">Talks and Tutorials</a></li>
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/library.html">Published content overview</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle "  href="#" id="community-dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        community
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark bg-sa-green" aria-labelledby="community-dropdown">
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/support.html">Get Support</a></li>
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/participate.html">Participate</a></li>
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/develop.html">Develop</a></li>
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/codeofconduct.html">Code of Conduct</a></li>
+                        <li><a class="dropdown-item" href="https://github.com/sqlalchemy/sqlalchemy">Github</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle "  href="#" id="download-dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        download
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark bg-sa-green" aria-labelledby="download-dropdown">
+                        <li><a class="dropdown-item" href="http://www.sqlalchemy.org/download.html">Download</a>
+                        
+
+
+
+
+
+
+    <li><a 
+        class="dropdown-item"
+ href="http://www.sqlalchemy.org/download.html#current">Current Release Series (2.0)</a></li>
+
+    <li><a 
+        class="dropdown-item"
+ href="http://www.sqlalchemy.org/download.html#maintenance">Maintenance Release (1.4)</a></li>
+
+    <li><a 
+        class="dropdown-item"
+ href="http://www.sqlalchemy.org/download.html#development">Development Access</a></li>
+    <li><a 
+        class="dropdown-item"
+ href="http://www.sqlalchemy.org/download.html#license">License</a></li>
+    <li><a 
+        class="dropdown-item"
+ href="http://www.sqlalchemy.org/download.html#versions">Version Numbering</a></li>
+    <li><a 
+        class="dropdown-item"
+ href="http://www.sqlalchemy.org/download.html#relstatus">Release Status</a></li>
+
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<div id="main-body" class="docs main-body row m-0">
+
+<main id="docs" class="docs">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div id="docs-container">
+
+
+
+
+
+<div id="docs-top-navigation-container" class="body-background">
+<div id="docs-header">
+    <div id="docs-version-header">
+        Release: <span class="version-num">2.0.18</span>
+
+            <span id="sidebar-current">current release</span>
+
+        | Release Date: July 5, 2023
+
+    </div>
+
+    <h1><a href="../../../index-2.html">SQLAlchemy 2.0 Documentation</a></h1>
+
+</div>
+</div>
+
+<div id="docs-body-container">
+
+    <div id="fixed-sidebar" class="">
+
+        <div id="index-nav">
+            <form class="search" action="https://docs.sqlalchemy.org/en/20/search.html" method="get">
+              <label>
+                 Search terms:
+              <input type="text" placeholder="search..." name="q" size="12" />
+              </label>
+              <input type="submit" value="Search" />
+              <input type="hidden" name="check_keywords" value="yes" />
+              <input type="hidden" name="area" value="default" />
+            </form>
+
+            <p>
+            <a href="../../../contents.html">Contents</a> |
+            <a href="../../../genindex.html">Index</a>
+            | <a href="http://docs.sqlalchemy.org/20/sqlalchemy_20.zip">Download this Documentation</a>
+            </p>
+
+        </div>
+
+
+    </div>
+
+    <div id="narrow-index-nav">
+        <form class="search" action="https://docs.sqlalchemy.org/en/20/search.html" method="get">
+            <label>
+                Search terms:
+            <input type="text" placeholder="search..." name="q" size="12" />
+            </label>
+            <input type="submit" value="Search" />
+            <input type="hidden" name="check_keywords" value="yes" />
+            <input type="hidden" name="area" value="default" />
+        </form>
+
+        <p>
+        <a href="../../../index-2.html">Home</a>
+        | <a href="http://docs.sqlalchemy.org/20/sqlalchemy_20.zip">Download this Documentation</a>
+        </p>
+
+    </div>
+
+
+
+    <div id="docs-body" role="main" class=" _modules-examples-dogpile_caching-local_session_caching" >
+        
+<h1>Source code for examples.dogpile_caching.local_session_caching</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;This example creates a new dogpile.cache backend that will persist data in a</span>
+<span class="sd">dictionary which is local to the current session.   remove() the session and</span>
+<span class="sd">the cache is gone.</span>
+
+<span class="sd">Create a new Dogpile cache backend that will store</span>
+<span class="sd">cached data local to the current Session.</span>
+
+<span class="sd">This is an advanced example which assumes familiarity</span>
+<span class="sd">with the basic operation of CachingQuery.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">dogpile.cache</span> <span class="kn">import</span> <span class="n">make_region</span>
+<span class="kn">from</span> <span class="nn">dogpile.cache.api</span> <span class="kn">import</span> <span class="n">CacheBackend</span>
+<span class="kn">from</span> <span class="nn">dogpile.cache.api</span> <span class="kn">import</span> <span class="n">NO_VALUE</span>
+<span class="kn">from</span> <span class="nn">dogpile.cache.region</span> <span class="kn">import</span> <span class="n">register_backend</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">environment</span>
+<span class="kn">from</span> <span class="nn">.caching_query</span> <span class="kn">import</span> <span class="n">FromCache</span>
+<span class="kn">from</span> <span class="nn">.environment</span> <span class="kn">import</span> <span class="n">regions</span>
+<span class="kn">from</span> <span class="nn">.environment</span> <span class="kn">import</span> <span class="n">Session</span>
+
+
+<span class="k">class</span> <span class="nc">ScopedSessionBackend</span><span class="p">(</span><span class="n">CacheBackend</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A dogpile backend which will cache objects locally on</span>
+<span class="sd">    the current session.</span>
+
+<span class="sd">    When used with the query_cache system, the effect is that the objects</span>
+<span class="sd">    in the cache are the same as that within the session - the merge()</span>
+<span class="sd">    is a formality that doesn&#39;t actually create a second instance.</span>
+<span class="sd">    This makes it safe to use for updates of data from an identity</span>
+<span class="sd">    perspective (still not ideal for deletes though).</span>
+
+<span class="sd">    When the session is removed, the cache is gone too, so the cache</span>
+<span class="sd">    is automatically disposed upon session.remove().</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arguments</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scoped_session</span> <span class="o">=</span> <span class="n">arguments</span><span class="p">[</span><span class="s2">&quot;scoped_session&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache_dictionary</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">NO_VALUE</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cache_dictionary</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cache_dictionary</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_cache_dictionary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the cache dictionary linked to the current Session.&quot;&quot;&quot;</span>
+
+        <span class="n">sess</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scoped_session</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">cache_dict</span> <span class="o">=</span> <span class="n">sess</span><span class="o">.</span><span class="n">_cache_dictionary</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">sess</span><span class="o">.</span><span class="n">_cache_dictionary</span> <span class="o">=</span> <span class="n">cache_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">return</span> <span class="n">cache_dict</span>
+
+
+<span class="n">register_backend</span><span class="p">(</span><span class="s2">&quot;sqlalchemy.session&quot;</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;ScopedSessionBackend&quot;</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="c1"># set up a region based on the ScopedSessionBackend,</span>
+    <span class="c1"># pointing to the scoped_session declared in the example</span>
+    <span class="c1"># environment.</span>
+    <span class="n">regions</span><span class="p">[</span><span class="s2">&quot;local_session&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">make_region</span><span class="p">()</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span>
+        <span class="s2">&quot;sqlalchemy.session&quot;</span><span class="p">,</span> <span class="n">arguments</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;scoped_session&quot;</span><span class="p">:</span> <span class="n">Session</span><span class="p">}</span>
+    <span class="p">)</span>
+
+    <span class="kn">from</span> <span class="nn">.model</span> <span class="kn">import</span> <span class="n">Person</span>
+
+    <span class="c1"># query to load Person by name, with criterion</span>
+    <span class="c1"># of &quot;person 10&quot;</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">Session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Person</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Person</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;person 10&quot;</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">options</span><span class="p">(</span><span class="n">FromCache</span><span class="p">(</span><span class="s2">&quot;local_session&quot;</span><span class="p">))</span>
+    <span class="p">)</span>
+
+    <span class="c1"># load from DB</span>
+    <span class="n">person10</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
+
+    <span class="c1"># next call, the query is cached.</span>
+    <span class="n">person10</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
+
+    <span class="c1"># clear out the Session.  The &quot;_cache_dictionary&quot; dictionary</span>
+    <span class="c1"># disappears with it.</span>
+    <span class="n">Session</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
+
+    <span class="c1"># query calls from DB again</span>
+    <span class="n">person10</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
+
+    <span class="c1"># identity is preserved - person10 is the *same* object that&#39;s</span>
+    <span class="c1"># ultimately inside the cache.   So it is safe to manipulate</span>
+    <span class="c1"># the not-queried-for attributes of objects when using such a</span>
+    <span class="c1"># cache without the need to invalidate - however, any change</span>
+    <span class="c1"># that would change the results of a cached query, such as</span>
+    <span class="c1"># inserts, deletes, or modification to attributes that are</span>
+    <span class="c1"># part of query criterion, still require careful invalidation.</span>
+    <span class="n">cache_key</span> <span class="o">=</span> <span class="n">FromCache</span><span class="p">(</span><span class="s2">&quot;local_session&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">_generate_cache_key</span><span class="p">(</span>
+        <span class="n">q</span><span class="o">.</span><span class="n">_statement_20</span><span class="p">(),</span> <span class="p">{},</span> <span class="n">environment</span><span class="o">.</span><span class="n">cache</span>
+    <span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">person10</span> <span class="ow">is</span> <span class="n">regions</span><span class="p">[</span><span class="s2">&quot;local_session&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">cache_key</span><span class="p">)()</span><span class="o">.</span><span class="n">scalar</span><span class="p">()</span></pre><div class="code-non-annotations-key"></div></div>
+    </div>
+
+</div>
+
+<div id="docs-bottom-navigation" class="docs-navigation-links">
+
+    <div id="docs-copyright">
+        &copy; <a href="../../../copyright.html">Copyright</a> 2007-2023, the SQLAlchemy authors and contributors.
+
+
+    <p><b>flambé!</b> the dragon and <b><i>The Alchemist</i></b> image designs created and generously donated by <a href="https://github.com/vmalloc">Rotem Yaari</a>.</p>
+
+        Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 7.0.1.
+
+    Documentation last generated: Wed 05 Jul 2023 03:34:11 PM 
+
+    </div>
+</div>
+
+</div>
+
+
+
+
+</div>
+
+</div> <!-- end #main-body -->
+
+
+    
+
+    
+
+<div id="footer" class="footer">
+    <div class="snd-ad">
+    </div>
+    <div class="pypowered">
+        <a href="http://www.python.org/" title="The Python Language Site">
+            <img src="../../../../../../www.sqlalchemy.org/img/python-logo.gif" width="88" height="30" alt="Python" class="pypowered" />
+        </a>
+    </div>
+
+    <div class="copyright">
+        <p>Website content copyright &copy; by SQLAlchemy authors and contributors.
+            SQLAlchemy and its documentation are licensed under the MIT license.</p>
+        <p>SQLAlchemy is a trademark of Michael Bayer.  mike(&amp;)zzzcomputing.com
+        All rights reserved. </p>
+        <p>Website generation by
+        <a href="https://github.com/sqlalchemyorg/zeekofile/">zeekofile</a>, with
+        huge thanks to the <a href="https://github.com/EnigmaCurry/blogofile">Blogofile</a>
+        project.</p>
+
+        <a rel="me" href="https://fosstodon.org/@zzzeek">Mastodon</a>
+
+    </div>
+
+    <br clear="all" />
+
+</div>
+
+
+
+     <!-- End original user content -->
+
+    
+
+
+
+
+</div> <!-- end #wrap -->
+
+
+    
+
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+          URL_ROOT:    '../../../',
+          VERSION:     '2.0.18',
+          COLLAPSE_MODINDEX: false,
+          FILE_SUFFIX: '.html'
+      };
+    </script>
+
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+
+    <!-- begin iterate through sphinx environment script_files -->
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script type="text/javascript" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/sphinx_highlight.js"></script>
+        <script type="text/javascript" src="../../../_static/clipboard.min.js"></script>
+        <script type="text/javascript" src="../../../_static/copybutton.js"></script>
+    <!-- end iterate through sphinx environment script_files -->
+
+    <script type="text/javascript" src="../../../_static/init.js"></script>
+
+
+
+
+<script type="text/javascript" src="../../../../../../www.sqlalchemy.org/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript" src="../../../../../../www.sqlalchemy.org/js/doc_versions.js"></script>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-KWWK46V0YX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-KWWK46V0YX');
+</script>
+
+
+</body>
+
+<!-- Mirrored from docs.sqlalchemy.org/en/20/_modules/examples/dogpile_caching/local_session_caching.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 06 Jul 2023 08:05:56 GMT -->
+</html>
+

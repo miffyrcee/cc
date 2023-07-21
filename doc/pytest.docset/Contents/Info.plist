@@ -6,6 +6,8 @@
 	<string>pytest</string>
 	<key>CFBundleName</key>
 	<string>pytest</string>
+	<key>DashDocSetDeclaredInStyle</key>
+	<string>originalName</string>
 	<key>DashDocSetFallbackURL</key>
 	<string>https://docs.pytest.org/en/latest/contents.html</string>
 	<key>DashDocSetFamily</key>
